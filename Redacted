@@ -1,0 +1,136 @@
+// ==UserScript==
+// @name         Auto Click on Redacted Airways Quest Buttons with Retry on Continue Button
+// @namespace    http://tampermonkey.net/
+// @version      1.5
+// @description  自动点击Redacted Airways页面上的FOLLOW, LIKE, RETWEET按钮，并处理小窗口上的相同按钮和CONTINUE按钮，增加对"CONTINUE"按钮的等待时间和重试机制
+// @match        https://quest.redactedairways.com/home
+// @grant        none
+// @run-at       document-idle
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 随机延迟函数，避免被检测为机器人
+    function randomDelay(min, max) {
+        return new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * (max - min + 1)) + min));
+    }
+
+    // 等待元素出现的函数
+    function waitForElement(selector, timeout = 10000) {
+        return new Promise((resolve, reject) => {
+            const startTime = Date.now();
+            (function check() {
+                const element = document.querySelector(selector);
+                if (element) {
+                    resolve(element);
+                } else if (Date.now() - startTime > timeout) {
+                    reject(new Error(`Timeout: Element ${selector} not found`));
+                } else {
+                    requestAnimationFrame(check);
+                }
+            })();
+        });
+    }
+
+    // 点击主区域中的按钮
+    async function findAndClickActionButton() {
+        const targetArea = document.querySelector('#social-quests > section.relative.mb-6.z-20');
+        if (!targetArea) {
+            console.log('目标区域未找到');
+            return;
+        }
+
+        const buttons = Array.from(targetArea.querySelectorAll('button')).filter(button =>
+            ['FOLLOW', 'LIKE', 'RETWEET'].some(text => button.innerText.toUpperCase().includes(text))
+        );
+
+        if (buttons.length === 0) {
+            console.log('目标按钮未找到');
+            return;
+        }
+
+        // 随机选择一个按钮进行点击
+        const randomButton = buttons[Math.floor(Math.random() * buttons.length)];
+        console.log(`点击了按钮: ${randomButton.innerText}`);
+        randomButton.click();
+
+        // 等待小窗口弹出并处理其中的按钮
+        await randomDelay(1000, 3000);  // 增加延迟确保窗口弹出
+        await handlePopup();
+    }
+
+    // 处理弹出的窗口
+    async function handlePopup() {
+        // 等待小窗口出现
+        const popup = await waitForElement('#root > div > div:nth-child(3) > div > div.fixed.flex.justify-center.items-center.z-40', 10000);
+        if (popup) {
+            console.log('小窗口已出现，处理其中的按钮...');
+            
+            // 在小窗口内继续寻找"FOLLOW", "LIKE", "RETWEET"的按钮
+            let popupButtons = Array.from(popup.querySelectorAll('button')).filter(button =>
+                ['FOLLOW', 'LIKE', 'RETWEET'].some(text => button.innerText.toUpperCase().includes(text))
+            );
+
+            for (let button of popupButtons) {
+                console.log(`点击弹窗内的按钮: ${button.innerText}`);
+                button.click();
+                await randomDelay(1000, 3000);  // 每次点击后增加延迟
+            }
+
+            // 尝试多次等待 "CONTINUE" 按钮出现
+            await waitForContinueButton();
+        } else {
+            console.log('小窗口未出现');
+        }
+    }
+
+    // 等待 "CONTINUE" 按钮，重试机制
+    async function waitForContinueButton() {
+        let continueButton;
+        let attempts = 0;
+        const maxAttempts = 5; // 设置最大尝试次数
+
+        while (attempts < maxAttempts) {
+            attempts++;
+            console.log(`等待CONTINUE按钮，尝试次数: ${attempts}`);
+
+            // 延迟10到15秒，等待按钮加载
+            await randomDelay(10000, 15000);
+
+            // 查找所有按钮并通过innerText过滤出 "CONTINUE" 按钮
+            continueButton = Array.from(document.querySelectorAll('button')).find(button => button.innerText.toUpperCase() === 'CONTINUE');
+            if (continueButton) {
+                console.log('点击CONTINUE按钮');
+                continueButton.click();
+                break; // 成功点击后退出循环
+            } else {
+                console.log(`CONTINUE按钮未找到，重试第 ${attempts} 次...`);
+            }
+        }
+
+        if (!continueButton) {
+            console.log('未能找到 CONTINUE 按钮，脚本结束。');
+        }
+    }
+
+    // 主循环，直到区域内不存在符合条件的按钮
+    async function mainLoop() {
+        while (true) {
+            await findAndClickActionButton();
+            await randomDelay(3000, 5000);  // 添加延迟以避免操作过于频繁
+            if (document.querySelectorAll('#social-quests > section.relative.mb-6.z-20 button').length === 0) {
+                console.log('没有剩余的目标按钮，脚本结束');
+                break;
+            }
+        }
+    }
+
+    // 页面加载完成后启动主循环，增加初始延迟
+    window.addEventListener('load', async () => {
+        console.log('页面加载完成，启动自动点击脚本');
+        await randomDelay(5000, 8000);  // 增加页面加载后的初始延迟
+        mainLoop();
+    });
+
+})();
