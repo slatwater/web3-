@@ -1,0 +1,61 @@
+// ==UserScript==
+// @name         自动打开下一个网址（更新版）
+// @namespace    http://tampermonkey.net/
+// @version      1.2
+// @description  当指定的网址被关闭时，自动打开下一个网址，更新了特定网址，并在最后一个网址被关闭后停止
+// @author
+// @match        https://arcana.p12.games/*
+// @match        https://app.rollie.finance/airdrop-mission/dashboard*
+// @match        https://mission.swanchain.io/*
+// @match        https://genesis.chainbase.com/*
+// @match        https://renaissance.artela.network/arthome*
+// @match        https://www.mintchain.io/mint-forest*
+// @match        https://daobase.ai/point/task*
+// @match        https://liveart.io/airdrop*
+// @match        https://gomble.io/treasureHunt*
+// @grant        GM_openInTab
+// @grant        window.close
+// @run-at       document-start
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 定义网址列表，按顺序排列
+    const urlList = [
+        'https://arcana.p12.games/',
+        'https://app.rollie.finance/airdrop-mission/dashboard',
+        'https://mission.swanchain.io',
+        'https://genesis.chainbase.com/',
+        'https://renaissance.artela.network/arthome',
+        'https://www.mintchain.io/mint-forest',
+        'https://daobase.ai/point/task',
+        'https://liveart.io/airdrop',
+        'https://gomble.io/treasureHunt'
+    ];
+
+    // 获取当前网址
+    const currentUrl = window.location.href;
+
+    // 获取当前网址在列表中的索引
+    const currentIndex = urlList.findIndex(url => currentUrl.startsWith(url));
+
+    // 如果当前网址在列表中
+    if (currentIndex !== -1) {
+        // 添加 beforeunload 事件监听器，当页面关闭时触发
+        window.addEventListener('beforeunload', function(event) {
+            // 计算下一个网址的索引
+            const nextIndex = currentIndex + 1;
+
+            // 检查是否还有下一个网址
+            if (nextIndex < urlList.length) {
+                const nextUrl = urlList[nextIndex];
+
+                // 在新标签页中打开下一个网址
+                GM_openInTab(nextUrl, { active: true });
+            } else {
+                console.log('已到达列表末尾，不再打开新的网址。');
+            }
+        });
+    }
+})();
