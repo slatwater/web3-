@@ -1,11 +1,9 @@
 // ==UserScript==
 // @name         Auto Click on Arcana P12 Tasks with Random Delay and Random Element Selection
 // @namespace    http://tampermonkey.net/
-// @version      2.3
+// @version      2.4
 // @description  自动点击Arcana P12页面任务的脚本，添加随机延迟，并在点击任务后刷新页面进行验证
-// @match        *://www.baidu.com/*
 // @match        *://arcana.p12.games/*
-// @grant        GM_openInTab
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @run-at       document-idle
@@ -43,12 +41,6 @@
 
     // 设置执行标志，避免重复执行前几步
     const taskCompleted = GM_getValue('taskCompleted', false);
-
-    // 打开新标签页
-    if (window.location.hostname === 'www.baidu.com') {
-        console.log('Detected Baidu, opening Arcana P12 page in a new tab.');
-        GM_openInTab('https://arcana.p12.games/', { active: true, insert: true });
-    }
 
     // 执行 Arcana P12 页面上的任务
     if (window.location.hostname === 'arcana.p12.games') {
