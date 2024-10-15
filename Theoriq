@@ -1,0 +1,142 @@
+// ==UserScript==
+// @name         Infinity Theoriq 自动化脚本（随机输入版）
+// @namespace    http://tampermonkey.net/
+// @version      1.4
+// @description  自动执行指定操作的脚本，随机输入文本并设置30秒间隔
+// @author       
+// @match        https://infinity.theoriq.ai/studio/chat
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 等待页面完全加载
+    window.addEventListener('load', function() {
+        console.log('页面已加载，开始执行脚本。');
+
+        // 定义目标元素的选择器
+        var step1Selector = '#main-container > div > div.flex.min-h-full.min-w-full.flex-auto.snap-start.flex-col.lg\\:min-w-\\[360px\\].lg\\:max-w-\\[360px\\] > div > div.relative.mr-1.flex-1.flex-col.overflow-y-hidden.pr-1.scrollbar.lg\\:px-3.lg\\:pr-2 > div > div > div.flex.flex-col.gap-1 > div > div > div > div.w-full.overflow-hidden.text-ellipsis.text-nowrap.text-sm > label';
+
+        // 等待第一步的元素加载完毕
+        waitForElement(step1Selector, function(element1) {
+            // 使用 dispatchEvent 模拟真实的鼠标点击
+            simulateClick(element1);
+            console.log('已点击第一步的元素。');
+
+            // 随机延迟
+            var delay1 = Math.random() * 1000 + 500;
+            setTimeout(step2And3, delay1);
+        });
+
+        // 定义等待元素加载的函数
+        function waitForElement(selector, callback) {
+            var element = document.querySelector(selector);
+            if (element) {
+                callback(element);
+            } else {
+                var observer = new MutationObserver(function(mutations, me) {
+                    var element = document.querySelector(selector);
+                    if (element) {
+                        me.disconnect(); // 停止观察
+                        callback(element);
+                    }
+                });
+                observer.observe(document, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+
+        // 模拟真实的鼠标点击事件
+        function simulateClick(element) {
+            var rect = element.getBoundingClientRect();
+            var x = rect.left + rect.width / 2;
+            var y = rect.top + rect.height / 2;
+
+            ['mouseover', 'mousedown', 'mouseup', 'click'].forEach(function(eventType) {
+                var event = new MouseEvent(eventType, {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true,
+                    clientX: x,
+                    clientY: y
+                });
+                element.dispatchEvent(event);
+            });
+        }
+
+        // 定义一个函数，用于触发React的事件
+        function setNativeValue(element, value) {
+            var lastValue = element.value;
+            element.value = value;
+
+            var event = new Event('input', { bubbles: true });
+            // hack React15
+            event.simulated = true;
+            // hack React16 内部定义了descriptor拦截value，此处重置状态
+            var tracker = element._valueTracker;
+            if (tracker) {
+                tracker.setValue(lastValue);
+            }
+            element.dispatchEvent(event);
+        }
+
+        // 定义执行步骤2和3的函数
+        function step2And3() {
+            var loopCount = 0;
+            var maxLoops = 10;
+
+            // 定义要随机选择的文本数组
+            var texts = [
+                "Show me a table of the top coins you're tracking.",
+                "Give me some Twitter posts on a popular memecoin.",
+                "What is the current marketcap of Solana?",
+                "What memecoins have around $100K liquidity?"
+            ];
+
+            function loopSteps() {
+                if (loopCount >= maxLoops) {
+                    console.log('已完成所有循环，脚本结束。');
+                    return;
+                }
+
+                // 第二步：在输入框中输入随机文本
+                var inputSelector = '#main-container > div > div.flex.size-full.max-h-full.min-h-full.min-w-full.grow.snap-start.flex-col.overflow-hidden.border-dark-400.pr-1.lg\\:w-7\\/12.lg\\:min-w-0.lg\\:border-l-2 > div.p-1.lg\\:px-6.lg\\:py-4 > div.flex.flex-row.justify-between.space-x-4.mb-4 > form > input';
+
+                waitForElement(inputSelector, function(inputElement) {
+                    inputElement.focus();
+
+                    // 随机选择一个文本
+                    var randomIndex = Math.floor(Math.random() * texts.length);
+                    var randomText = texts[randomIndex];
+
+                    // 使用setNativeValue设置值并触发React事件
+                    setNativeValue(inputElement, randomText);
+                    console.log('第' + (loopCount + 1) + '次循环：已输入文本"' + randomText + '"。');
+
+                    // 随机延迟
+                    var delay2 = Math.random() * 1000 + 500;
+                    setTimeout(function() {
+                        // 第三步：点击提交按钮
+                        var buttonSelector = '#main-container > div > div.flex.size-full.max-h-full.min-h-full.min-w-full.grow.snap-start.flex-col.overflow-hidden.border-dark-400.pr-1.lg\\:w-7\\/12.lg\\:min-w-0.lg\\:border-l-2 > div.p-1.lg\\:px-6.lg\\:py-4 > div.flex.flex-row.justify-between.space-x-4.mb-4 > form > button';
+                        waitForElement(buttonSelector, function(buttonElement) {
+                            simulateClick(buttonElement);
+                            console.log('第' + (loopCount + 1) + '次循环：已点击提交按钮。');
+
+                            loopCount++;
+                            // 间隔30秒后进行下一次循环
+                            var delayBetweenLoops = 30000; // 30秒
+                            setTimeout(loopSteps, delayBetweenLoops);
+                        });
+                    }, delay2);
+                });
+            }
+
+            // 开始循环
+            loopSteps();
+        }
+
+    });
+})();
