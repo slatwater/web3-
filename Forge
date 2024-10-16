@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Forge.gg Quests 自动化脚本（最终版）
+// @name         Forge.gg Quests 自动化脚本（增强版）
 // @namespace    http://tampermonkey.net/
-// @version      1.4
-// @description  自动点击元素1，等待加载完成后点击元素2，并在每个步骤之间添加随机延迟
+// @version      1.5
+// @description  自动点击元素1，监测元素3的barValue值，点击元素2，直至barValue变化后停止脚本
 // @author       
 // @match        https://forge.gg/quests
 // @grant        none
@@ -19,11 +19,16 @@
         var element1Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > button';
         var element2Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > div.home-rewards__head > div > button';
         var spinnerSelector = '#root > div > div.user__wrapper.bg-quest.content-paused > main > div.home-topcontent > header > p > span.spinner';
+        var element3Selector = 'div.xpbar.xpbar--badge.margin-bottom';
+
+        // 记录初始的barValue值
+        var initialBarValue = null;
+        var scriptStopped = false; // 脚本停止标志
 
         // 第一步：等待元素1加载完毕并点击
         waitForElement(element1Selector, function(element1) {
             // 随机延迟
-            var delay1 = getRandomDelay(500, 1000); // 500ms 到 1000ms 之间的随机延迟
+            var delay1 = getRandomDelay(1000, 2000);
             setTimeout(function() {
                 simulateClick(element1);
                 console.log('已点击元素1。');
@@ -36,74 +41,132 @@
                     waitForSpinnerDisappear(spinnerSelector, function() {
                         console.log('加载已完成。');
 
-                        // 随机延迟
-                        var delay2 = getRandomDelay(500, 1000);
-                        setTimeout(function() {
-                            // 第四步：等待元素2加载完毕并点击
-                            waitForElement(element2Selector, function(element2) {
-                                simulateClick(element2);
-                                console.log('已点击元素2。');
+                        // 第四步：开始监测元素3的barValue值变化
+                        waitForElement(element3Selector, function(element3) {
+                            // 获取初始的barValue值
+                            initialBarValue = getBarValue(element3);
+                            console.log('初始的barValue值为：' + initialBarValue);
+
+                            // 开始监测barValue变化
+                            observeBarValueChange(element3, function(newBarValue) {
+                                console.log('检测到barValue值变化，新的值为：' + newBarValue);
+                                scriptStopped = true; // 设置脚本停止标志
                             });
-                        }, delay2);
+
+                            // 第五步：持续检测元素2的出现并点击
+                            monitorAndClickElement2();
+                        });
                     });
                 });
             }, delay1);
         });
+
+        // 获取随机延迟时间的函数（minMs到maxMs之间）
+        function getRandomDelay(minMs, maxMs) {
+            return Math.random() * (maxMs - minMs) + minMs;
+        }
+
+        // 等待元素加载完毕的函数
+        function waitForElement(selector, callback) {
+            var element = document.querySelector(selector);
+            if (element) {
+                callback(element);
+            } else {
+                var observer = new MutationObserver(function(mutations, me) {
+                    var element = document.querySelector(selector);
+                    if (element) {
+                        me.disconnect(); // 停止观察
+                        callback(element);
+                    }
+                });
+                observer.observe(document.documentElement, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+
+        // 等待元素消失的函数
+        function waitForSpinnerDisappear(selector, callback) {
+            var element = document.querySelector(selector);
+            if (!element) {
+                callback();
+            } else {
+                var observer = new MutationObserver(function(mutations, me) {
+                    var element = document.querySelector(selector);
+                    if (!element) {
+                        me.disconnect(); // 停止观察
+                        callback();
+                    }
+                });
+                observer.observe(document.documentElement, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+
+        // 模拟点击事件
+        function simulateClick(element) {
+            var event = new MouseEvent('click', {
+                view: window,
+                bubbles: true,
+                cancelable: true
+            });
+            element.dispatchEvent(event);
+        }
+
+        // 获取元素3的barValue值
+        function getBarValue(element) {
+            var style = element.getAttribute('style');
+            var match = /--barValue:\s*([^;]+);/.exec(style);
+            if (match && match[1]) {
+                return match[1].trim();
+            }
+            return null;
+        }
+
+        // 监测元素3的barValue值变化
+        function observeBarValueChange(element, callback) {
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'style') {
+                        var newBarValue = getBarValue(element);
+                        if (newBarValue !== initialBarValue) {
+                            observer.disconnect(); // 停止观察
+                            callback(newBarValue);
+                        }
+                    }
+                });
+            });
+            observer.observe(element, {
+                attributes: true,
+                attributeFilter: ['style']
+            });
+        }
+
+        // 持续检测元素2的出现并点击
+        function monitorAndClickElement2() {
+            if (scriptStopped) {
+                console.log('barValue值已变化，停止脚本。');
+                return;
+            }
+
+            waitForElement(element2Selector, function(element2) {
+                // 随机延迟
+                var delay = getRandomDelay(500, 1000);
+                setTimeout(function() {
+                    if (!scriptStopped) {
+                        simulateClick(element2);
+                        console.log('已点击元素2。');
+                        // 继续监测元素2的出现
+                        monitorAndClickElement2();
+                    } else {
+                        console.log('barValue值已变化，停止点击元素2。');
+                    }
+                }, delay);
+            });
+        }
+
     });
-
-    // 获取随机延迟时间的函数（minMs到maxMs之间）
-    function getRandomDelay(minMs, maxMs) {
-        return Math.random() * (maxMs - minMs) + minMs;
-    }
-
-    // 等待元素加载完毕的函数
-    function waitForElement(selector, callback) {
-        var element = document.querySelector(selector);
-        if (element) {
-            callback(element);
-        } else {
-            var observer = new MutationObserver(function(mutations, me) {
-                var element = document.querySelector(selector);
-                if (element) {
-                    me.disconnect(); // 停止观察
-                    callback(element);
-                }
-            });
-            observer.observe(document.documentElement, {
-                childList: true,
-                subtree: true
-            });
-        }
-    }
-
-    // 等待元素消失的函数
-    function waitForSpinnerDisappear(selector, callback) {
-        var element = document.querySelector(selector);
-        if (!element) {
-            callback();
-        } else {
-            var observer = new MutationObserver(function(mutations, me) {
-                var element = document.querySelector(selector);
-                if (!element) {
-                    me.disconnect(); // 停止观察
-                    callback();
-                }
-            });
-            observer.observe(document.documentElement, {
-                childList: true,
-                subtree: true
-            });
-        }
-    }
-
-    // 模拟点击事件
-    function simulateClick(element) {
-        var event = new MouseEvent('click', {
-            view: window,
-            bubbles: true,
-            cancelable: true
-        });
-        element.dispatchEvent(event);
-    }
-
 })();
