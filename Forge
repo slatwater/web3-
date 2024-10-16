@@ -1,0 +1,109 @@
+// ==UserScript==
+// @name         Forge.gg Quests 自动化脚本（最终版）
+// @namespace    http://tampermonkey.net/
+// @version      1.4
+// @description  自动点击元素1，等待加载完成后点击元素2，并在每个步骤之间添加随机延迟
+// @author       
+// @match        https://forge.gg/quests
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 等待页面完全加载
+    window.addEventListener('load', function() {
+        console.log('页面已加载，开始执行脚本。');
+
+        // 元素选择器
+        var element1Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > button';
+        var element2Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > div.home-rewards__head > div > button';
+        var spinnerSelector = '#root > div > div.user__wrapper.bg-quest.content-paused > main > div.home-topcontent > header > p > span.spinner';
+
+        // 第一步：等待元素1加载完毕并点击
+        waitForElement(element1Selector, function(element1) {
+            // 随机延迟
+            var delay1 = getRandomDelay(500, 1000); // 500ms 到 1000ms 之间的随机延迟
+            setTimeout(function() {
+                simulateClick(element1);
+                console.log('已点击元素1。');
+
+                // 第二步：等待加载开始（等待spinner出现）
+                waitForElement(spinnerSelector, function(spinnerElement) {
+                    console.log('加载已开始，检测加载状态...');
+
+                    // 第三步：等待加载完成（等待spinner消失）
+                    waitForSpinnerDisappear(spinnerSelector, function() {
+                        console.log('加载已完成。');
+
+                        // 随机延迟
+                        var delay2 = getRandomDelay(500, 1000);
+                        setTimeout(function() {
+                            // 第四步：等待元素2加载完毕并点击
+                            waitForElement(element2Selector, function(element2) {
+                                simulateClick(element2);
+                                console.log('已点击元素2。');
+                            });
+                        }, delay2);
+                    });
+                });
+            }, delay1);
+        });
+    });
+
+    // 获取随机延迟时间的函数（minMs到maxMs之间）
+    function getRandomDelay(minMs, maxMs) {
+        return Math.random() * (maxMs - minMs) + minMs;
+    }
+
+    // 等待元素加载完毕的函数
+    function waitForElement(selector, callback) {
+        var element = document.querySelector(selector);
+        if (element) {
+            callback(element);
+        } else {
+            var observer = new MutationObserver(function(mutations, me) {
+                var element = document.querySelector(selector);
+                if (element) {
+                    me.disconnect(); // 停止观察
+                    callback(element);
+                }
+            });
+            observer.observe(document.documentElement, {
+                childList: true,
+                subtree: true
+            });
+        }
+    }
+
+    // 等待元素消失的函数
+    function waitForSpinnerDisappear(selector, callback) {
+        var element = document.querySelector(selector);
+        if (!element) {
+            callback();
+        } else {
+            var observer = new MutationObserver(function(mutations, me) {
+                var element = document.querySelector(selector);
+                if (!element) {
+                    me.disconnect(); // 停止观察
+                    callback();
+                }
+            });
+            observer.observe(document.documentElement, {
+                childList: true,
+                subtree: true
+            });
+        }
+    }
+
+    // 模拟点击事件
+    function simulateClick(element) {
+        var event = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true
+        });
+        element.dispatchEvent(event);
+    }
+
+})();
