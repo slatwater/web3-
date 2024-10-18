@@ -1,0 +1,284 @@
+// ==UserScript==
+// @name         Space3 & SideQuest 自动化脚本
+// @namespace    http://tampermonkey.net/
+// @version      1.5
+// @description  自动化操作 Space3 和 SideQuest 任务页面
+// @author       您的名字
+// @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
+// @match        https://sidequest.rcade.game/quests
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 版本信息
+    const SCRIPT_VERSION = "1.5";
+
+    // 日志函数
+    function log(message) {
+        console.log(`[自动化脚本 v${SCRIPT_VERSION}] ${message}`);
+    }
+
+    // 随机延迟函数，返回Promise
+    function randomDelay(min = 1000, max = 3000) {
+        const delay = Math.floor(Math.random() * (max - min + 1)) + min;
+        return new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    // 等待CSS选择器出现
+    function waitForSelector(selector, timeout = 30000) {
+        return new Promise((resolve, reject) => {
+            const interval = 500;
+            let elapsed = 0;
+            const timer = setInterval(() => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    clearInterval(timer);
+                    resolve(element);
+                } else {
+                    elapsed += interval;
+                    if (elapsed >= timeout) {
+                        clearInterval(timer);
+                        reject(new Error(`等待元素 ${selector} 超时`));
+                    }
+                }
+            }, interval);
+        });
+    }
+
+    // 等待XPath选择器出现
+    function waitForXPath(xpath, timeout = 30000) {
+        return new Promise((resolve, reject) => {
+            const interval = 500;
+            let elapsed = 0;
+            const timer = setInterval(() => {
+                const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                if (result.singleNodeValue) {
+                    clearInterval(timer);
+                    resolve(result.singleNodeValue);
+                } else {
+                    elapsed += interval;
+                    if (elapsed >= timeout) {
+                        clearInterval(timer);
+                        reject(new Error(`等待XPath ${xpath} 超时`));
+                    }
+                }
+            }, interval);
+        });
+    }
+
+    // 等待元素消失
+    function waitForElementToDisappear(selector, timeout = 30000) {
+        return new Promise((resolve, reject) => {
+            const interval = 500;
+            let elapsed = 0;
+            const timer = setInterval(() => {
+                const element = document.querySelector(selector);
+                if (!element) {
+                    clearInterval(timer);
+                    resolve();
+                } else {
+                    elapsed += interval;
+                    if (elapsed >= timeout) {
+                        clearInterval(timer);
+                        reject(new Error(`等待元素 ${selector} 消失超时`));
+                    }
+                }
+            }, interval);
+        });
+    }
+
+    // 主函数
+    async function main() {
+        try {
+            log("脚本开始执行，等待页面完全加载...");
+
+            // 根据当前网址选择执行的脚本
+            const currentURL = window.location.href;
+
+            if (currentURL.includes('space3.gg/missions')) {
+                // 执行脚本1的功能
+                await executeScript1();
+            } else if (currentURL.includes('sidequest.rcade.game/quests')) {
+                // 执行脚本2的功能
+                await executeScript2();
+            } else {
+                log("当前页面不在脚本的处理范围内。");
+            }
+
+        } catch (error) {
+            log(`发生错误: ${error.message}`);
+        }
+    }
+
+    // 脚本1：Space3 Missions 自动化操作
+    async function executeScript1() {
+        log("执行Space3 Missions 自动化脚本。");
+
+        const area1Selector = '#daily-checkin-container > div.space-3-row.css-kda75v > div.space-3-col.space-3-col-24.overlay-container.css-kda75v > div';
+        const smallWindow1XPath = '//*[@id="daily-checkin-container"]/div[6]/div[2]/div/div[2]';
+
+        await waitForSelector(area1Selector);
+        await randomDelay(2000, 4000);
+        log("页面加载完成，开始执行点击操作。");
+
+        // 获取区域1
+        const area1 = document.querySelector(area1Selector);
+        if (!area1) {
+            log(`未找到区域1，选择器为：${area1Selector}`);
+            return;
+        }
+
+        // 获取所有符合条件的img元素
+        let imgElements = area1.querySelectorAll('img[alt="Daily Reward"].space-3-image-img.checkin-reward-card__contents--thumb.css-kda75v[src="/_next/static/media/ep.ae7483f4.webp"]');
+        log(`在区域1中找到 ${imgElements.length} 个符合条件的img元素。`);
+
+        for (let i = 0; i < imgElements.length; i++) {
+            const img = imgElements[i];
+            if (img) {
+                log(`点击第 ${i + 1} 个符合条件的img元素。`);
+                img.scrollIntoView({ behavior: 'smooth', block: 'center' }); // 确保元素在视野内
+                await randomDelay(500, 1500); // 在点击前稍作延迟
+
+                img.click();
+                log(`已点击第 ${i + 1} 个img元素，等待小窗口1的出现...`);
+                await randomDelay(1000, 2000); // 在点击后稍作延迟
+
+                // 检查小窗口1是否出现
+                try {
+                    await waitForXPath(smallWindow1XPath, 5000);
+                    log("小窗口1已出现，结束遍历。");
+                    break;
+                } catch (error) {
+                    log("小窗口1未出现，继续点击下一个img元素。");
+                }
+
+                // 随机延迟后继续
+                await randomDelay(2000, 4000);
+            } else {
+                log(`第 ${i + 1} 个img元素不存在，跳过。`);
+            }
+        }
+
+        log("Space3 Missions 自动化脚本执行完毕，跳转到 SideQuest 任务页面。");
+        await randomDelay(2000, 4000);
+        window.location.href = 'https://sidequest.rcade.game/quests';
+    }
+
+    // 脚本2：SideQuest 自动化操作
+    async function executeScript2() {
+        log("执行SideQuest 自动化脚本。");
+
+        await waitForSelector('#root > div > div > div.main > div.content.undefined > div > div.mission-list');
+        await randomDelay(2000, 4000);
+        log("页面加载完成，开始执行第一步操作。");
+
+        // 步骤一：循环点击任务按钮
+        const missionListSelector = '#root > div > div > div.main > div.content.undefined > div > div.mission-list';
+        let missionList = document.querySelector(missionListSelector);
+        while (true) {
+            const buttons = missionList.querySelectorAll('button');
+            if (buttons.length === 0) {
+                log("区域1中没有更多的button元素，进入第二步。");
+                break;
+            }
+
+            // 随机选择一个按钮
+            const randomIndex = Math.floor(Math.random() * buttons.length);
+            const selectedButton = buttons[randomIndex];
+            log(`点击区域1中的第 ${randomIndex + 1} 个按钮。`);
+            selectedButton.click();
+
+            // 等待小窗口1出现
+            const smallWindow1Selector = 'body > div:nth-child(8) > div > div > div > div';
+            log("等待小窗口1出现...");
+            await waitForSelector(smallWindow1Selector);
+            log("小窗口1已出现。");
+            await randomDelay(1000, 2000);
+
+            // 在小窗口1中点击元素1的button子元素
+            const element1Selector = 'body > div:nth-child(8) > div > div > div > div > div:nth-child(3) > div > div button';
+            log("查找并点击小窗口1中的元素1的button子元素。");
+            const element1Button = await waitForSelector(element1Selector, 10000);
+            if (element1Button) {
+                element1Button.click();
+                log("已点击元素1的button子元素，等待其消失...");
+                // 等待元素1的button子元素消失，预计约25秒
+                await waitForElementToDisappear(element1Selector, 30000);
+                log("元素1的button子元素已消失。");
+            } else {
+                log("未找到元素1的button子元素。");
+            }
+
+            // 点击小窗口1中的元素2
+            const element2Selector = 'body > div:nth-child(8) > div > div > div > div > button > img';
+            log("查找并点击小窗口1中的元素2。");
+            const element2 = await waitForSelector(element2Selector, 10000);
+            if (element2) {
+                element2.click();
+                log("已点击元素2。");
+            } else {
+                log("未找到元素2。");
+            }
+
+            // 随机延迟后继续循环
+            await randomDelay(2000, 4000);
+        }
+
+        // 步骤二：点击元素3并处理小窗口2
+        const element3Selector = '#root > div > div > div.main > div.content.undefined > div > div.spin-container > div > button';
+        log("开始执行第二步，点击元素3。");
+        const element3 = await waitForSelector(element3Selector, 10000);
+        if (element3) {
+            element3.click();
+            log("已点击元素3，等待小窗口2出现。");
+        } else {
+            log("未找到元素3，无法执行第二步。");
+            return;
+        }
+
+        // 等待小窗口2出现
+        const smallWindow2Selector = 'body > div.ReactModalPortal > div > div > div > div';
+        await waitForSelector(smallWindow2Selector, 10000);
+        log("小窗口2已出现。");
+        await randomDelay(1000, 2000);
+
+        // 点击小窗口2中的元素4
+        const element4Selector = 'body > div.ReactModalPortal > div > div > div > div > button.spin-btn';
+        log("查找并点击小窗口2中的元素4。");
+        const element4 = await waitForSelector(element4Selector, 10000);
+        if (element4) {
+            element4.click();
+            log("已点击元素4，等待其消失...");
+            // 等待元素4消失
+            await waitForElementToDisappear(element4Selector, 30000);
+            log("元素4已消失。");
+        } else {
+            log("未找到元素4。");
+        }
+
+        // 点击小窗口2中的元素5
+        const element5Selector = 'body > div.ReactModalPortal > div > div > div > div > button.close-btn > img';
+        log("查找并点击小窗口2中的元素5。");
+        const element5 = await waitForSelector(element5Selector, 10000);
+        if (element5) {
+            element5.click();
+            log("已点击元素5。");
+        } else {
+            log("未找到元素5。");
+        }
+
+        log("SideQuest 自动化脚本执行完毕。");
+    }
+
+    // 等待页面完全加载后执行主函数
+    window.addEventListener('load', async () => {
+        // 随机延迟后开始执行
+        const initialDelay = Math.floor(Math.random() * 2000) + 1000; // 1-3秒
+        log(`页面加载完成，等待 ${initialDelay} 毫秒后开始执行脚本。`);
+        await new Promise(resolve => setTimeout(resolve, initialDelay));
+        main();
+    });
+
+})();
