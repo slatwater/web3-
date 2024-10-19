@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Forge.gg Quests 自动化脚本（增强版）
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.7
 // @description  自动点击元素1，监测元素3的barValue值，点击元素2，直至barValue变化后停止脚本
 // @author       
 // @match        https://forge.gg/quests
@@ -24,6 +24,7 @@
         // 记录初始的barValue值
         var initialBarValue = null;
         var scriptStopped = false; // 脚本停止标志
+        var clickElement2IntervalId = null; // 定时器ID
 
         // 第一步：等待元素1加载完毕并点击
         waitForElement(element1Selector, function(element1) {
@@ -51,10 +52,15 @@
                             observeBarValueChange(element3, function(newBarValue) {
                                 console.log('检测到barValue值变化，新的值为：' + newBarValue);
                                 scriptStopped = true; // 设置脚本停止标志
+                                // 停止点击元素2的定时器
+                                if (clickElement2IntervalId) {
+                                    clearInterval(clickElement2IntervalId);
+                                    console.log('已停止点击元素2的定时器。');
+                                }
                             });
 
-                            // 第五步：持续检测元素2的出现并点击
-                            monitorAndClickElement2();
+                            // 第五步：点击元素2，并每隔20秒点击一次，直到barValue变化
+                            clickElement2Periodically();
                         });
                     });
                 });
@@ -145,8 +151,8 @@
             });
         }
 
-        // 持续检测元素2的出现并点击
-        function monitorAndClickElement2() {
+        // 点击元素2，并每隔20秒点击一次，直到barValue变化
+        function clickElement2Periodically() {
             if (scriptStopped) {
                 console.log('barValue值已变化，停止脚本。');
                 return;
@@ -159,8 +165,17 @@
                     if (!scriptStopped) {
                         simulateClick(element2);
                         console.log('已点击元素2。');
-                        // 继续监测元素2的出现
-                        monitorAndClickElement2();
+
+                        // 设置每隔20秒点击一次
+                        clickElement2IntervalId = setInterval(function() {
+                            if (!scriptStopped) {
+                                simulateClick(element2);
+                                console.log('已再次点击元素2。');
+                            } else {
+                                console.log('barValue值已变化，停止点击元素2。');
+                                clearInterval(clickElement2IntervalId);
+                            }
+                        }, 20000); // 20秒
                     } else {
                         console.log('barValue值已变化，停止点击元素2。');
                     }
