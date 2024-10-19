@@ -1,11 +1,13 @@
 // ==UserScript==
-// @name         Space3 & SideQuest 自动化脚本
+// @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests
 // @namespace    http://tampermonkey.net/
-// @version      1.5
-// @description  自动化操作 Space3 和 SideQuest 任务页面
-// @author       您的名字
+// @version      1.6
+// @description  自动化操作 Space3、SideQuest 和 Glob Shaga Quests 页面上的任务
+// @author       
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
 // @match        https://sidequest.rcade.game/quests
+// @match        https://glob.shaga.xyz/quests*
+// @match        https://forge.gg/quests
 // @grant        none
 // ==/UserScript==
 
@@ -13,7 +15,7 @@
     'use strict';
 
     // 版本信息
-    const SCRIPT_VERSION = "1.5";
+    const SCRIPT_VERSION = "1.6";
 
     // 日志函数
     function log(message) {
@@ -103,6 +105,12 @@
             } else if (currentURL.includes('sidequest.rcade.game/quests')) {
                 // 执行脚本2的功能
                 await executeScript2();
+            } else if (currentURL.includes('glob.shaga.xyz/quests')) {
+                // 执行脚本3的功能
+                await executeScript3();
+            } else if (currentURL.includes('forge.gg/quests')) {
+                // 执行脚本4的功能（原脚本2）
+                await executeScript4();
             } else {
                 log("当前页面不在脚本的处理范围内。");
             }
@@ -269,7 +277,157 @@
             log("未找到元素5。");
         }
 
-        log("SideQuest 自动化脚本执行完毕。");
+        log("SideQuest 自动化脚本执行完毕，跳转到 Glob Shaga Quests 页面。");
+        await randomDelay(2000, 4000);
+        window.location.href = 'https://glob.shaga.xyz/quests';
+    }
+
+    // 脚本3：Glob Shaga Quests 自动化操作
+    async function executeScript3() {
+        log("执行 Glob Shaga Quests 自动化脚本。");
+
+        // 元素1：<img src="other/Group 1000004021.png">
+        const imgSelector = 'img[src="other/Group 1000004021.png"]';
+
+        // 元素2的XPath
+        const element2XPath = '//*[@id="root"]/div/div[1]/main/div[3]/div[2]/div[3]/div[6]/span[2]/span/span';
+
+        // 等待元素1出现
+        const imgElement = await waitForSelector(imgSelector, 20000);
+        log(`找到元素1，src="${imgElement.getAttribute('src')}"，准备点击。`);
+
+        // 获取元素1的父级元素（假设是可点击的）
+        let clickableElement = imgElement.closest('button, a, div[onclick], span[onclick]');
+        if (!clickableElement) {
+            // 如果找不到可点击的父级，可以尝试点击img本身
+            clickableElement = imgElement;
+            log("未找到可点击的父级元素，将直接点击<img>元素。");
+        } else {
+            log(`找到可点击的父级元素：${clickableElement.tagName}`);
+        }
+
+        // 滚动到元素并点击
+        clickableElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); // 确保元素在视野内
+        await randomDelay(500, 1500); // 在点击前稍作延迟
+        clickableElement.click();
+        log("已点击元素1，开始监测元素2的出现。");
+
+        // 等待元素2出现
+        log(`等待元素2出现，XPath: ${element2XPath}`);
+        await waitForXPath(element2XPath, 30000);
+        log("Glob Shaga Quests 自动化脚本执行完毕，跳转到 Forge.gg Quests 页面。");
+        await randomDelay(2000, 4000);
+        window.location.href = 'https://forge.gg/quests';
+    }
+
+
+
+    // 脚本4：Forge.gg Quests 自动化操作
+    async function executeScript4() {
+        log("执行 Forge.gg Quests 自动化脚本。");
+    
+        // 定义元素选择器
+        const element1Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > button';
+        const element2Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > div.home-rewards__head > div > button';
+        const spinnerSelector = '#root > div > div.user__wrapper.bg-quest.content-paused > main > div.home-topcontent > header > p > span.spinner';
+        const element3Selector = 'div.xpbar.xpbar--badge.margin-bottom';
+    
+        // 记录初始的barValue值
+        let initialBarValue = null;
+        let scriptStopped = false; // 脚本停止标志
+        let clickElement2IntervalId = null; // 定时器ID
+    
+        // 第一步：等待元素1加载完毕并点击
+        log("等待元素1加载完毕...");
+        const element1 = await waitForSelector(element1Selector, 20000);
+        await randomDelay(1000, 2000);
+        element1.click();
+        log("已点击元素1。");
+    
+        // 第二步：等待加载开始（等待spinner出现）
+        log("等待加载开始（等待spinner出现）...");
+        await waitForSelector(spinnerSelector, 20000);
+        log("加载已开始，检测加载状态...");
+    
+        // 第三步：等待加载完成（等待spinner消失）
+        log("等待加载完成（等待spinner消失）...");
+        await waitForElementToDisappear(spinnerSelector, 30000);
+        log("加载已完成。");
+    
+        // 第四步：开始监测元素3的barValue值变化
+        log("等待元素3加载完毕...");
+        const element3 = await waitForSelector(element3Selector, 20000);
+        initialBarValue = getBarValue(element3);
+        log(`初始的barValue值为：${initialBarValue}`);
+    
+        // 开始监测barValue变化
+        observeBarValueChange(element3, (newBarValue) => {
+            log(`检测到barValue值变化，新的值为：${newBarValue}`);
+            scriptStopped = true; // 设置脚本停止标志
+            // 停止点击元素2的定时器
+            if (clickElement2IntervalId) {
+                clearInterval(clickElement2IntervalId);
+                log('已停止点击元素2的定时器。');
+            }
+        });
+    
+        // 第五步：点击元素2，并每隔20秒点击一次，直到barValue变化
+        clickElement2Periodically();
+    
+        // 定义辅助函数
+    
+        // 获取元素3的barValue值
+        function getBarValue(element) {
+            const style = element.getAttribute('style');
+            const match = /--barValue:\s*([^;]+);/.exec(style);
+            if (match && match[1]) {
+                return match[1].trim();
+            }
+            return null;
+        }
+    
+        // 监测元素3的barValue值变化
+        function observeBarValueChange(element, callback) {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'style') {
+                        const newBarValue = getBarValue(element);
+                        if (newBarValue !== initialBarValue) {
+                            observer.disconnect(); // 停止观察
+                            callback(newBarValue);
+                        }
+                    }
+                });
+            });
+            observer.observe(element, {
+                attributes: true,
+                attributeFilter: ['style']
+            });
+        }
+    
+        // 点击元素2，并每隔20秒点击一次，直到barValue变化
+        async function clickElement2Periodically() {
+            if (scriptStopped) {
+                log('barValue值已变化，停止脚本。');
+                return;
+            }
+    
+            const element2 = await waitForSelector(element2Selector, 20000);
+            await randomDelay(500, 1000);
+            element2.click();
+            log('已点击元素2。');
+    
+            // 设置每隔20秒点击一次
+            clickElement2IntervalId = setInterval(async () => {
+                if (!scriptStopped) {
+                    element2.click();
+                    log('已再次点击元素2。');
+                } else {
+                    log('barValue值已变化，停止点击元素2。');
+                    clearInterval(clickElement2IntervalId);
+                }
+            }, 20000); // 20秒
+        }
     }
 
     // 等待页面完全加载后执行主函数
