@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.6
 // @description  自动化操作 Space3、SideQuest 和 Glob Shaga Quests 页面上的任务
-// @author       
+// @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
 // @match        https://sidequest.rcade.game/quests
 // @match        https://glob.shaga.xyz/quests*
@@ -183,7 +183,7 @@
         log("执行SideQuest 自动化脚本。");
 
         await waitForSelector('#root > div > div > div.main > div.content.undefined > div > div.mission-list');
-        await randomDelay(2000, 4000);
+        await randomDelay(3000, 4000);
         log("页面加载完成，开始执行第一步操作。");
 
         // 步骤一：循环点击任务按钮
@@ -329,44 +329,44 @@
     // 脚本4：Forge.gg Quests 自动化操作
     async function executeScript4() {
         log("执行 Forge.gg Quests 自动化脚本。");
-    
+
         // 定义元素选择器
         const element1Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > button';
         const element2Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > div.home-rewards__head > div > button';
         const spinnerSelector = '#root > div > div.user__wrapper.bg-quest.content-paused > main > div.home-topcontent > header > p > span.spinner';
         const element3Selector = 'div.xpbar.xpbar--badge.margin-bottom';
-    
-        // 记录初始的barValue值
+
+        // 记录初始的 barValue 值
         let initialBarValue = null;
         let scriptStopped = false; // 脚本停止标志
-        let clickElement2IntervalId = null; // 定时器ID
-    
+        let clickElement2IntervalId = null; // 定时器 ID
+
         // 第一步：等待元素1加载完毕并点击
         log("等待元素1加载完毕...");
         const element1 = await waitForSelector(element1Selector, 20000);
         await randomDelay(1000, 2000);
         element1.click();
         log("已点击元素1。");
-    
-        // 第二步：等待加载开始（等待spinner出现）
-        log("等待加载开始（等待spinner出现）...");
+
+        // 第二步：等待加载开始（等待 spinner 出现）
+        log("等待加载开始（等待 spinner 出现）...");
         await waitForSelector(spinnerSelector, 20000);
         log("加载已开始，检测加载状态...");
-    
-        // 第三步：等待加载完成（等待spinner消失）
-        log("等待加载完成（等待spinner消失）...");
+
+        // 第三步：等待加载完成（等待 spinner 消失）
+        log("等待加载完成（等待 spinner 消失）...");
         await waitForElementToDisappear(spinnerSelector, 30000);
         log("加载已完成。");
-    
-        // 第四步：开始监测元素3的barValue值变化
+
+        // 第四步：开始监测元素3的 barValue 值变化
         log("等待元素3加载完毕...");
         const element3 = await waitForSelector(element3Selector, 20000);
         initialBarValue = getBarValue(element3);
-        log(`初始的barValue值为：${initialBarValue}`);
-    
-        // 开始监测barValue变化
+        log(`初始的 barValue 值为：${initialBarValue}`);
+
+        // 开始监测 barValue 变化
         observeBarValueChange(element3, (newBarValue) => {
-            log(`检测到barValue值变化，新的值为：${newBarValue}`);
+            log(`检测到 barValue 值变化，新的值为：${newBarValue}`);
             scriptStopped = true; // 设置脚本停止标志
             // 停止点击元素2的定时器
             if (clickElement2IntervalId) {
@@ -374,13 +374,13 @@
                 log('已停止点击元素2的定时器。');
             }
         });
-    
-        // 第五步：点击元素2，并每隔20秒点击一次，直到barValue变化
+
+        // 第五步：点击元素2，并每隔20秒点击一次，直到 barValue 变化
         clickElement2Periodically();
-    
+
         // 定义辅助函数
-    
-        // 获取元素3的barValue值
+
+        // 获取元素3的 barValue 值
         function getBarValue(element) {
             const style = element.getAttribute('style');
             const match = /--barValue:\s*([^;]+);/.exec(style);
@@ -389,8 +389,8 @@
             }
             return null;
         }
-    
-        // 监测元素3的barValue值变化
+
+        // 监测元素3的 barValue 值变化
         function observeBarValueChange(element, callback) {
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
@@ -408,47 +408,59 @@
                 attributeFilter: ['style']
             });
         }
-    
-        // 点击元素2，并每隔20秒点击一次，直到barValue变化
+
+        // 点击元素2，并每隔20秒点击一次，直到 barValue 变化
         async function clickElement2Periodically() {
             if (scriptStopped) {
-                log('barValue值已变化，停止脚本。');
+                log('barValue 值已变化，停止脚本。');
                 return;
             }
-    
+
             const element2 = await waitForSelector(element2Selector, 20000);
             await randomDelay(500, 1000);
             element2.click();
             log('已点击元素2。');
-    
+
             // 设置每隔20秒点击一次
             clickElement2IntervalId = setInterval(async () => {
                 if (!scriptStopped) {
                     element2.click();
                     log('已再次点击元素2。');
                 } else {
-                    log('barValue值已变化，停止点击元素2。');
+                    log('barValue 值已变化，停止点击元素2。');
                     clearInterval(clickElement2IntervalId);
                 }
             }, 20000); // 20秒
         }
-        log("Forge自动化脚本执行完毕，跳转到 Reddio 页面。");
-        await randomDelay(2000, 4000);
-        window.location.href = 'https://points.reddio.com/task';
+
+        // 等待 barValue 变化后，跳转到 Reddio Points Task 页面
+        // 检查 scriptStopped 标志，以确保脚本已完成
+        const checkScriptCompletion = setInterval(() => {
+            if (scriptStopped) {
+                clearInterval(checkScriptCompletion);
+                // 添加跳转逻辑
+                (async () => {
+                    log("Forge.gg Quests 自动化脚本执行完毕，跳转到 Reddio Points Task 页面。");
+                    await randomDelay(2000, 4000);
+                    window.location.href = 'https://points.reddio.com/task';
+                })();
+            }
+        }, 1000); // 每秒检查一次
     }
 
-    // 脚本6：Reddio Points Task 自动化操作
+
+    // 脚本5：Reddio Points Task 自动化操作
     async function executeScript6() {
         log("检测到 Reddio Points Task 页面，开始执行自动点击任务按钮的脚本。");
-    
+
         // 定义 XPath
         const targetButtonXPath = '/html/body/div[1]/main/div/div[8]/div/div/div[1]/button';
-    
+
         // 随机延迟函数
         function randomDelay(min = 1000, max = 3000) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
-    
+
         // 定时检测并点击按钮
         async function detectAndClickButton() {
             log("开始检测任务按钮...");
@@ -463,8 +475,8 @@
                 }
             }, randomDelay(3000, 5000)); // 每隔3到5秒检测一次
         }
-    
-    
+
+
         // 页面加载完成后开始检测
         window.addEventListener('load', async () => {
             log("页面已加载，等待一段随机时间后开始检测任务按钮。");
