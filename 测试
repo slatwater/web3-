@@ -8,6 +8,7 @@
 // @match        https://sidequest.rcade.game/quests
 // @match        https://glob.shaga.xyz/quests*
 // @match        https://forge.gg/quests
+// @match        https://points.reddio.com/task
 // @grant        none
 // ==/UserScript==
 
@@ -111,6 +112,9 @@
             } else if (currentURL.includes('forge.gg/quests')) {
                 // 执行脚本4的功能（原脚本2）
                 await executeScript4();
+            } else if (currentURL.includes('points.reddio.com/task')) {
+                // 执行脚本5的功能
+                await executeScript5();
             } else {
                 log("当前页面不在脚本的处理范围内。");
             }
@@ -428,7 +432,47 @@
                 }
             }, 20000); // 20秒
         }
+        log("Forge自动化脚本执行完毕，跳转到 Reddio 页面。");
+        await randomDelay(2000, 4000);
+        window.location.href = 'https://points.reddio.com/task';
     }
+
+    // 脚本6：Reddio Points Task 自动化操作
+    async function executeScript6() {
+        log("检测到 Reddio Points Task 页面，开始执行自动点击任务按钮的脚本。");
+    
+        // 定义 XPath
+        const targetButtonXPath = '/html/body/div[1]/main/div/div[8]/div/div/div[1]/button';
+    
+        // 随机延迟函数
+        function randomDelay(min = 1000, max = 3000) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+    
+        // 定时检测并点击按钮
+        async function detectAndClickButton() {
+            log("开始检测任务按钮...");
+            const interval = setInterval(async () => {
+                const targetButton = document.evaluate(targetButtonXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (targetButton) {
+                    await new Promise(resolve => setTimeout(resolve, randomDelay(1000, 3000))); // 延迟1到3秒
+                    targetButton.click();
+                    log("已点击任务按钮。");
+                    // 如果需要在点击后停止检测，可以取消注释以下代码
+                    // clearInterval(interval);
+                }
+            }, randomDelay(3000, 5000)); // 每隔3到5秒检测一次
+        }
+    
+    
+        // 页面加载完成后开始检测
+        window.addEventListener('load', async () => {
+            log("页面已加载，等待一段随机时间后开始检测任务按钮。");
+            await new Promise(resolve => setTimeout(resolve, randomDelay(3000, 5000))); // 延迟3到5秒
+            detectAndClickButton();
+        });
+    }
+
 
     // 等待页面完全加载后执行主函数
     window.addEventListener('load', async () => {
