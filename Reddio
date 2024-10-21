@@ -1,0 +1,107 @@
+// ==UserScript==
+// @name         Reddio Points Task 自动化脚本
+// @namespace    http://tampermonkey.net/
+// @version      1.0.0
+// @description  自动点击 https://points.reddio.com/task 页面上的指定按钮
+// @author       您的名字
+// @match        https://points.reddio.com/task
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=reddio.com
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 版本标记
+    const SCRIPT_VERSION = '1.0.0';
+
+    /**
+     * 生成一个介于 min 和 max 毫秒之间的随机延迟
+     * @param {number} min 最小延迟时间（毫秒）
+     * @param {number} max 最大延迟时间（毫秒）
+     * @returns {Promise} 延迟完成的Promise
+     */
+    function randomDelay(min, max) {
+        const delay = Math.floor(Math.random() * (max - min + 1)) + min;
+        return new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    /**
+     * 通过XPath获取元素
+     * @param {string} xpath 元素的XPath路径
+     * @returns {HTMLElement|null} 返回找到的元素或null
+     */
+    function getElementByXPath(xpath) {
+        return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    }
+
+    /**
+     * 点击指定的元素并记录日志
+     * @param {HTMLElement} element 要点击的元素
+     * @param {string} description 元素的描述信息
+     * @returns {Promise<boolean>} 返回点击是否成功
+     */
+    async function clickElement(element, description) {
+        if (element) {
+            try {
+                element.click();
+                console.log(`✔️ 成功点击 ${description}`);
+                return true;
+            } catch (error) {
+                console.error(`❌ 点击 ${description} 失败:`, error);
+                return false;
+            }
+        } else {
+            console.warn(`⚠️ ${description} 不存在`);
+            return false;
+        }
+    }
+
+    /**
+     * 等待页面完全加载
+     * @returns {Promise} 页面加载完成的Promise
+     */
+    async function waitForPageLoad() {
+        return new Promise((resolve) => {
+            if (document.readyState === 'complete') {
+                resolve();
+            } else {
+                window.addEventListener('load', () => resolve());
+            }
+        });
+    }
+
+    /**
+     * 主函数，执行自动点击操作
+     */
+    async function main() {
+        console.log(`🔧 Tampermonkey脚本版本 ${SCRIPT_VERSION} 已启动`);
+
+        // 等待页面加载完成
+        await waitForPageLoad();
+        console.log('✅ 页面已完全加载');
+
+        // 随机延迟1-3秒后开始执行
+        const initialDelay = Math.floor(Math.random() * 2000) + 1000;
+        console.log(`⏳ 等待 ${initialDelay} 毫秒后开始执行脚本`);
+        await randomDelay(initialDelay, initialDelay);
+
+        // 定义元素1的XPath
+        const element1XPath = '/html/body/div[1]/main/div/div[8]/div/div[2]/div[1]/button';
+        const element1 = getElementByXPath(element1XPath);
+
+        if (element1) {
+            console.log('🔍 找到元素1，准备点击');
+            const clicked = await clickElement(element1, '元素1');
+            if (clicked) {
+                console.log('🎉 元素1已成功点击，脚本执行结束');
+            }
+        } else {
+            console.error('❌ 未找到元素1，脚本执行结束');
+        }
+    }
+
+    // 执行主函数
+    main();
+
+})();
