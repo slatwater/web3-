@@ -800,7 +800,7 @@
     // 等待页面完全加载后执行主函数
     window.addEventListener('load', async () => {
         // 随机延迟后开始执行
-        const initialDelay = Math.floor(Math.random() * 3000) + 2000; // 2-5秒
+        const initialDelay = Math.floor(Math.random() * 3000) + 3000; // 3-6秒
         log(`页面加载完成，等待 ${initialDelay} 毫秒后开始执行脚本。`);
         await new Promise(resolve => setTimeout(resolve, initialDelay));
         main();
