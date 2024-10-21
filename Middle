@@ -1,0 +1,116 @@
+// ==UserScript==
+// @name         Midle Airdrops LiveArt 自动化脚本
+// @namespace    http://tampermonkey.net/
+// @version      1.5.0
+// @description  自动化操作 https://app.midle.io/airdrops/liveart 页面上的按钮点击
+// @author       您的名字
+// @match        https://app.midle.io/airdrops/liveart
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=midle.io
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 版本标记
+    const SCRIPT_VERSION = '1.5.0';
+
+    // 随机延迟函数（毫秒）
+    function randomDelay(min, max) {
+        const delay = Math.floor(Math.random() * (max - min + 1)) + min;
+        return new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    // 根据选择器获取元素
+    function getElementBySelector(selector, context = document) {
+        return context.querySelector(selector);
+    }
+
+    // 点击元素并返回是否成功
+    async function clickElement(element, description) {
+        if (element) {
+            try {
+                element.click();
+                console.log(`✔️ 成功点击 ${description}`);
+                return true;
+            } catch (error) {
+                console.error(`❌ 点击 ${description} 失败:`, error);
+                return false;
+            }
+        } else {
+            console.warn(`⚠️ ${description} 不存在`);
+            return false;
+        }
+    }
+
+    // 等待页面完全加载
+    async function waitForPageLoad() {
+        return new Promise((resolve) => {
+            if (document.readyState === 'complete') {
+                resolve();
+            } else {
+                window.addEventListener('load', () => resolve());
+            }
+        });
+    }
+
+    // 主函数
+    async function main() {
+        console.log(`🔧 Tampermonkey脚本版本 ${SCRIPT_VERSION} 已启动`);
+
+        // 等待页面加载
+        await waitForPageLoad();
+        console.log('✅ 页面已完全加载');
+
+        // 随机延迟 1-3 秒后开始执行
+        const initialDelay = Math.floor(Math.random() * 3000) + 3000;
+        console.log(`⏳ 等待 ${initialDelay} 毫秒后开始执行脚本`);
+        await randomDelay(initialDelay, initialDelay);
+
+        // 第二步：遍历区域1中的按钮并点击
+        const area1Selector = '#system_layout_main > div > main > div > div.px-3 > div:nth-child(3) > div';
+        const area1 = getElementBySelector(area1Selector);
+
+        if (area1) {
+            console.log('🔍 找到区域1，准备遍历按钮');
+            let buttons = Array.from(area1.querySelectorAll('button'));
+            while (buttons.length > 0) {
+                for (let i = 0; i < buttons.length; i++) {
+                    let button = buttons[i];
+                    if (!button) continue;
+
+                    console.log(`🔘 正在点击第 ${i + 1} 个按钮`);
+                    let clickSuccess = false;
+                    for (let attempt = 1; attempt <= 3; attempt++) {
+                        button.click();
+                        console.log(`✔️ 第 ${attempt} 次尝试点击按钮`);
+                        await randomDelay(3000, 4000); // 随机延迟 3-4 秒
+
+                        // 检查按钮是否已消失
+                        if (!area1.contains(button)) {
+                            console.log('✅ 按钮已消失，继续下一个按钮');
+                            clickSuccess = true;
+                            break;
+                        } else {
+                            console.warn(`⚠️ 按钮未消失，准备第 ${attempt + 1} 次尝试`);
+                        }
+                    }
+
+                    if (!clickSuccess) {
+                        console.error('❌ 点击按钮失败 3 次，跳过此按钮');
+                    }
+
+                    // 更新按钮列表
+                    buttons = Array.from(area1.querySelectorAll('button'));
+                }
+            }
+            console.log('🎉 所有按钮已处理完毕，脚本执行结束');
+        } else {
+            console.error('❌ 未找到区域1，无法继续执行第二步');
+        }
+    }
+
+    // 执行主函数
+    main();
+
+})();
