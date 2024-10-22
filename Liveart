@@ -132,7 +132,7 @@
 
                 // 在每次点击后等待4秒
                 console.log('等待4秒...');
-                await delay(4000);
+                await delay(5000);
             }
         }
 
