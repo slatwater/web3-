@@ -13,27 +13,22 @@
 现在制作一个Tampermonkey脚本，以下是脚本的功能需求以及相关数据：
 
 数据部分：
-在网址：https://sidequest.rcade.game/quests上执行脚本
 
-区域1selector：#root > div > div > div.main > div.content.undefined > div > div.mission-list
+目标网址：
 
-元素1selector：body > div:nth-child(8) > div > div > div > div > div:nth-child(3) > div > div (父级元素）
-元素2selector：body > div:nth-child(8) > div > div > div > div > button > img
-元素3selector：#root > div > div > div.main > div.content.undefined > div > div.spin-container > div > button
-元素4selector：body > div.ReactModalPortal > div > div > div > div > button.spin-btn
-元素5selector：body > div.ReactModalPortal > div > div > div > div > button.close-btn > img
+区域1selector：
 
-小窗口1selector：body > div:nth-child(8) > div > div > div > div
-小窗口2selector：body > div.ReactModalPortal > div > div > div > div
+元素1xpath：
+
+小窗口1selector：
+
 
 功能部分：
 第一步：
-循环操作：在区域1中随机点击一个button元素，点击后开始识别小窗口1的出现，在小窗口1中寻找元素1的button属性子级元素并进行点击，等待该元素（元素1的button属性子级元素）消失后，消失过程大概25s，再点击小窗口1中的元素2。
-执行循环操作直至区域1中没有button元素后，进入第二步
+
 
 第二步：
-点击元素3，点击后开始识别小窗口2的出现，在小窗口2寻找元素4并点击，等待元素4消失后，点击元素5。
-第二步执行完操作之后结束脚本
+
 
 
 
