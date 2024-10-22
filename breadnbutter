@@ -84,14 +84,14 @@
                         // 点击元素5
                         waitForElement(element5Xpath, function(element5) {
                             element5.click();
-                            console.log('已点击元素5，等待5秒钟');
+                            console.log('已点击元素5，等待12秒钟');
                             setTimeout(function() {
                                 // 点击元素6
                                 waitForElement(element6Xpath, function(element6) {
                                     element6.click();
                                     console.log('已点击元素6，脚本执行完毕');
                                 });
-                            }, 5000);
+                            }, 12000);
                         });
                     }, delay2);
                 });
