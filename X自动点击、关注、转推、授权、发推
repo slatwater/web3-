@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Combined X.com Intent & Twitter OAuth2 自动化脚本
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.2
 // @description  在所有子域名的 X.com Intent 授权页面、Twitter OAuth2 授权页面和 X.com Compose Post 页面加载完成后，随机延迟后自动点击指定按钮并关闭页面。
-// @author
+// @author      
 // @match        https://*.x.com/intent/*
 // @match        https://*.twitter.com/i/oauth2/authorize*
 // @match        https://x.com/compose/post*
@@ -15,7 +15,7 @@
     'use strict';
 
     // 版本信息
-    const SCRIPT_VERSION = "1.0.1";
+    const SCRIPT_VERSION = "1.0.2";
 
     // 日志函数
     function log(message) {
@@ -157,7 +157,7 @@
                     log(`未找到目标按钮或点击失败：${error.message}`);
                 }
 
-            } else if (currentURL === 'https://x.com/compose/post') {
+            } else if (currentURL.startsWith('https://x.com/compose/post')) { // 修改此处
                 // 处理X.com Compose Post页面
                 log("识别为 X.com Compose Post 页面。");
 
@@ -166,7 +166,7 @@
 
                 // 定义XPath
                 const containerXPath = '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[3]/div[2]/div[1]/div/div/div';
-                const targetButtonXPath = '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[3]/div[2]/div[1]/div/div/div/div[2]/div[2]/div/div/div/button[2]/';
+                const targetButtonXPath = '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[3]/div[2]/div[1]/div/div/div/div[2]/div[2]/div/div/div/button[2]';
 
                 // 监测容器的出现
                 log("开始监测Compose Post容器的出现...");
