@@ -1,0 +1,109 @@
+// ==UserScript==
+// @name         Google OAuth2 自动点击脚本
+// @namespace    http://tampermonkey.net/
+// @version      1.2
+// @description  在 Google OAuth2 授权页面及其所有子路径自动点击指定元素
+// @author
+// @match        https://accounts.google.com/*
+// @grant        none
+// @run-at       document-idle
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    /**
+     * 生成随机延迟时间（毫秒）
+     * @param {number} min 最小延迟时间
+     * @param {number} max 最大延迟时间
+     * @returns {number} 随机延迟时间
+     */
+    function getRandomDelay(min = 1000, max = 3000) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    /**
+     * 输出日志
+     * @param {string} message 日志内容
+     */
+    function log(message) {
+        console.log(`[Google OAuth2 自动化脚本 v1.2] ${message}`);
+    }
+
+    /**
+     * 等待指定的时间
+     * @param {number} ms 毫秒数
+     * @returns {Promise} Promise对象
+     */
+    function wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /**
+     * 等待CSS选择器出现
+     * @param {string} selector CSS选择器
+     * @param {number} timeout 超时时间（毫秒）
+     * @returns {Promise<Element>} 返回找到的元素
+     */
+    function waitForSelector(selector, timeout = 30000) {
+        return new Promise((resolve, reject) => {
+            const interval = 500;
+            let elapsed = 0;
+            const timer = setInterval(() => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    clearInterval(timer);
+                    resolve(element);
+                } else {
+                    elapsed += interval;
+                    if (elapsed >= timeout) {
+                        clearInterval(timer);
+                        reject(new Error(`等待元素 ${selector} 超时`));
+                    }
+                }
+            }, interval);
+        });
+    }
+
+    /**
+     * 主执行函数
+     */
+    async function main() {
+        try {
+            log('脚本开始执行，等待页面完全加载...');
+
+            // 等待随机延迟后开始执行
+            const initialDelay = getRandomDelay(1000, 3000); // 1-3秒
+            log(`等待随机延迟 ${initialDelay} 毫秒后开始执行...`);
+            await wait(initialDelay);
+
+            // 定位目标元素
+            const targetSelector = '#yDmH0d > div.gfM9Zd > div.tTmh9.NQ5OL > div.SQNfcc.WbALBb > div > div > div.Anixxd > div > div > div.HvrJge > form > span > section > div > div > div > div > ul > li.aZvCDf.oqdnae.W7Aapd.zpCp3.SmR8 > div';
+            log(`尝试查找目标元素，选择器为：${targetSelector}`);
+            try {
+                const targetElement = await waitForSelector(targetSelector, 20000); // 等待最多20秒
+                if (targetElement) {
+                    log('找到目标元素，准备点击。');
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); // 确保元素在视野内
+                    const clickDelay = getRandomDelay(500, 1500); // 点击前随机延迟0.5-1.5秒
+                    log(`等待随机延迟 ${clickDelay} 毫秒后进行点击。`);
+                    await wait(clickDelay);
+                    targetElement.click();
+                    log('已点击目标元素。');
+                }
+            } catch (error) {
+                log(`未找到目标元素或点击失败：${error.message}`);
+            }
+        } catch (error) {
+            log(`发生错误: ${error.message}`);
+        }
+    }
+
+    // 确保脚本在文档准备好后执行
+    if (document.readyState === 'complete') {
+        main();
+    } else {
+        window.addEventListener('load', main);
+    }
+
+})();
