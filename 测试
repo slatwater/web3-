@@ -952,86 +952,85 @@
         log("执行 BreadnButter 自动化脚本。");
     
         // 定义元素的XPath
-        const element1Xpath = '//*[@id="root"]/div/div/div/div/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/div[2]/button/div';
-        const element2Xpath = '//*[@id="root"]/div/div/div/div/div[3]/div[1]/div[2]/div[3]/div/div';
-        const element3Xpath = '//*[@id="root"]/div/div[2]/div[1]/div[2]/div[1]/div/div/div/div[2]';
-        const element4Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[9]/div/div/div/div[2]';
-        const element5Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[8]/div/div/div/div[1]/div[2]/span';
-        const element6Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[8]/div/div/div/div[2]';
-    
+        var element1Xpath = '//*[@id="root"]/div/div/div/div/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/div[2]/button/div';
+        var element2Xpath = '//*[@id="root"]/div/div/div/div/div[3]/div[1]/div[2]/div[3]/div/div';
+        var element3Xpath = '//*[@id="root"]/div/div[2]/div[1]/div[2]/div[1]/div/div/div/div[2]';
+        var element4Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[9]/div/div/div/div[2]';
+        var element5Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[8]/div/div/div/div[1]/div[2]/span';
+        var element6Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[8]/div/div/div/div[2]';
+
         // 检查元素1是否存在
-        try {
-            const element1 = await waitForXPath(element1Xpath, 10000);
-    
-            if (element1) {
-                log('元素1存在，开始点击元素1');
-                // 点击元素1
-                element1.click();
-                // 设置随机延迟，然后等待元素2出现
-                const delay = Math.floor(Math.random() * 2000) + 1000;
-                log(`等待 ${delay} 毫秒后，等待元素2出现并点击`);
-                await randomDelay(delay, delay + 500); // 1-1.5秒
-    
-                try {
-                    const element2 = await waitForXPath(element2Xpath, 10000);
-                    log('元素2已出现，点击元素2');
+        var element1 = getElementByXpath(element1Xpath);
+
+        if (element1) {
+            console.log('元素1存在，开始点击元素1');
+            // 点击元素1
+            element1.click();
+            // 设置随机延迟，然后等待元素2出现
+            var delay = Math.floor(Math.random() * 2000) + 1000;
+            setTimeout(function() {
+                waitForElement(element2Xpath, function(element2) {
+                    console.log('元素2已出现，点击元素2');
                     element2.click();
-    
                     // 随机延迟后，进行第二步
-                    const delayStep2 = Math.floor(Math.random() * 2000) + 1000;
-                    log(`等待 ${delayStep2} 毫秒后，开始执行第二步`);
-                    await randomDelay(delayStep2, delayStep2 + 500); // 1-1.5秒
-    
-                    await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
-                } catch (error) {
-                    log('元素2未出现，直接进行第二步');
-                    await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
-                }
-            } else {
-                log('元素1不存在，直接进行第二步');
-                await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+                    var delay = Math.floor(Math.random() * 2000) + 1000;
+                    setTimeout(function() {
+                        secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+                    }, delay);
+                });
+            }, delay);
+        } else {
+            console.log('元素1不存在，直接进行第二步');
+            secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+        }
+    }
+
+    function waitForElement(xpath, callback) {
+        var checkExist = setInterval(function() {
+            var element = getElementByXpath(xpath);
+            if (element) {
+                clearInterval(checkExist);
+                callback(element);
             }
-        } catch (error) {
-            log('元素1不存在，直接进行第二步');
-            await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
-        }
+        }, 1000);
     }
-    
-    // 第二步函数
-    async function secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath) {
-        log('开始执行第二步');
-        try {
-            const element3 = await waitForXPath(element3Xpath, 10000);
-            log('点击元素3');
+
+    function secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath) {
+        console.log('开始执行第二步');
+        // 点击元素3
+        waitForElement(element3Xpath, function(element3) {
             element3.click();
-            log('已点击元素3');
-    
-            const delay = Math.floor(Math.random() * 2000) + 1000;
-            log(`等待 ${delay} 毫秒后，点击元素4`);
-            await randomDelay(delay, delay + 500); // 1-1.5秒
-    
-            const element4 = await waitForXPath(element4Xpath, 10000);
-            log('点击元素4');
-            element4.click();
-            log('已点击元素4');
-    
-            const delay2 = Math.floor(Math.random() * 2000) + 1000;
-            log(`等待 ${delay2} 毫秒后，点击元素5`);
-            await randomDelay(delay2, delay2 + 500); // 1-1.5秒
-    
-            const element5 = await waitForXPath(element5Xpath, 10000);
-            log('点击元素5，等待12秒钟');
-            element5.click();
-            await new Promise(resolve => setTimeout(resolve, 12000)); // 等待12秒
-    
-            const element6 = await waitForXPath(element6Xpath, 10000);
-            log('点击元素6，脚本执行完毕');
-            element6.click();
-            log('已点击元素6，脚本执行完毕');
-        } catch (error) {
-            log(`执行第二步时发生错误：${error.message}`);
-        }
+            console.log('已点击元素3');
+            var delay = Math.floor(Math.random() * 2000) + 1000;
+            setTimeout(function() {
+                // 点击元素4
+                waitForElement(element4Xpath, function(element4) {
+                    element4.click();
+                    console.log('已点击元素4');
+                    var delay2 = Math.floor(Math.random() * 2000) + 1000;
+                    setTimeout(function() {
+                        // 点击元素5
+                        waitForElement(element5Xpath, function(element5) {
+                            element5.click();
+                            console.log('已点击元素5，等待12秒钟');
+                            setTimeout(function() {
+                                // 点击元素6
+                                waitForElement(element6Xpath, function(element6) {
+                                    element6.click();
+                                    console.log('已点击元素6，脚本执行完毕');
+                                });
+                            }, 12000);
+                        });
+                    }, delay2);
+                });
+            }, delay);
+        });
     }
+
+    function getElementByXpath(path) {
+        return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    }
+})();
 
 
     // 等待页面完全加载后执行主函数
