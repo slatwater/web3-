@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.6.8
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
-// @author       
+// @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
 // @match        https://sidequest.rcade.game/quests
 // @match        https://glob.shaga.xyz/quests*
@@ -193,7 +193,7 @@
                 // 已删除URL变化检测逻辑
 
                 // 随机延迟后继续
-                await randomDelay(2000, 4000);
+                await randomDelay(500, 1000);
             } else {
                 log(`第 ${i + 1} 个img元素不存在，跳过。`);
             }
@@ -405,29 +405,34 @@
         let scriptStopped = false; // 脚本停止标志
         let clickElement2IntervalId = null; // 定时器ID
 
-        // 第一步：等待元素1加载完毕并点击
-        log("等待元素1加载完毕...");
+        // 第一步：重复点击元素1，直到spinner出现
+        log("开始点击元素1，直到加载开始（spinner出现）...");
         try {
-            const element1 = await waitForSelector(element1Selector, 20000);
-            await randomDelay(1000, 2000);
-            element1.click();
-            log("已点击元素1。");
+            let spinnerAppeared = false;
+            while (!spinnerAppeared) {
+                const element1 = await waitForSelector(element1Selector, 10000);
+                await randomDelay(500, 1000);
+                element1.click();
+                log("已点击元素1。");
+
+                // 检查spinner是否出现
+                try {
+                    await waitForSelector(spinnerSelector, 2000);
+                    log("加载已开始（spinner已出现）。");
+                    spinnerAppeared = true;
+                } catch (error) {
+                    log("spinner未出现，继续点击元素1...");
+                }
+
+                // 添加适当的随机延迟
+                await randomDelay(1000, 2000);
+            }
         } catch (error) {
             log("未找到元素1或点击失败。");
             return;
         }
 
-        // 第二步：等待加载开始（等待spinner出现）
-        log("等待加载开始（等待spinner出现）...");
-        try {
-            await waitForSelector(spinnerSelector, 20000);
-            log("加载已开始，检测加载状态...");
-        } catch (error) {
-            log("未找到spinner元素，可能加载未开始或页面结构变化。");
-            return;
-        }
-
-        // 第三步：等待加载完成（等待spinner消失）
+        // 第二步：等待加载完成（等待spinner消失）
         log("等待加载完成（等待spinner消失）...");
         try {
             await waitForElementToDisappear(spinnerSelector, 30000);
@@ -437,7 +442,7 @@
             return;
         }
 
-        // 第四步：开始监测元素3的barValue值变化
+        // 第三步：开始监测元素3的barValue值变化
         log("等待元素3加载完毕...");
         try {
             const element3 = await waitForSelector(element3Selector, 20000);
@@ -458,7 +463,7 @@
                 window.location.href = 'https://points.reddio.com/task';
             });
 
-            // 第五步：点击元素2，并每隔20秒点击一次，直到barValue变化
+            // 第四步：点击元素2，并每隔20秒点击一次，直到barValue变化
             await clickElement2Periodically(element2Selector);
         } catch (error) {
             log(`未找到元素3或获取barValue失败：${error.message}`);
