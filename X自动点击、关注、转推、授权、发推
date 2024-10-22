@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Combined X.com Intent & Twitter OAuth2 自动化脚本
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
-// @description  在所有子域名的 X.com Intent 授权页面和 Twitter OAuth2 授权页面加载完成后，随机延迟后自动点击指定按钮并关闭页面。
-// @author       
+// @version      1.0.1
+// @description  在所有子域名的 X.com Intent 授权页面、Twitter OAuth2 授权页面和 X.com Compose Post 页面加载完成后，随机延迟后自动点击指定按钮并关闭页面。
+// @author
 // @match        https://*.x.com/intent/*
 // @match        https://*.twitter.com/i/oauth2/authorize*
+// @match        https://x.com/compose/post*
 // @grant        none
 // @run-at       document-idle
 // ==/UserScript==
@@ -14,7 +15,7 @@
     'use strict';
 
     // 版本信息
-    const SCRIPT_VERSION = "1.0.0";
+    const SCRIPT_VERSION = "1.0.1";
 
     // 日志函数
     function log(message) {
@@ -130,26 +131,71 @@
                 log("识别为 Twitter OAuth2 页面。");
 
                 // 定义目标按钮的CSS选择器
-                const targetButtonSelector = '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010 > main > div > div > div.css-175oi2r.r-1mlwlqe.r-16y2uox.r-1q142lx > div > div > div.css-175oi2r.r-1awozwy.r-6koalj.r-q4m81j > div.css-175oi2r.r-11rk87y.r-1ur9v65 > button';
+                const targetButtonSelector = '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010 > main > div > div > div.css-175oi2r.r-1mlwlqe.r-16y2uox.r-1q142lx > div > div > div.css-175oi2r.r-11rk87y.r-1ur9v65 > button';
 
                 // 等待目标按钮出现
                 log("等待目标按钮加载...");
-                const targetButton = await waitForSelector(targetButtonSelector, 20000);
-                log("目标按钮已加载。");
+                try {
+                    const targetButton = await waitForSelector(targetButtonSelector, 20000);
+                    log("目标按钮已加载。");
+
+                    // 随机延迟
+                    const delay = Math.floor(Math.random() * 4000) + 1000; // 1-5秒
+                    log(`等待随机延迟 ${delay} 毫秒后点击按钮。`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+
+                    // 点击目标按钮
+                    if (targetButton) {
+                        targetButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        await randomDelay(500, 1500); // 点击前的额外随机延迟
+                        targetButton.click();
+                        log("已点击目标按钮。");
+                    } else {
+                        log("未找到目标按钮，无法点击。");
+                    }
+                } catch (error) {
+                    log(`未找到目标按钮或点击失败：${error.message}`);
+                }
+
+            } else if (currentURL === 'https://x.com/compose/post') {
+                // 处理X.com Compose Post页面
+                log("识别为 X.com Compose Post 页面。");
 
                 // 随机延迟
-                const delay = Math.floor(Math.random() * 4000) + 1000; // 1-5秒
-                log(`等待随机延迟 ${delay} 毫秒后点击按钮。`);
-                await new Promise(resolve => setTimeout(resolve, delay));
+                await randomDelay(1000, 5000); // 1-5秒
 
-                // 点击目标按钮
-                if (targetButton) {
-                    targetButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    await randomDelay(500, 1500); // 点击前的额外随机延迟
-                    targetButton.click();
-                    log("已点击目标按钮。");
-                } else {
-                    log("未找到目标按钮，无法点击。");
+                // 定义XPath
+                const containerXPath = '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[3]/div[2]/div[1]/div/div/div';
+                const targetButtonXPath = '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[3]/div[2]/div[1]/div/div/div/div[2]/div[2]/div/div/div/button[2]/div';
+
+                // 监测容器的出现
+                log("开始监测Compose Post容器的出现...");
+                try {
+                    const container = await waitForXPath(containerXPath, 20000); // 等待最多20秒
+                    if (container) {
+                        log("检测到Compose Post容器，准备点击指定按钮。");
+
+                        // 查找并点击目标按钮
+                        const targetButton = document.evaluate(targetButtonXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                        if (targetButton) {
+                            targetButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            await randomDelay(500, 1500); // 点击前的额外随机延迟
+                            targetButton.click();
+                            log("已点击指定按钮。");
+
+                            // 等待1-3秒后关闭页面
+                            const closeDelay = Math.floor(Math.random() * (3000 - 1000 + 1)) + 1000; // 1-3秒
+                            log(`等待 ${closeDelay} 毫秒后关闭页面。`);
+                            await new Promise(resolve => setTimeout(resolve, closeDelay));
+
+                            // 尝试关闭页面
+                            safeCloseWindow();
+                        } else {
+                            log("未找到目标按钮，无法点击。");
+                        }
+                    }
+                } catch (error) {
+                    log(`未找到Compose Post容器或点击失败：${error.message}`);
                 }
 
             } else {
