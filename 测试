@@ -11,6 +11,7 @@
 // @match        https://points.reddio.com/task
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://cess.network/merkle/*
+// @match        https://*.breadnbutter.fun/*
 // @grant        none
 // ==/UserScript==
 
@@ -145,7 +146,10 @@
                 await executeScript6();
             } else if (currentURL.includes('cess.network/merkle')) {
                 // 执行脚本7的功能
-                await executeScript7();
+                await executeScript8();
+            } else if (currentURL.includes('breadnbutter.fun')) {
+                // 执行脚本8的功能
+                await executeScript8();
             } else {
                 log("当前页面不在脚本的处理范围内。");
             }
@@ -933,9 +937,99 @@
             log('已点击元素7。');
     
             log('CESS Network Merkle 自动化脚本执行完毕，脚本结束。');
+            // 自动跳转至 breadnbutter.fun 页面
+            log("XtremeVerse 脚本执行完毕，准备跳转至 BreadnButter 页面。");
+            await randomDelay(2000, 4000);
+            window.location.href = 'https://m.breadnbutter.fun/task';
     
         } catch (error) {
             log(`发生错误: ${error.message}`);
+        }
+    }
+
+    // 脚本8：BreadnButter 自动化操作
+    async function executeScript8() {
+        log("执行 BreadnButter 自动化脚本。");
+    
+        // 定义元素的XPath
+        const element1Xpath = '//*[@id="root"]/div/div/div/div/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/div[2]/button/div';
+        const element2Xpath = '//*[@id="root"]/div/div/div/div/div[3]/div[1]/div[2]/div[3]/div/div';
+        const element3Xpath = '//*[@id="root"]/div/div[2]/div[1]/div[2]/div[1]/div/div/div/div[2]';
+        const element4Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[9]/div/div/div/div[2]';
+        const element5Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[8]/div/div/div/div[1]/div[2]/span';
+        const element6Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[8]/div/div/div/div[2]';
+    
+        // 检查元素1是否存在
+        try {
+            const element1 = await waitForXPath(element1Xpath, 10000);
+    
+            if (element1) {
+                log('元素1存在，开始点击元素1');
+                // 点击元素1
+                element1.click();
+                // 设置随机延迟，然后等待元素2出现
+                const delay = Math.floor(Math.random() * 2000) + 1000;
+                log(`等待 ${delay} 毫秒后，等待元素2出现并点击`);
+                await randomDelay(delay, delay + 500); // 1-1.5秒
+    
+                try {
+                    const element2 = await waitForXPath(element2Xpath, 10000);
+                    log('元素2已出现，点击元素2');
+                    element2.click();
+    
+                    // 随机延迟后，进行第二步
+                    const delayStep2 = Math.floor(Math.random() * 2000) + 1000;
+                    log(`等待 ${delayStep2} 毫秒后，开始执行第二步`);
+                    await randomDelay(delayStep2, delayStep2 + 500); // 1-1.5秒
+    
+                    await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+                } catch (error) {
+                    log('元素2未出现，直接进行第二步');
+                    await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+                }
+            } else {
+                log('元素1不存在，直接进行第二步');
+                await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+            }
+        } catch (error) {
+            log('元素1不存在，直接进行第二步');
+            await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+        }
+    }
+    
+    // 第二步函数
+    async function secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath) {
+        log('开始执行第二步');
+        try {
+            const element3 = await waitForXPath(element3Xpath, 10000);
+            log('点击元素3');
+            element3.click();
+            log('已点击元素3');
+    
+            const delay = Math.floor(Math.random() * 2000) + 1000;
+            log(`等待 ${delay} 毫秒后，点击元素4`);
+            await randomDelay(delay, delay + 500); // 1-1.5秒
+    
+            const element4 = await waitForXPath(element4Xpath, 10000);
+            log('点击元素4');
+            element4.click();
+            log('已点击元素4');
+    
+            const delay2 = Math.floor(Math.random() * 2000) + 1000;
+            log(`等待 ${delay2} 毫秒后，点击元素5`);
+            await randomDelay(delay2, delay2 + 500); // 1-1.5秒
+    
+            const element5 = await waitForXPath(element5Xpath, 10000);
+            log('点击元素5，等待12秒钟');
+            element5.click();
+            await new Promise(resolve => setTimeout(resolve, 12000)); // 等待12秒
+    
+            const element6 = await waitForXPath(element6Xpath, 10000);
+            log('点击元素6，脚本执行完毕');
+            element6.click();
+            log('已点击元素6，脚本执行完毕');
+        } catch (error) {
+            log(`执行第二步时发生错误：${error.message}`);
         }
     }
 
