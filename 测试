@@ -12,8 +12,8 @@
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://cess.network/merkle/*
 // @match        https://*.breadnbutter.fun/*
-// @downloadURL  https://raw.githubusercontent.com/slatwater/web3-/refs/heads/main/%E6%B5%8B%E8%AF%95.user.js
-// @updateURL    https://raw.githubusercontent.com/slatwater/web3-/refs/heads/main/%E6%B5%8B%E8%AF%95.user.js
+// @downloadURL  https://github.com/slatwater/web3-/blob/main/%E6%B5%8B%E8%AF%95.user.js
+// @updateURL    https://github.com/slatwater/web3-/blob/main/%E6%B5%8B%E8%AF%95.user.js
 // @grant        none
 // ==/UserScript==
 
