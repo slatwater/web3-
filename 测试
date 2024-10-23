@@ -12,8 +12,8 @@
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://cess.network/merkle/*
 // @match        https://*.breadnbutter.fun/*
-// @downloadURL  https://raw.githubusercontent.com/slatwater/web3-/refs/heads/main/%E6%B5%8B%E8%AF%95?token=GHSAT0AAAAAACYGTAMY6L7P33HVXCP22KNQZYYNGNA
-// @updateURL    https://raw.githubusercontent.com/slatwater/web3-/refs/heads/main/%E6%B5%8B%E8%AF%95?token=GHSAT0AAAAAACYGTAMY6L7P33HVXCP22KNQZYYNGNA
+// @downloadURL  https://raw.githubusercontent.com/slatwater/web3-/refs/heads/main/%E6%B5%8B%E8%AF%95
+// @updateURL    https://raw.githubusercontent.com/slatwater/web3-/refs/heads/main/%E6%B5%8B%E8%AF%95
 // @grant        none
 // ==/UserScript==
 
