@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.6.8
+// @version      1.6.9
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -186,7 +186,7 @@
         }
 
         // 获取所有符合条件的img元素
-        let imgElements = area1.querySelectorAll('img[alt="Daily Reward"].space-3-image-img.checkin-reward-card__contents--thumb.css-kda75v[src="/_next/static/media/ep.ae7483f4.webp"]');
+        let imgElements = area1.querySelectorAll('img[alt="Daily Reward"].space-3-image-img.checkin-reward-card__contents--thumb.css-kda75v[src="https://psyxmwdgtfwzworjuzqw.supabase.co/storage/v1/object/public/space3/public/41fc685129ab4ca651f337dad12f0dd7a81714a34cd6fa0561f06840d5b5e4d2"]');
         log(`在区域1中找到 ${imgElements.length} 个符合条件的img元素。`);
 
         for (let i = 0; i < imgElements.length; i++) {
