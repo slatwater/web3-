@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.7.3
+// @version      1.7.4
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -12,8 +12,8 @@
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://cess.network/merkle/*
 // @match        https://*.breadnbutter.fun/*
-// @updateURL    https://cdn.jsdelivr.net/gh/slatwater/web3-@main/test.user.js
-// @downloadURL  https://cdn.jsdelivr.net/gh/slatwater/web3-@main/test.user.js
+// @updateURL    https://cdn.jsdelivr.net/gh/slatwater/web3-/raw/refs/heads/main/test.user.js
+// @downloadURL  https://cdn.jsdelivr.net/gh/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @grant        none
 // ==/UserScript==
 
