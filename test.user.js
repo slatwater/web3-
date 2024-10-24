@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.8.4
+// @version      1.8.5
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1038,8 +1038,11 @@
             log("BreadnButter 脚本执行完毕，准备跳转至 CommunityGaming 页面。");
             await randomDelay(2000, 4000);
             log("即将跳转至 CommunityGaming 页面。");
-            window.location.href = 'https://www.communitygaming.io/quests';
-            log("已执行跳转。"); // 此日志可能无法看到，因为页面已跳转
+        setTimeout(() => {
+            log("即将执行重定向 via setTimeout。");
+            window.location.replace('https://www.communitygaming.io/quests');
+        }, 1000); // 延迟1秒
+
 
         } catch (error) {
             log(`执行第二步时发生错误：${error.message}`);
