@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.0.2
+// @version      2.0.3
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1259,8 +1259,8 @@
         // 版本标记
         const SCRIPT10_VERSION = '1.2';
     
-        // 随机延迟函数（范围：3000ms - 3500ms）
-        function randomDelayScript10(min = 3000, max = 3500) {
+        // 随机延迟函数（范围：500ms - 2500ms）
+        function randomDelayScript10(min = 500, max = 2500) {
             const delay = Math.floor(Math.random() * (max - min + 1)) + min;
             return new Promise(resolve => setTimeout(resolve, delay));
         }
@@ -1387,7 +1387,7 @@
         async function stepOnePentagon() {
             log('步骤1：执行点击操作。');
     
-            // 定义元素的XPath
+            // 定义元素的XPath和CSS选择器
             const element1Xpath = '/html/body/main/div[1]/header/div/div/a[2]/button';
             const element2Selector = 'body > main > div.bg-img-main-bg-sm.md\\:bg-img-main-bg-md.lg\\:bg-img-main-bg.bg-black.bg-center.bg-no-repeat.bg-top.min-h-screen.flex.flex-col.justify-between > div > div > div > form > div.w-full.flex.justify-center.mt-\\[43px\\].md\\:mt-\\[51px\\].lg\\:mt-\\[45px\\] > input';
             const element3Xpath = '/html/body/main/div[1]/header/div/div/div/a[2]/label';
@@ -1406,11 +1406,20 @@
                     log('✅ 开始点击元素2');
                     const element2 = getElementBySelectorScript10(element2Selector);
                     if (element2) {
-                        // 为确保元素2被正确点击，先聚焦再点击
+                        // 先聚焦元素2
                         element2.focus();
+                        await randomDelayScript10(500, 1000); // 聚焦后等待
                         await simulateClickScript10(element2, '元素2');
                         log('✅ 已点击元素2');
                         await randomDelayScript10(500, 1500);
+    
+                        // 模拟点击页面的其他部分，以确保触发相关事件
+                        log('✅ 模拟点击页面的其他部分以触发事件');
+                        const body = document.querySelector('body');
+                        if (body) {
+                            await simulateClickScript10(body, '页面主体');
+                            await randomDelayScript10(500, 1000);
+                        }
                     } else {
                         log('⚠️ 未找到元素2，跳过点击元素2');
                     }
@@ -1508,7 +1517,7 @@
         // 执行Pentagon Games脚本的主函数
         await mainPentagon();
     }
-    
+
 
 
 
