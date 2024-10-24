@@ -13,6 +13,7 @@
 // @match        https://cess.network/merkle/*
 // @match        https://*.breadnbutter.fun/*
 // @match        https://www.communitygaming.io/quests
+// @match        https://pentagon.games/airdrop/ascended
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @grant        none
@@ -156,6 +157,9 @@
             } else if (currentURL.includes('communitygaming.io/quests')) {
                 // 执行脚本9的功能
                 await executeScript9();
+            } else if (currentURL.includes('pentagon.games/airdrop/ascended')) {
+                // 执行脚本10的功能
+                await executeScript10();
             } else {
                 log("当前页面不在脚本的处理范围内。");
             }
@@ -1233,6 +1237,11 @@
                 logScript2('等待2秒后结束脚本');
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 logScript2('脚本执行完毕');
+                // 在CommunityGaming脚本执行完毕后，自动跳转至 Pentagon Games 目标网址
+                log("CommunityGaming 脚本执行完毕，准备跳转至 Pentagon Games 空投页面。");
+                await randomDelay(2000, 4000); // 延迟2-4秒
+                window.location.href = 'https://pentagon.games/airdrop/ascended';
+
             } catch (error) {
                 logScript2(`脚本执行出错: ${error.message}`);
             }
@@ -1243,6 +1252,145 @@
 
         // 在CommunityGaming脚本执行完毕后，自动结束脚本或执行其他操作
         log("CommunityGaming 脚本执行完毕，脚本结束。");
+    }
+
+    // 脚本10：Pentagon Games Airdrop 自动化操作
+    async function executeScript10() {
+        log("执行Pentagon Games Airdrop Automation脚本。");
+    
+        try {
+            console.log(`[%s] 脚本开始执行`, new Date().toLocaleString());
+    
+            // 确保页面完全加载
+            await waitForPageLoad();
+    
+            // 第一步
+            await stepOnePentagon();
+    
+            // 第二步
+            await stepTwoPentagon();
+    
+            console.log(`[%s] 脚本执行完毕`, new Date().toLocaleString());
+    
+        } catch (error) {
+            log(`发生错误: ${error.message}`);
+        }
+    
+        // 在Pentagon脚本执行完毕后，可以选择结束脚本或执行其他操作
+        // 如果需要自动刷新或其他行为，可以在这里添加
+    }
+    
+    // 第一步操作 for Pentagon Games
+    async function stepOnePentagon() {
+        console.log(`[%s] 开始执行第一步（Pentagon）`, new Date().toLocaleString());
+    
+        const element1 = getElementByXpath('/html/body/main/div[1]/header/div/div/a[2]/button');
+        if (element1) {
+            console.log(`[%s] 发现元素1，准备点击`, new Date().toLocaleString());
+            const clickSuccess1 = await clickElement(element1, '元素1');
+            if (!clickSuccess1) return;
+    
+            const element2 = getElementByXpath('/html/body/main/div[2]/div/div/div/form/div[3]/input');
+            if (element2) {
+                console.log(`[%s] 发现元素2，准备点击`, new Date().toLocaleString());
+                const clickSuccess2 = await clickElement(element2, '元素2');
+                if (!clickSuccess2) return;
+            } else {
+                console.log(`[%s] 未找到元素2，跳过`, new Date().toLocaleString());
+            }
+    
+            const element3 = getElementByXpath('/html/body/main/div[1]/header/div/div/div/a[2]/label');
+            if (element3) {
+                console.log(`[%s] 发现元素3，准备点击`, new Date().toLocaleString());
+                const clickSuccess3 = await clickElement(element3, '元素3');
+                if (!clickSuccess3) return;
+            } else {
+                console.log(`[%s] 未找到元素3，跳过`, new Date().toLocaleString());
+            }
+    
+            const element4 = getElementByXpath('//*[@id="airdrop"]/div/div[1]/a/button');
+            if (element4) {
+                console.log(`[%s] 发现元素4，准备点击`, new Date().toLocaleString());
+                const clickSuccess4 = await clickElement(element4, '元素4');
+                if (!clickSuccess4) return;
+            } else {
+                console.log(`[%s] 未找到元素4，跳过`, new Date().toLocaleString());
+            }
+    
+            const element5 = getElementByXpath('/html/body/main/div[2]/div[2]/div/img');
+            if (element5) {
+                console.log(`[%s] 发现元素5，准备点击`, new Date().toLocaleString());
+                const clickSuccess5 = await clickElement(element5, '元素5');
+                if (!clickSuccess5) return;
+            } else {
+                console.log(`[%s] 未找到元素5，跳过`, new Date().toLocaleString());
+            }
+    
+            const element6 = getElementByXpath('/html/body/main/div[2]/div[3]/div/div/div[7]/div/div/div[2]/a/button');
+            if (element6) {
+                console.log(`[%s] 发现元素6，准备点击`, new Date().toLocaleString());
+                const clickSuccess6 = await clickElement(element6, '元素6');
+                if (!clickSuccess6) return;
+            } else {
+                console.log(`[%s] 未找到元素6，跳过`, new Date().toLocaleString());
+            }
+        } else {
+            console.log(`[%s] 未找到元素1，跳过第一步`, new Date().toLocaleString());
+        }
+    
+        console.log(`[%s] 第一部完成，进入第二步`, new Date().toLocaleString());
+    }
+    
+    // 第二步操作 for Pentagon Games
+    async function stepTwoPentagon() {
+        console.log(`[%s] 开始执行第二步（Pentagon）`, new Date().toLocaleString());
+    
+        const element7 = getElementByXpath('/html/body/main/div[2]/div/div[2]/div[2]/img');
+        if (element7) {
+            console.log(`[%s] 发现元素7，准备点击`, new Date().toLocaleString());
+            const clickSuccess7 = await clickElement(element7, '元素7');
+            if (!clickSuccess7) return;
+        } else {
+            console.log(`[%s] 未找到元素7，无法执行第二步`, new Date().toLocaleString());
+            return;
+        }
+    
+        const element8Xpath = '/html/body/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/div/canvas';
+        const smallWindowXpath = '//*[@id="headlessui-dialog-panel-:r1:"]/div/div[2]/div/div/label';
+    
+        console.log(`[%s] 开始持续点击元素8，直到小窗口1出现`, new Date().toLocaleString());
+    
+        // 持续点击元素8，直到小窗口1出现
+        const maxAttempts = 100; // 最大尝试次数，防止无限循环
+        let attempts = 0;
+    
+        while (attempts < maxAttempts) {
+            const smallWindow = getElementByXpath(smallWindowXpath);
+            if (smallWindow) {
+                console.log(`[%s] 发现小窗口1，结束脚本`, new Date().toLocaleString());
+                break;
+            }
+    
+            const element8 = getElementByXpath(element8Xpath);
+            if (element8) {
+                console.log(`[%s] 尝试点击元素8（转盘）`, new Date().toLocaleString());
+                const clickSuccess8 = await simulateClick(element8, '元素8');
+                if (!clickSuccess8) {
+                    console.log(`[%s] 点击元素8失败，尝试重新点击`, new Date().toLocaleString());
+                } else {
+                    console.log(`[%s] 成功点击元素8`, new Date().toLocaleString());
+                }
+            } else {
+                console.log(`[%s] 未找到元素8，等待下一次尝试`, new Date().toLocaleString());
+            }
+    
+            attempts++;
+            await randomDelay(500, 1000); // 每次点击后延迟
+        }
+    
+        if (attempts >= maxAttempts) {
+            console.log(`[%s] 达到最大尝试次数，脚本结束`, new Date().toLocaleString());
+        }
     }
 
     // 等待页面完全加载后执行主函数
