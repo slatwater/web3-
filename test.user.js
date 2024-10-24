@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.0.4
+// @version      2.0.5
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1257,7 +1257,7 @@
         log("执行 Pentagon Games Airdrop 自动化脚本。");
     
         // 版本标记
-        const SCRIPT10_VERSION = '1.2';
+        const SCRIPT10_VERSION = '1.3';
     
         // 随机延迟函数（范围：500ms - 2500ms）
         function randomDelayScript10(min = 500, max = 2500) {
@@ -1411,18 +1411,27 @@
                         log('✅ 已聚焦元素2');
                         await randomDelayScript10(500, 1000); // 聚焦后等待
     
-                        // 点击元素2
+                        // 尝试模拟点击元素2
                         await simulateClickScript10(element2, '元素2');
                         log('✅ 已点击元素2');
                         await randomDelayScript10(500, 1500);
     
-                        // 模拟点击页面的其他部分，以确保触发相关事件
-                        log('✅ 模拟点击页面的其他部分以触发事件');
-                        const body = document.querySelector('body');
-                        if (body) {
-                            await simulateClickScript10(body, '页面主体');
-                            log('✅ 已点击页面主体');
+                        // 如果模拟点击仍然无效，尝试直接提交表单
+                        log('⚠️ 检测到点击元素2未能成功提交表单，尝试直接提交表单');
+                        const form = element2.closest('form');
+                        if (form) {
+                            // 触发 'submit' 事件以确保所有相关事件被触发
+                            const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                            form.dispatchEvent(submitEvent);
+                            log('✅ 已手动触发表单的 submit 事件');
                             await randomDelayScript10(500, 1000);
+    
+                            // 直接提交表单
+                            form.submit();
+                            log('✅ 已直接提交表单');
+                            await randomDelayScript10(500, 1500);
+                        } else {
+                            log('⚠️ 未找到包含元素2的表单，无法直接提交');
                         }
                     } else {
                         log('⚠️ 未找到元素2，跳过点击元素2');
@@ -1521,7 +1530,6 @@
         // 执行Pentagon Games脚本的主函数
         await mainPentagon();
     }
-
 
 
 
