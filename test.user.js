@@ -1035,9 +1035,11 @@
             element6.click();
             log('已点击元素6，脚本执行完毕');
             // 自动跳转至 CommunityGaming.io 目标网址
+            
             log("BreadnButter 脚本执行完毕，准备跳转至 CommunityGaming.io 任务页面。");
             await randomDelay(2000, 4000);
-            window.location.href = 'https://www.communitygaming.io/quests'; 
+            window.location.href = 'https://www.communitygaming.io/quests';
+            
         } catch (error) {
             log(`执行第二步时发生错误：${error.message}`);
         }
