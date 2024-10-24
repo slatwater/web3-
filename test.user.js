@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.9.8
+// @version      1.9.9
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1449,17 +1449,25 @@
             const element2Xpath = '/html/body/main/div[2]/div/div[2]/div[2]/div/div/input'; // 请根据实际情况替换此XPath
     
             try {
+                // 增加点击元素7之前的延迟
+                log('✅ 开始点击元素7之前，等待延迟...');
+                await randomDelayScript10(1000, 2000); // 增加1-2秒的延迟
+    
                 log('✅ 开始点击元素7');
-                const element7 = await waitForXpathScript10(element7Xpath, 10000);
+                const element7 = await waitForXPathScript10(element7Xpath, 10000);
                 await simulateClickScript10(element7, '元素7');
                 log('✅ 已点击元素7');
-                await randomDelayScript10(500, 1000);
+                await randomDelayScript10(1000, 2000); // 增加1-2秒的延迟
+    
+                // 增加点击元素2之前的延迟
+                log('✅ 开始点击元素2之前，等待延迟...');
+                await randomDelayScript10(1000, 2000); // 增加1-2秒的延迟
     
                 log('✅ 开始点击元素2');
-                const element2 = await waitForXpathScript10(element2Xpath, 10000);
-                await simulateClickScript10(element2, '元素2');
+                const element2 = await waitForXPathScript10(element2Xpath, 10000);
+                await simulateClickScript10(element2, '元素2'); // 使用模拟点击
                 log('✅ 已点击元素2');
-                await randomDelayScript10(500, 1000);
+                await randomDelayScript10(500, 1500); // 增加0.5-1.5秒的延迟
     
                 log('✅ 开始持续点击元素8，直到小窗口1出现');
     
@@ -1500,6 +1508,7 @@
         // 执行Pentagon Games脚本的主函数
         await mainPentagon();
     }
+
 
 
 
