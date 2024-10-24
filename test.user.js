@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.8.5
+// @version      1.8.6
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -952,7 +952,6 @@
             log(`发生错误: ${error.message}`);
         }
     }
-
     // 脚本8：BreadnButter 自动化操作
     async function executeScript8() {
         log("执行 BreadnButter 自动化脚本。");
@@ -1034,20 +1033,54 @@
             log('点击元素6，脚本执行完毕');
             element6.click();
             log('已点击元素6，脚本执行完毕');
-            // 确保所有点击操作完成后再进行重定向
-            log("BreadnButter 脚本执行完毕，准备跳转至 CommunityGaming 页面。");
-            await randomDelay(2000, 4000);
-            log("即将跳转至 CommunityGaming 页面。");
-        setTimeout(() => {
-            log("即将执行重定向 via setTimeout。");
-            window.location.replace('https://www.communitygaming.io/quests');
-        }, 1000); // 延迟1秒
-
-
         } catch (error) {
             log(`执行第二步时发生错误：${error.message}`);
+        } finally {
+            // 确保所有点击操作完成后再进行重定向
+            try {
+                log("BreadnButter 脚本执行完毕，准备跳转至 CommunityGaming 页面。");
+                await randomDelay(2000, 4000);
+                log("即将跳转至 CommunityGaming 页面。");
+
+                // 使用 setTimeout 延迟执行重定向，确保前置操作完成
+                setTimeout(() => {
+                    try {
+                        if (window.top === window) {
+                            // 脚本在顶层窗口中执行
+                            window.location.assign('https://www.communitygaming.io/quests');
+                        } else {
+                            // 脚本在 iframe 中执行，尝试在顶层窗口中执行重定向
+                            window.top.location.assign('https://www.communitygaming.io/quests');
+                        }
+                        log("已执行重定向。"); // 这条日志可能无法看到，因为页面已跳转
+                    } catch (e) {
+                        log(`重定向时发生错误：${e.message}`);
+                    }
+                }, 1000); // 延迟1秒后执行重定向
+
+                // 或者，使用注入脚本的方法
+                /*
+                injectRedirect();
+                */
+            } catch (redirectError) {
+                log(`重定向时发生错误：${redirectError.message}`);
+            }
         }
     }
+
+    // 注入重定向脚本到顶层窗口
+    function injectRedirect() {
+        try {
+            const script = document.createElement('script');
+            script.textContent = "window.top.location.href = 'https://www.communitygaming.io/quests';";
+            window.top.document.body.appendChild(script);
+            script.parentNode.removeChild(script);
+            log("已注入并执行重定向脚本。");
+        } catch (e) {
+            log(`无法注入重定向脚本: ${e.message}`);
+        }
+    }
+
     // 脚本9：CommunityGaming Quests 自动化操作
     async function executeScript9() {
         log("执行 CommunityGaming Quests 自动化脚本。");
