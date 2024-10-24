@@ -515,7 +515,7 @@
             });
         }
 
-        // 点击元素2，并每隔20秒点击一次，直到barValue变化
+        // 点击元素2，并每隔30秒点击一次，直到barValue变化
         async function clickElement2Periodically(element2Selector) {
             if (scriptStopped) {
                 log('barValue值已变化，停止脚本。');
@@ -528,7 +528,7 @@
                 element2.click();
                 log('已点击元素2。');
 
-                // 设置每隔20秒点击一次
+                // 设置每隔30秒点击一次
                 clickElement2IntervalId = setInterval(async () => {
                     if (!scriptStopped) {
                         try {
@@ -547,7 +547,7 @@
                         log('barValue值已变化，停止点击元素2。');
                         clearInterval(clickElement2IntervalId);
                     }
-                }, 30000); // 20秒
+                }, 30000); // 30秒
             } catch (error) {
                 log(`未找到元素2或点击失败：${error.message}`);
             }
