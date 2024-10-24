@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.0.5
+// @version      2.0.6
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1257,7 +1257,7 @@
         log("执行 Pentagon Games Airdrop 自动化脚本。");
     
         // 版本标记
-        const SCRIPT10_VERSION = '1.3';
+        const SCRIPT10_VERSION = '1.4';
     
         // 随机延迟函数（范围：500ms - 2500ms）
         function randomDelayScript10(min = 500, max = 2500) {
@@ -1308,21 +1308,27 @@
                 const x = rect.left + rect.width / 2;
                 const y = rect.top + rect.height / 2;
     
-                // 创建鼠标事件
-                const mouseDownEvent = new MouseEvent('mousedown', {
+                // 创建和分发 PointerEvent（更接近真实用户交互）
+                const pointerDownEvent = new PointerEvent('pointerdown', {
                     view: window,
                     bubbles: true,
                     cancelable: true,
                     clientX: x,
-                    clientY: y
+                    clientY: y,
+                    pointerId: 1,
+                    pointerType: 'mouse',
+                    isPrimary: true
                 });
     
-                const mouseUpEvent = new MouseEvent('mouseup', {
+                const pointerUpEvent = new PointerEvent('pointerup', {
                     view: window,
                     bubbles: true,
                     cancelable: true,
                     clientX: x,
-                    clientY: y
+                    clientY: y,
+                    pointerId: 1,
+                    pointerType: 'mouse',
+                    isPrimary: true
                 });
     
                 const clickEvent = new MouseEvent('click', {
@@ -1334,9 +1340,9 @@
                 });
     
                 // 分发事件
-                element.dispatchEvent(mouseDownEvent);
+                element.dispatchEvent(pointerDownEvent);
                 await randomDelayScript10(100, 200);
-                element.dispatchEvent(mouseUpEvent);
+                element.dispatchEvent(pointerUpEvent);
                 await randomDelayScript10(100, 200);
                 element.dispatchEvent(clickEvent);
     
@@ -1411,13 +1417,18 @@
                         log('✅ 已聚焦元素2');
                         await randomDelayScript10(500, 1000); // 聚焦后等待
     
-                        // 尝试模拟点击元素2
+                        // 点击元素2
                         await simulateClickScript10(element2, '元素2');
                         log('✅ 已点击元素2');
                         await randomDelayScript10(500, 1500);
     
-                        // 如果模拟点击仍然无效，尝试直接提交表单
-                        log('⚠️ 检测到点击元素2未能成功提交表单，尝试直接提交表单');
+                        // 检查表单是否已提交或其他标志
+                        // 如果未提交，尝试直接提交表单
+                        log('⚠️ 检查表单提交状态');
+                        // 假设表单有某种标志，如URL变化或DOM变化，需根据实际情况调整
+                        // 这里假设需要直接提交表单
+                        log('⚠️ 尝试直接提交表单');
+    
                         const form = element2.closest('form');
                         if (form) {
                             // 触发 'submit' 事件以确保所有相关事件被触发
@@ -1432,6 +1443,15 @@
                             await randomDelayScript10(500, 1500);
                         } else {
                             log('⚠️ 未找到包含元素2的表单，无法直接提交');
+                        }
+    
+                        // 模拟点击页面的其他部分，以确保触发相关事件
+                        log('✅ 模拟点击页面的其他部分以触发事件');
+                        const body = document.querySelector('body');
+                        if (body) {
+                            await simulateClickScript10(body, '页面主体');
+                            log('✅ 已点击页面主体');
+                            await randomDelayScript10(500, 1000);
                         }
                     } else {
                         log('⚠️ 未找到元素2，跳过点击元素2');
@@ -1530,6 +1550,7 @@
         // 执行Pentagon Games脚本的主函数
         await mainPentagon();
     }
+
 
 
 
