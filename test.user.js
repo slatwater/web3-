@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.7.7
+// @version      1.7.8
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1036,125 +1036,182 @@
             log('已点击元素6，脚本执行完毕');
             // 自动跳转至 CommunityGaming.io 目标网址
             
-            log("BreadnButter 脚本执行完毕，准备跳转至 CommunityGaming.io 任务页面。");
-            await randomDelay(2000, 4000);
-            window.location.href = 'https://www.communitygaming.io/quests';
+        log("BreadnButter 脚本执行完毕，准备跳转至 CommunityGaming.io 任务页面。");
+        await randomDelay(2000, 4000);
+        window.location.href = 'https://www.communitygaming.io/quests';
             
         } catch (error) {
             log(`执行第二步时发生错误：${error.message}`);
         }
     }
-    // 脚本9：CommunityGaming.io 自动化操作
+
+    // 脚本9：CommunityGaming Quests 自动化操作
     async function executeScript9() {
-        log("执行 CommunityGaming.io 自动化脚本。");
+        log("执行 CommunityGaming Quests 自动化脚本。");
     
-        try {
-            // 步骤1：遍历点击所有“LIKE & REPOST”按钮
-            log('开始执行步骤1：遍历并点击元素1');
+        // 版本标记
+        const SCRIPT2_VERSION = '1.7';
     
-            // 元素1的XPath：查找所有包含特定文本的div，并获取其父按钮
-            const element1XPath = "//div[contains(@class, 'd-flex') and contains(@class, 'align-items-center') and normalize-space(text())='LIKE & REPOST']/ancestor::button[1]";
-            const element1Buttons = getAllElementsByXPath(element1XPath);
+        // 使用XPath获取单个元素
+        function getElementByXPath(xpath, context = document) {
+            return document.evaluate(xpath, context, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        }
     
-            log(`在页面中找到 ${element1Buttons.length} 个元素1`);
+        // 使用XPath获取所有匹配的元素
+        function getAllElementsByXPath(xpath, context = document) {
+            const result = [];
+            const nodesSnapshot = document.evaluate(xpath, context, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+            for (let i = 0; i < nodesSnapshot.snapshotLength; i++) {
+                result.push(nodesSnapshot.snapshotItem(i));
+            }
+            return result;
+        }
     
-            if (element1Buttons.length === 0) {
-                log('未找到任何元素1，跳过步骤1');
-            } else {
-                for (let i = 0; i < element1Buttons.length; i++) {
-                    const elem1Button = element1Buttons[i];
-                    log(`点击元素1 (${i + 1}/${element1Buttons.length})`);
-                    elem1Button.click();
-                    await randomDelay();
+        // 使用CSS选择器获取单个元素
+        function getElementBySelector(selector) {
+            return document.querySelector(selector);
+        }
     
-                    // 等待小窗口1出现
-                    log('等待小窗口1出现...');
-                    try {
-                        const smallWindow1 = await waitForElement('#ActivityModal > div > div', 'selector', 10000);
-                        log('小窗口1已出现，开始延迟1-2秒后点击元素2');
+        // 日志输出
+        function log2(message) {
+            console.log(`[脚本2 v${SCRIPT2_VERSION}] ${message}`);
+        }
     
-                        // 延迟1-2秒
-                        await randomDelay(1000, 2000);
-                        log('延迟完成，点击小窗口1中的元素2');
+        // 等待元素出现
+        function waitForElement(selectorOrXPath, type = 'selector', timeout = 20000, context = document) { // 增加了超时时间
+            return new Promise((resolve, reject) => {
+                const intervalTime = 500;
+                let elapsed = 0;
     
-                        // 元素2的XPath
-                        const elem2XPath = '/html/body/div[4]/div/div/div/div[4]/button[2]';
-                        const elem2 = getElementByXPath(elem2XPath);
-                        if (elem2) {
-                            elem2.click();
-                            log('已点击小窗口1中的元素2');
-                            await randomDelay();
-                        } else {
-                            log('未找到小窗口1中的元素2');
+                const interval = setInterval(() => {
+                    let element;
+                    if (type === 'selector') {
+                        element = getElementBySelector(selectorOrXPath);
+                    } else if (type === 'xpath') {
+                        element = getElementByXPath(selectorOrXPath, context);
+                    }
+    
+                    if (element) {
+                        clearInterval(interval);
+                        resolve(element);
+                    } else {
+                        elapsed += intervalTime;
+                        if (elapsed >= timeout) {
+                            clearInterval(interval);
+                            reject(new Error(`等待元素超时: ${selectorOrXPath}`));
+                        }
+                    }
+                }, intervalTime);
+            });
+        }
+    
+        // 主异步函数
+        async function mainCommunityGaming() {
+            try {
+                log2('脚本开始执行，等待页面完全加载...');
+                await randomDelay(2000, 4000); // 增加初始等待时间确保页面加载
+    
+                // 步骤1：遍历点击元素1
+                log2('开始执行步骤1：遍历并点击元素1');
+    
+                // 元素1的XPath：查找所有包含特定文本的div，并获取其父按钮
+                const element1XPath = "//div[contains(@class, 'd-flex') and contains(@class, 'align-items-center') and normalize-space(text())='LIKE & REPOST']/ancestor::button[1]";
+                const element1Buttons = getAllElementsByXPath(element1XPath);
+    
+                log2(`在页面中找到 ${element1Buttons.length} 个元素1`);
+    
+                if (element1Buttons.length === 0) {
+                    log2('未找到任何元素1，跳过步骤1');
+                } else {
+                    for (let i = 0; i < element1Buttons.length; i++) {
+                        const elem1Button = element1Buttons[i];
+                        log2(`点击元素1 (${i + 1}/${element1Buttons.length})`);
+                        elem1Button.click();
+                        await randomDelay();
+    
+                        // 等待小窗口1出现
+                        log2('等待小窗口1出现...');
+                        try {
+                            const smallWindow1 = await waitForElement('#ActivityModal > div > div', 'selector', 10000);
+                            log2('小窗口1已出现，开始延迟1-2秒后点击元素2');
+    
+                            // 延迟1-2秒
+                            await randomDelay(2000, 2500);
+                            log2('延迟完成，点击小窗口1中的元素2');
+    
+                            // 元素2的XPath
+                            const elem2XPath = '/html/body/div[4]/div/div/div/div[4]/button[2]';
+                            const elem2 = getElementByXPath(elem2XPath);
+                            if (elem2) {
+                                elem2.click();
+                                log2('已点击小窗口1中的元素2');
+                                await randomDelay();
+                            } else {
+                                log2('未找到小窗口1中的元素2');
+                                continue;
+                            }
+                        } catch (error) {
+                            log2(error.message);
                             continue;
                         }
-                    } catch (error) {
-                        log(error.message);
-                        continue;
+    
+                        // 等待小窗口2出现
+                        log2('等待小窗口2出现...');
+                        try {
+                            const smallWindow2 = await waitForElement('#ModalXPCompletedXpedition > div > div', 'selector', 20000); // 增加等待时间
+                            log2('小窗口2已出现，等待3秒后继续下一个元素');
+    
+                            // 等待3秒
+                            await new Promise(resolve => setTimeout(resolve, 3000));
+                        } catch (error) {
+                            log2(error.message);
+                            continue;
+                        }
+    
+                        log2(`已完成元素1 (${i + 1}/${element1Buttons.length}) 的点击流程`);
+                        await randomDelay(); // 随机延迟后继续下一个元素
                     }
-    
-                    // 等待小窗口2出现
-                    log('等待小窗口2出现...');
-                    try {
-                        const smallWindow2 = await waitForElement('#ModalXPCompletedXpedition > div > div', 'selector', 20000); // 增加等待时间
-                        log('小窗口2已出现，等待3秒后继续下一个元素');
-    
-                        // 等待3秒
-                        await new Promise(resolve => setTimeout(resolve, 3000));
-                    } catch (error) {
-                        log(error.message);
-                        continue;
-                    }
-    
-                    log(`已完成元素1 (${i + 1}/${element1Buttons.length}) 的点击流程`);
-                    await randomDelay(); // 随机延迟后继续下一个元素
                 }
+    
+                // 步骤2：持续点击元素4，直到小窗口3出现
+                log2('开始执行步骤2：持续点击元素4，直到小窗口3出现');
+                let continueClicking = true;
+    
+                // 设置一个监听器来监控小窗口3的出现
+                const observer = new MutationObserver((mutations, obs) => {
+                    const smallWindow3 = getElementBySelector('#ModalXPSpin > div > div');
+                    if (smallWindow3) {
+                        log2('小窗口3已出现，停止点击');
+                        continueClicking = false;
+                        obs.disconnect();
+                    }
+                });
+    
+                observer.observe(document.body, { childList: true, subtree: true });
+    
+                while (continueClicking) {
+                    // 更新后的元素4的XPath
+                    const elem4XPath = "/html/body/div[1]/main/div[3]/div/div[3]/div[2]/div[2]/div[1]/div[2]/div[2]/button";
+                    const elem4Button = getElementByXPath(elem4XPath);
+                    if (elem4Button) {
+                        log2('点击元素4');
+                        elem4Button.click();
+                    } else {
+                        log2('未找到元素4，停止点击');
+                        break;
+                    }
+                    await fixedDelay(1000); // 设置固定1秒的间隔
+                }
+    
+                // 等待2秒后结束脚本
+                log2('等待2秒后结束脚本');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                log2('脚本执行完毕');
             }
     
-            // 步骤2：持续点击元素4
-            log('开始执行步骤2：持续点击元素4，直到小窗口3出现');
-            let continueClicking = true;
-    
-            // 设置一个监听器来监控小窗口3的出现
-            const observer = new MutationObserver((mutations, obs) => {
-                const smallWindow3 = getElementBySelector('#ModalXPSpin > div > div');
-                if (smallWindow3) {
-                    log('小窗口3已出现，停止点击');
-                    continueClicking = false;
-                    obs.disconnect();
-                }
-            });
-    
-            observer.observe(document.body, { childList: true, subtree: true });
-    
-            while (continueClicking) {
-                // 更新后的元素4的XPath
-                const elem4XPath = "/html/body/div[1]/main/div[3]/div/div[3]/div[2]/div[2]/div[1]/div[2]/div[2]/button";
-                const elem4Button = getElementByXPath(elem4XPath);
-                if (elem4Button) {
-                    log('点击元素4');
-                    elem4Button.click();
-                } else {
-                    log('未找到元素4，停止点击');
-                    break;
-                }
-                await fixedDelay(1000); // 设置固定1秒的间隔
-            }
-    
-            // 等待2秒后结束脚本
-            log('等待2秒后结束脚本');
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            log('CommunityGaming.io 自动化脚本执行完毕，脚本结束。');
-    
-            // 自动跳转至 CommunityGaming.io 目标网址
-            log("CommunityGaming.io 脚本执行完毕，准备跳转至 CommunityGaming.io 任务页面。");
-            await randomDelay(2000, 4000);
-            window.location.href = 'https://www.communitygaming.io/quests'; // 目标网址，请根据需要修改
-    
-        } catch (error) {
-            log(`CommunityGaming.io 脚本执行出错: ${error.message}`);
+            // 执行主函数
+            await mainCommunityGaming();
         }
-    }
 
 
     // 等待页面完全加载后执行主函数
