@@ -1259,8 +1259,8 @@
         // 版本标记
         const SCRIPT10_VERSION = '1.2';
     
-        // 随机延迟函数（范围：3000ms - 3500ms）
-        function randomDelayScript10(min = 3000, max = 3500) {
+        // 随机延迟函数（范围：500ms - 2500ms）
+        function randomDelayScript10(min = 500, max = 2500) {
             const delay = Math.floor(Math.random() * (max - min + 1)) + min;
             return new Promise(resolve => setTimeout(resolve, delay));
         }
@@ -1268,6 +1268,11 @@
         // 通过XPath获取元素
         function getElementByXpathScript10(path) {
             return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        }
+    
+        // 通过CSS选择器获取元素
+        function getElementByCssSelectorScript10(selector) {
+            return document.querySelector(selector);
         }
     
         // 等待XPath选择器出现
@@ -1288,6 +1293,29 @@
                         }
                     }
                 }, interval);
+            });
+        }
+    
+        // 等待CSS选择器出现
+        function waitForCssSelectorScript10(selector, timeout = 30000) {
+            return new Promise((resolve, reject) => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    resolve(element);
+                    return;
+                }
+                const observer = new MutationObserver((mutations, obs) => {
+                    const el = document.querySelector(selector);
+                    if (el) {
+                        obs.disconnect();
+                        resolve(el);
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+                setTimeout(() => {
+                    observer.disconnect();
+                    reject(new Error(`等待CSS选择器 ${selector} 超时`));
+                }, timeout);
             });
         }
     
@@ -1384,11 +1412,13 @@
     
             // 定义元素的XPath
             const element1Xpath = '/html/body/main/div[1]/header/div/div/a[2]/button';
-            const element2Xpath = '/html/body/main/div[2]/div/div/div/form/div[3]/input';
             const element3Xpath = '/html/body/main/div[1]/header/div/div/div/a[2]/label';
             const element4Xpath = '//*[@id="airdrop"]/div/div[1]/a/button';
             const element5Xpath = '/html/body/main/div[2]/div[2]/div/img';
             const element6Xpath = '/html/body/main/div[2]/div[3]/div/div/div[7]/div/div/div[2]/a/button';
+    
+            // element2 CSS selector
+            const element2CssSelector = 'body > main > div.bg-img-main-bg-sm.md\\:bg-img-main-bg-md.lg\\:bg-img-main-bg.bg-black.bg-center.bg-no-repeat.bg-top.min-h-screen.flex.flex-col.justify-between > div > div > div > form > div.w-full.flex.justify-center.mt-\\[43px\\].md\\:mt-\\[51px\\].lg\\:mt-\\[45px\\] > input';
     
             try {
                 // 检测元素1是否存在
@@ -1399,32 +1429,36 @@
                     await randomDelayScript10(500, 1500);
     
                     log('✅ 开始点击元素2');
-                    const element2 = await waitForXPathScript10(element2Xpath, 5000);
-                    await simulateClickScript10(element2, '元素2'); // 使用模拟点击
-                    log('✅ 已点击元素2');
-                    await randomDelayScript10(500, 1500);
+                    const element2 = await waitForCssSelectorScript10(element2CssSelector, 5000);
+                    if (element2) {
+                        await simulateClickScript10(element2, '元素2');
+                        log('✅ 已点击元素2');
+                        await randomDelayScript10(500, 1500);
+                    } else {
+                        log('⚠️ 元素2未找到，跳过');
+                    }
     
                     log('✅ 开始点击元素3');
                     const element3 = await waitForXPathScript10(element3Xpath, 5000);
-                    await simulateClickScript10(element3, '元素3'); // 使用模拟点击
+                    await simulateClickScript10(element3, '元素3');
                     log('✅ 已点击元素3');
                     await randomDelayScript10(500, 1500);
     
                     log('✅ 开始点击元素4');
                     const element4 = await waitForXPathScript10(element4Xpath, 5000);
-                    await simulateClickScript10(element4, '元素4'); // 使用模拟点击
+                    await simulateClickScript10(element4, '元素4');
                     log('✅ 已点击元素4');
                     await randomDelayScript10(500, 1500);
     
                     log('✅ 开始点击元素5');
                     const element5 = await waitForXPathScript10(element5Xpath, 5000);
-                    await simulateClickScript10(element5, '元素5'); // 使用模拟点击
+                    await simulateClickScript10(element5, '元素5');
                     log('✅ 已点击元素5');
                     await randomDelayScript10(500, 1500);
     
                     log('✅ 开始点击元素6');
                     const element6 = await waitForXPathScript10(element6Xpath, 5000);
-                    await simulateClickScript10(element6, '元素6'); // 使用模拟点击
+                    await simulateClickScript10(element6, '元素6');
                     log('✅ 已点击元素6');
                     await randomDelayScript10(500, 1500);
     
@@ -1446,7 +1480,6 @@
             const element7Xpath = '/html/body/main/div[2]/div/div[2]/div[2]/img';
             const element8Xpath = '/html/body/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/div/canvas';
             const smallWindowXpath = '//*[@id="headlessui-dialog-panel-:r1:"]/div/div[2]/div/div/label';
-            const element2Xpath = '/html/body/main/div[2]/div/div[2]/div[2]/div/div/input'; // 请根据实际情况替换此XPath
     
             try {
                 // 增加点击元素7之前的延迟
@@ -1455,19 +1488,14 @@
     
                 log('✅ 开始点击元素7');
                 const element7 = await waitForXPathScript10(element7Xpath, 10000);
-                await simulateClickScript10(element7, '元素7');
-                log('✅ 已点击元素7');
-                await randomDelayScript10(1000, 2000); // 增加1-2秒的延迟
-    
-                // 增加点击元素2之前的延迟
-                log('✅ 开始点击元素2之前，等待延迟...');
-                await randomDelayScript10(1000, 2000); // 增加1-2秒的延迟
-    
-                log('✅ 开始点击元素2');
-                const element2 = await waitForXPathScript10(element2Xpath, 10000);
-                await simulateClickScript10(element2, '元素2'); // 使用模拟点击
-                log('✅ 已点击元素2');
-                await randomDelayScript10(500, 1500); // 增加0.5-1.5秒的延迟
+                if (element7) {
+                    await simulateClickScript10(element7, '元素7');
+                    log('✅ 已点击元素7');
+                    await randomDelayScript10(1000, 2000); // 增加1-2秒的延迟
+                } else {
+                    log('⚠️ 元素7未找到，无法点击，脚本结束。');
+                    return;
+                }
     
                 log('✅ 开始持续点击元素8，直到小窗口1出现');
     
@@ -1504,10 +1532,11 @@
                 log(`❌ 步骤2操作时发生错误: ${error.message}`);
             }
         }
-    
-        // 执行Pentagon Games脚本的主函数
-        await mainPentagon();
-    }
+
+    // 执行Pentagon Games脚本的主函数
+    await mainPentagon();
+}
+
 
 
 
