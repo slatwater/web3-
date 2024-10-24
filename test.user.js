@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.0.3
+// @version      2.0.4
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1408,7 +1408,10 @@
                     if (element2) {
                         // 先聚焦元素2
                         element2.focus();
+                        log('✅ 已聚焦元素2');
                         await randomDelayScript10(500, 1000); // 聚焦后等待
+    
+                        // 点击元素2
                         await simulateClickScript10(element2, '元素2');
                         log('✅ 已点击元素2');
                         await randomDelayScript10(500, 1500);
@@ -1418,6 +1421,7 @@
                         const body = document.querySelector('body');
                         if (body) {
                             await simulateClickScript10(body, '页面主体');
+                            log('✅ 已点击页面主体');
                             await randomDelayScript10(500, 1000);
                         }
                     } else {
