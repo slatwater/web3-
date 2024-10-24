@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.0.1
+// @version      2.0.2
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1259,20 +1259,20 @@
         // 版本标记
         const SCRIPT10_VERSION = '1.2';
     
-        // 随机延迟函数（范围：500ms - 2500ms）
-        function randomDelayScript10(min = 500, max = 2500) {
+        // 随机延迟函数（范围：3000ms - 3500ms）
+        function randomDelayScript10(min = 3000, max = 3500) {
             const delay = Math.floor(Math.random() * (max - min + 1)) + min;
             return new Promise(resolve => setTimeout(resolve, delay));
         }
     
-        // 通过XPath获取元素
-        function getElementByXpathScript10(path) {
-            return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        // 通过CSS选择器获取元素
+        function getElementBySelectorScript10(selector) {
+            return document.querySelector(selector);
         }
     
-        // 通过CSS选择器获取元素
-        function getElementByCssSelectorScript10(selector) {
-            return document.querySelector(selector);
+        // 通过XPath获取元素
+        function getElementByXpathScript10(xpath) {
+            return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         }
     
         // 等待XPath选择器出现
@@ -1293,29 +1293,6 @@
                         }
                     }
                 }, interval);
-            });
-        }
-    
-        // 等待CSS选择器出现
-        function waitForCssSelectorScript10(selector, timeout = 30000) {
-            return new Promise((resolve, reject) => {
-                const element = document.querySelector(selector);
-                if (element) {
-                    resolve(element);
-                    return;
-                }
-                const observer = new MutationObserver((mutations, obs) => {
-                    const el = document.querySelector(selector);
-                    if (el) {
-                        obs.disconnect();
-                        resolve(el);
-                    }
-                });
-                observer.observe(document.body, { childList: true, subtree: true });
-                setTimeout(() => {
-                    observer.disconnect();
-                    reject(new Error(`等待CSS选择器 ${selector} 超时`));
-                }, timeout);
             });
         }
     
@@ -1412,13 +1389,11 @@
     
             // 定义元素的XPath
             const element1Xpath = '/html/body/main/div[1]/header/div/div/a[2]/button';
+            const element2Selector = 'body > main > div.bg-img-main-bg-sm.md\\:bg-img-main-bg-md.lg\\:bg-img-main-bg.bg-black.bg-center.bg-no-repeat.bg-top.min-h-screen.flex.flex-col.justify-between > div > div > div > form > div.w-full.flex.justify-center.mt-\\[43px\\].md\\:mt-\\[51px\\].lg\\:mt-\\[45px\\] > input';
             const element3Xpath = '/html/body/main/div[1]/header/div/div/div/a[2]/label';
             const element4Xpath = '//*[@id="airdrop"]/div/div[1]/a/button';
             const element5Xpath = '/html/body/main/div[2]/div[2]/div/img';
             const element6Xpath = '/html/body/main/div[2]/div[3]/div/div/div[7]/div/div/div[2]/a/button';
-    
-            // element2 CSS selector
-            const element2CssSelector = 'body > main > div.bg-img-main-bg-sm.md\\:bg-img-main-bg-md.lg\\:bg-img-main-bg.bg-black.bg-center.bg-no-repeat.bg-top.min-h-screen.flex.flex-col.justify-between > div > div > div > form > div.w-full.flex.justify-center.mt-\\[43px\\].md\\:mt-\\[51px\\].lg\\:mt-\\[45px\\] > input';
     
             try {
                 // 检测元素1是否存在
@@ -1429,13 +1404,15 @@
                     await randomDelayScript10(500, 1500);
     
                     log('✅ 开始点击元素2');
-                    const element2 = await waitForCssSelectorScript10(element2CssSelector, 5000);
+                    const element2 = getElementBySelectorScript10(element2Selector);
                     if (element2) {
+                        // 为确保元素2被正确点击，先聚焦再点击
+                        element2.focus();
                         await simulateClickScript10(element2, '元素2');
                         log('✅ 已点击元素2');
                         await randomDelayScript10(500, 1500);
                     } else {
-                        log('⚠️ 元素2未找到，跳过');
+                        log('⚠️ 未找到元素2，跳过点击元素2');
                     }
     
                     log('✅ 开始点击元素3');
@@ -1488,14 +1465,9 @@
     
                 log('✅ 开始点击元素7');
                 const element7 = await waitForXPathScript10(element7Xpath, 10000);
-                if (element7) {
-                    await simulateClickScript10(element7, '元素7');
-                    log('✅ 已点击元素7');
-                    await randomDelayScript10(1000, 2000); // 增加1-2秒的延迟
-                } else {
-                    log('⚠️ 元素7未找到，无法点击，脚本结束。');
-                    return;
-                }
+                await simulateClickScript10(element7, '元素7');
+                log('✅ 已点击元素7');
+                await randomDelayScript10(1000, 2000); // 增加1-2秒的延迟
     
                 log('✅ 开始持续点击元素8，直到小窗口1出现');
     
@@ -1532,11 +1504,11 @@
                 log(`❌ 步骤2操作时发生错误: ${error.message}`);
             }
         }
-
-    // 执行Pentagon Games脚本的主函数
-    await mainPentagon();
-}
-
+    
+        // 执行Pentagon Games脚本的主函数
+        await mainPentagon();
+    }
+    
 
 
 
