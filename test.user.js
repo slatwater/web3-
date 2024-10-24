@@ -1034,9 +1034,12 @@
             log('点击元素6，脚本执行完毕');
             element6.click();
             log('已点击元素6，脚本执行完毕');
-        log("BreadnButter 脚本执行完毕，准备跳转至 CommunityGaming 页面。");
-        await randomDelay(2000, 4000);
-        window.location.href = 'https://www.communitygaming.io/quests';
+            // 确保所有点击操作完成后再进行重定向
+            log("BreadnButter 脚本执行完毕，准备跳转至 CommunityGaming 页面。");
+            await randomDelay(2000, 4000);
+            log("即将跳转至 CommunityGaming 页面。");
+            window.location.assign('https://www.communitygaming.io/quests'); // 使用 assign 进行重定向
+            log("已执行跳转。"); // 此日志可能无法看到，因为页面已跳转
 
         } catch (error) {
             log(`执行第二步时发生错误：${error.message}`);
