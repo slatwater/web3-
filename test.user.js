@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.9.4
+// @version      1.9.5
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1270,158 +1270,8 @@
             return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         }
     
-        // 主执行函数
-        async function mainPentagon() {
-            log(`🔧 [脚本 v${SCRIPT10_VERSION}] 已启动`);
-    
-            // 等待页面加载完成
-            await waitForPageLoad();
-            log('✅ 页面已完全加载');
-    
-            // 随机延迟后开始执行
-            const initialDelay = Math.floor(Math.random() * 500) + 500; // 500-1000ms
-            log(`⏳ 等待 ${initialDelay} 毫秒后开始执行脚本`);
-            await new Promise(resolve => setTimeout(resolve, initialDelay));
-    
-            // 第一步操作
-            await stepOnePentagon();
-    
-            // 第二步操作
-            await stepTwoPentagon();
-    
-            log(`🔧 [脚本 v${SCRIPT10_VERSION}] 自动化操作完成，脚本结束。`);
-        }
-    
-        // 等待页面完全加载
-        function waitForPageLoad() {
-            return new Promise((resolve) => {
-                if (document.readyState === 'complete') {
-                    resolve();
-                } else {
-                    window.addEventListener('load', () => resolve());
-                }
-            });
-        }
-    
-        // 第一步操作
-        async function stepOnePentagon() {
-            log('步骤1：执行点击操作。');
-    
-            // 定义元素的XPath
-            const element1Xpath = '/html/body/main/div[1]/header/div/div/a[2]/button';
-            const element2Xpath = '/html/body/main/div[2]/div/div/div/form/div[3]/input';
-            const element3Xpath = '/html/body/main/div[1]/header/div/div/div/a[2]/label';
-            const element4Xpath = '//*[@id="airdrop"]/div/div[1]/a/button';
-            const element5Xpath = '/html/body/main/div[2]/div[2]/div/img';
-            const element6Xpath = '/html/body/main/div[2]/div[3]/div/div/div[7]/div/div/div[2]/a/button';
-    
-            try {
-                // 检测元素1是否存在
-                const element1 = await waitForXPathScript10(element1Xpath, 10000);
-                if (element1) {
-                    log('元素1存在，开始点击元素1');
-                    element1.click();
-                    await randomDelayScript10(500, 1500);
-    
-                    log('开始点击元素2');
-                    const element2 = await waitForXPathScript10(element2Xpath, 5000);
-                    await simulateClickScript10(element2, '元素2'); // 使用模拟点击
-                    log('已点击元素2');
-                    await randomDelayScript10(500, 1500);
-    
-                    log('开始点击元素3');
-                    const element3 = await waitForXPathScript10(element3Xpath, 5000);
-                    element3.click();
-                    await randomDelayScript10(500, 1500);
-    
-                    log('开始点击元素4');
-                    const element4 = await waitForXPathScript10(element4Xpath, 5000);
-                    element4.click();
-                    await randomDelayScript10(500, 1500);
-    
-                    log('开始点击元素5');
-                    const element5 = await waitForXPathScript10(element5Xpath, 5000);
-                    element5.click();
-                    await randomDelayScript10(500, 1500);
-    
-                    log('开始点击元素6');
-                    const element6 = await waitForXPathScript10(element6Xpath, 5000);
-                    element6.click();
-                    await randomDelayScript10(500, 1500);
-    
-                    log('步骤1操作完成，进入步骤2。');
-                } else {
-                    log('元素1不存在，直接进入步骤2。');
-                }
-            } catch (error) {
-                log(`步骤1操作时发生错误: ${error.message}`);
-                log('可能元素1不存在，直接进入步骤2。');
-            }
-        }
-    
-        // 第二步操作
-        async function stepTwoPentagon() {
-            log('步骤2：执行点击元素7和元素8操作。');
-    
-            // 定义元素的XPath
-            const element7Xpath = '/html/body/main/div[2]/div/div[2]/div[2]/img';
-            const element8Xpath = '/html/body/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/div/canvas';
-            const smallWindowXpath = '//*[@id="headlessui-dialog-panel-:r1:"]/div/div[2]/div/div/label';
-    
-            try {
-                log('开始点击元素7');
-                const element7 = await waitForXpathScript10(element7Xpath, 10000);
-                await simulateClickScript10(element7, '元素7');
-                log('已点击元素7');
-                await randomDelayScript10(500, 1000);
-    
-                log('开始持续点击元素8，直到小窗口1出现');
-    
-                // 持续点击元素8，直到小窗口1出现或达到最大尝试次数
-                const maxAttempts = 50; // 最大尝试次数（每次2-2.5秒，总计约100-125秒）
-                let attempts = 0;
-    
-                while (attempts < maxAttempts) {
-                    // 检查小窗口1是否已出现
-                    const smallWindow = getElementByXpathScript10(smallWindowXpath);
-                    if (smallWindow) {
-                        log('小窗口1已出现，结束脚本。');
-                        break;
-                    }
-    
-                    // 点击元素8（转盘）
-                    const element8 = getElementByXpathScript10(element8Xpath);
-                    if (element8) {
-                        await simulateClickScript10(element8, '元素8');
-                        log('已点击元素8');
-                    } else {
-                        log('未找到元素8，等待下一次尝试。');
-                    }
-    
-                    // 点击元素2（input元素）
-                    try {
-                        const element2 = await waitForXpathScript10(element2Xpath, 5000);
-                        await simulateClickScript10(element2, '元素2');
-                        log('已点击元素2');
-                    } catch (error) {
-                        log(`点击元素2时发生错误: ${error.message}`);
-                    }
-    
-                    attempts++;
-                    await randomDelayScript10(2000, 2500); // 每2-2.5秒点击一次
-                }
-    
-                if (attempts >= maxAttempts) {
-                    log('达到最大尝试次数，小窗口1未出现，脚本结束。');
-                }
-    
-            } catch (error) {
-                log(`步骤2操作时发生错误: ${error.message}`);
-            }
-        }
-    
         // 等待XPath选择器出现
-        function waitForXpathScript10(xpath, timeout = 30000) {
+        function waitForXPathScript10(xpath, timeout = 30000) {
             return new Promise((resolve, reject) => {
                 const interval = 500;
                 let elapsed = 0;
@@ -1491,9 +1341,169 @@
             }
         }
     
+        // 主执行函数
+        async function mainPentagon() {
+            try {
+                log(`🔧 [脚本 v${SCRIPT10_VERSION}] 已启动`);
+    
+                // 等待页面加载完成
+                await waitForPageLoad();
+                log('✅ 页面已完全加载');
+    
+                // 随机延迟后开始执行
+                const initialDelay = Math.floor(Math.random() * 500) + 500; // 500-1000ms
+                log(`⏳ 等待 ${initialDelay} 毫秒后开始执行脚本`);
+                await new Promise(resolve => setTimeout(resolve, initialDelay));
+    
+                // 第一步操作
+                await stepOnePentagon();
+    
+                // 第二步操作
+                await stepTwoPentagon();
+    
+                log(`🔧 [脚本 v${SCRIPT10_VERSION}] 自动化操作完成，脚本结束。`);
+            } catch (error) {
+                log(`❌ 主执行函数发生错误: ${error.message}`);
+            }
+        }
+    
+        // 等待页面完全加载
+        function waitForPageLoad() {
+            return new Promise((resolve) => {
+                if (document.readyState === 'complete') {
+                    resolve();
+                } else {
+                    window.addEventListener('load', () => resolve());
+                }
+            });
+        }
+    
+        // 第一步操作
+        async function stepOnePentagon() {
+            log('步骤1：执行点击操作。');
+    
+            // 定义元素的XPath
+            const element1Xpath = '/html/body/main/div[1]/header/div/div/a[2]/button';
+            const element2Xpath = '/html/body/main/div[2]/div/div/div/form/div[3]/input';
+            const element3Xpath = '/html/body/main/div[1]/header/div/div/div/a[2]/label';
+            const element4Xpath = '//*[@id="airdrop"]/div/div[1]/a/button';
+            const element5Xpath = '/html/body/main/div[2]/div[2]/div/img';
+            const element6Xpath = '/html/body/main/div[2]/div[3]/div/div/div[7]/div/div/div[2]/a/button';
+    
+            try {
+                // 检测元素1是否存在
+                const element1 = await waitForXPathScript10(element1Xpath, 10000);
+                if (element1) {
+                    log('✅ 元素1存在，开始点击元素1');
+                    await simulateClickScript10(element1, '元素1');
+                    await randomDelayScript10(500, 1500);
+    
+                    log('✅ 开始点击元素2');
+                    const element2 = await waitForXPathScript10(element2Xpath, 5000);
+                    await simulateClickScript10(element2, '元素2'); // 使用模拟点击
+                    log('✅ 已点击元素2');
+                    await randomDelayScript10(500, 1500);
+    
+                    log('✅ 开始点击元素3');
+                    const element3 = await waitForXPathScript10(element3Xpath, 5000);
+                    await simulateClickScript10(element3, '元素3'); // 使用模拟点击
+                    log('✅ 已点击元素3');
+                    await randomDelayScript10(500, 1500);
+    
+                    log('✅ 开始点击元素4');
+                    const element4 = await waitForXPathScript10(element4Xpath, 5000);
+                    await simulateClickScript10(element4, '元素4'); // 使用模拟点击
+                    log('✅ 已点击元素4');
+                    await randomDelayScript10(500, 1500);
+    
+                    log('✅ 开始点击元素5');
+                    const element5 = await waitForXPathScript10(element5Xpath, 5000);
+                    await simulateClickScript10(element5, '元素5'); // 使用模拟点击
+                    log('✅ 已点击元素5');
+                    await randomDelayScript10(500, 1500);
+    
+                    log('✅ 开始点击元素6');
+                    const element6 = await waitForXPathScript10(element6Xpath, 5000);
+                    await simulateClickScript10(element6, '元素6'); // 使用模拟点击
+                    log('✅ 已点击元素6');
+                    await randomDelayScript10(500, 1500);
+    
+                    log('✅ 步骤1操作完成，进入步骤2。');
+                } else {
+                    log('⚠️ 元素1不存在，直接进入步骤2。');
+                }
+            } catch (error) {
+                log(`❌ 步骤1操作时发生错误: ${error.message}`);
+                log('⚠️ 可能元素1不存在，直接进入步骤2。');
+            }
+        }
+    
+        // 第二步操作
+        async function stepTwoPentagon() {
+            log('步骤2：执行点击元素7和元素8操作。');
+    
+            // 定义元素的XPath
+            const element7Xpath = '/html/body/main/div[2]/div/div[2]/div[2]/img';
+            const element8Xpath = '/html/body/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/div/canvas';
+            const smallWindowXpath = '//*[@id="headlessui-dialog-panel-:r1:"]/div/div[2]/div/div/label';
+    
+            try {
+                log('✅ 开始点击元素7');
+                const element7 = await waitForXPathScript10(element7Xpath, 10000);
+                await simulateClickScript10(element7, '元素7');
+                log('✅ 已点击元素7');
+                await randomDelayScript10(500, 1000);
+    
+                log('✅ 开始持续点击元素8，直到小窗口1出现');
+    
+                // 持续点击元素8，直到小窗口1出现或达到最大尝试次数
+                const maxAttempts = 50; // 最大尝试次数（每次2-2.5秒，总计约100-125秒）
+                let attempts = 0;
+    
+                while (attempts < maxAttempts) {
+                    // 检查小窗口1是否已出现
+                    const smallWindow = getElementByXpathScript10(smallWindowXpath);
+                    if (smallWindow) {
+                        log('✅ 小窗口1已出现，结束脚本。');
+                        break;
+                    }
+    
+                    // 点击元素8（转盘）
+                    const element8 = getElementByXpathScript10(element8Xpath);
+                    if (element8) {
+                        await simulateClickScript10(element8, '元素8');
+                        log('✅ 已点击元素8');
+                    } else {
+                        log('⚠️ 未找到元素8，等待下一次尝试。');
+                    }
+    
+                    // 增加对元素2（input元素）的点击
+                    const element2Xpath = '/html/body/main/div[2]/div/div[2]/div[2]/div/div/input'; // 请根据实际情况替换此XPath
+                    try {
+                        const element2 = await waitForXPathScript10(element2Xpath, 5000);
+                        await simulateClickScript10(element2, '元素2'); // 使用模拟点击
+                        log('✅ 已点击元素2');
+                    } catch (error) {
+                        log(`⚠️ 点击元素2时发生错误: ${error.message}`);
+                    }
+    
+                    attempts++;
+                    await randomDelayScript10(2000, 2500); // 每2-2.5秒点击一次
+                }
+    
+                if (attempts >= maxAttempts) {
+                    log('⚠️ 达到最大尝试次数，小窗口1未出现，脚本结束。');
+                }
+    
+            } catch (error) {
+                log(`❌ 步骤2操作时发生错误: ${error.message}`);
+            }
+        }
+    
         // 执行Pentagon Games脚本的主函数
         await mainPentagon();
     }
+
 
 
     // 等待页面完全加载后执行主函数
