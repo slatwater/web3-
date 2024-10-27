@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HoloWorldAI 自动化脚本
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.5
 // @description  自动执行指定操作的脚本
 // @author
 // @match        https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd
@@ -14,26 +14,41 @@
     // 等待页面完全加载
     window.addEventListener('load', function() {
         // 随机延迟2-5秒后开始执行脚本
-        var initialDelay = Math.random() * 3000 + 4000; // 2000ms到5000ms之间
+        var initialDelay = Math.random() * 3000 + 2000; // 2000ms到5000ms之间
         console.log('页面加载完成，等待 ' + (initialDelay / 1000).toFixed(2) + ' 秒开始执行脚本');
 
         setTimeout(function() {
-            // 获取区域1
+            console.log('开始监测区域1是否存在');
+
             var region1Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[2]/div[2]/div/div[3]/div[1]';
-            var region1 = document.evaluate(region1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            var maxChecks = 60; // 最大检查次数（相当于30秒）
+            var checks = 0;
+            var checkInterval = 500; // 每500ms检查一次
 
-            if (!region1) {
-                console.log('区域1未找到');
-                return;
-            }
+            var checkRegion1Exist = setInterval(function() {
+                var region1 = document.evaluate(region1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (region1) {
+                    clearInterval(checkRegion1Exist);
+                    console.log('区域1已加载');
 
-            // 在区域1中获取所有按钮
-            var buttons = region1.getElementsByTagName('button');
-            var buttonsArray = Array.prototype.slice.call(buttons);
+                    // 开始执行第一步
+                    stepOne(region1);
+                } else {
+                    checks++;
+                    if (checks >= maxChecks) {
+                        clearInterval(checkRegion1Exist);
+                        console.log('等待区域1超时');
+                    }
+                }
+            }, checkInterval);
 
             // 定义第一步
-            function stepOne() {
+            function stepOne(region1) {
                 console.log('第一步：开始随机点击两个按钮');
+
+                // 在区域1中获取所有按钮
+                var buttons = region1.getElementsByTagName('button');
+                var buttonsArray = Array.prototype.slice.call(buttons);
 
                 if (buttonsArray.length < 2) {
                     console.log('按钮数量不足两个，无法执行操作');
@@ -50,121 +65,157 @@
                 button1.click();
                 console.log('已点击第一个随机按钮');
 
-                // 等待7秒后点击第二个按钮
+                // 等待12秒后点击第二个按钮
                 setTimeout(function() {
                     button2.click();
                     console.log('已点击第二个随机按钮');
 
-                    // 等待5秒后执行第二步
+                    // 等待7秒后执行第二步
                     setTimeout(stepTwo, 7000);
-                }, 7000);
+                }, 12000);
             }
 
             // 定义第二步
             function stepTwo() {
-                console.log('第二步：点击元素1和元素2');
+                console.log('第二步：等待元素1并点击');
 
                 var element1Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[1]/div[3]/div[2]/div[1]/button/img';
-                var element1 = document.evaluate(element1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
-                if (!element1) {
-                    console.log('元素1未找到');
-                    return;
-                }
-
-                element1.click();
-                console.log('已点击元素1');
-
-                // 等待3秒后点击元素2
-                setTimeout(function() {
-                    var element2Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[2]/div[2]';
-                    var element2 = document.evaluate(element2Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
-                    if (!element2) {
-                        console.log('元素2未找到');
-                        return;
-                    }
-
-                    element2.click();
-                    console.log('已点击元素2');
-
-                    // 等待2秒后执行第三步
-                    setTimeout(stepThree, 5000);
-                }, 3000);
-            }
-
-            // 定义第三步
-            function stepThree() {
-                console.log('第三步：点击元素3并等待小窗口1出现');
-
-                var element3Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[2]/div[1]/button';
-                var element3 = document.evaluate(element3Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
-                if (!element3) {
-                    console.log('元素3未找到');
-                    return;
-                }
-
-                element3.click();
-                console.log('已点击元素3');
-
-                // 轮询检查小窗口1是否出现
-                var checkInterval = 1000; // 每1000ms检查一次
-                var maxChecks = 30; // 最多检查30次（30秒）
+                var maxChecks = 60; // 最大检查次数（相当于30秒）
                 var checks = 0;
+                var checkInterval = 500; // 每500ms检查一次
 
-                var checkExist = setInterval(function() {
-                    var xiaokuan1Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[4]/div/div/div/div[2]';
-                    var xiaokuan1 = document.evaluate(xiaokuan1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                var checkElement1Exist = setInterval(function() {
+                    var element1 = document.evaluate(element1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (element1) {
+                        clearInterval(checkElement1Exist);
+                        element1.click();
+                        console.log('已点击元素1');
 
-                    if (xiaokuan1) {
-                        clearInterval(checkExist);
-                        console.log('小窗口1已出现');
-
-                        // 等待3-5秒后点击元素5
-                        var delay = Math.random() * 2000 + 4000; // 3000ms到5000ms之间
-                        console.log('等待 ' + (delay / 1000).toFixed(2) + ' 秒后点击元素5');
-
-                        setTimeout(function() {
-                            var element5Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[4]/div/div/div/div[2]/div[2]/button';
-                            var element5 = document.evaluate(element5Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
-                            if (!element5) {
-                                console.log('元素5未找到');
-                                return;
-                            }
-
-                            element5.click();
-                            console.log('已点击元素5');
-
-                            // 等待5秒后点击元素4
-                            setTimeout(function() {
-                                var element4Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[5]/div/div/div[4]/button';
-                                var element4 = document.evaluate(element4Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
-                                if (!element4) {
-                                    console.log('元素4未找到');
-                                    return;
-                                }
-
-                                element4.click();
-                                console.log('已点击元素4');
-                                console.log('脚本执行完毕');
-                            }, 7000);
-                        }, delay);
+                        // 继续等待元素2并点击
+                        waitForElement2();
                     } else {
                         checks++;
                         if (checks >= maxChecks) {
-                            clearInterval(checkExist);
-                            console.log('等待小窗口1超时');
+                            clearInterval(checkElement1Exist);
+                            console.log('等待元素1超时');
                         }
                     }
                 }, checkInterval);
             }
 
-            // 开始执行第一步
-            stepOne();
+            function waitForElement2() {
+                console.log('第二步：等待元素2并点击');
+
+                var element2Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[2]/div[2]';
+                var maxChecks = 60;
+                var checks = 0;
+                var checkInterval = 500;
+
+                var checkElement2Exist = setInterval(function() {
+                    var element2 = document.evaluate(element2Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (element2) {
+                        clearInterval(checkElement2Exist);
+                        element2.click();
+                        console.log('已点击元素2');
+
+                        // 进入第三步
+                        stepThree();
+                    } else {
+                        checks++;
+                        if (checks >= maxChecks) {
+                            clearInterval(checkElement2Exist);
+                            console.log('等待元素2超时');
+                        }
+                    }
+                }, checkInterval);
+            }
+
+            // 定义第三步
+            function stepThree() {
+                console.log('第三步：等待元素3并点击');
+
+                var element3Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[2]/div[1]/button';
+                var maxChecks = 60;
+                var checks = 0;
+                var checkInterval = 500;
+
+                var checkElement3Exist = setInterval(function() {
+                    var element3 = document.evaluate(element3Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (element3) {
+                        clearInterval(checkElement3Exist);
+                        element3.click();
+                        console.log('已点击元素3');
+
+                        // 开始监测元素5
+                        waitForElement5();
+                    } else {
+                        checks++;
+                        if (checks >= maxChecks) {
+                            clearInterval(checkElement3Exist);
+                            console.log('等待元素3超时');
+                        }
+                    }
+                }, checkInterval);
+            }
+
+            function waitForElement5() {
+                console.log('第三步：等待元素5并点击');
+
+                var element5Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[4]/div/div/div/div[2]/div[2]/button';
+                var maxChecks = 60;
+                var checks = 0;
+                var checkInterval = 500;
+
+                var checkElement5Exist = setInterval(function() {
+                    var element5 = document.evaluate(element5Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (element5) {
+                        clearInterval(checkElement5Exist);
+                        element5.click();
+                        console.log('已点击元素5');
+
+                        // 继续等待元素4
+                        waitForElement4();
+                    } else {
+                        checks++;
+                        if (checks >= maxChecks) {
+                            clearInterval(checkElement5Exist);
+                            console.log('等待元素5超时');
+                        }
+                    }
+                }, checkInterval);
+            }
+
+            function waitForElement4() {
+                console.log('第三步：等待元素4');
+
+                var element4Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[5]/div/div/div[4]/button';
+                var maxChecks = 60;
+                var checks = 0;
+                var checkInterval = 500;
+
+                var checkElement4Exist = setInterval(function() {
+                    var element4 = document.evaluate(element4Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (element4) {
+                        clearInterval(checkElement4Exist);
+                        console.log('元素4已出现，随机等待10-13秒后点击');
+
+                        var delay = Math.random() * 3000 + 10000; // 5000ms到7000ms之间
+                        setTimeout(function() {
+                            element4.click();
+                            console.log('已点击元素4');
+                            console.log('脚本执行完毕');
+                        }, delay);
+                    } else {
+                        checks++;
+                        if (checks >= maxChecks) {
+                            clearInterval(checkElement4Exist);
+                            console.log('等待元素4超时');
+                        }
+                    }
+                }, checkInterval);
+            }
 
         }, initialDelay);
     });
 })();
+
