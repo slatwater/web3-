@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.0.8
+// @version      2.0.9
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -14,6 +14,7 @@
 // @match        https://*.breadnbutter.fun/*
 // @match        https://www.communitygaming.io/quests
 // @match        https://pentagon.games/airdrop/ascended
+// @match        https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @grant        none
@@ -160,6 +161,9 @@
             } else if (currentURL.includes('pentagon.games/airdrop/ascended')) {
                 // 执行脚本10的功能
                 await executeScript10();
+            } else if (currentURL.includes('www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd')) {
+                // 执行脚本11的功能
+                await executeScript11();             
             } else {
                 log("当前页面不在脚本的处理范围内。");
             }
@@ -1580,6 +1584,216 @@
             await mainPentagon();
         } catch (error) {
             log(`❌ 执行脚本时发生错误: ${error.message}`);
+        }
+        log("Pentagon 脚本执行完毕，准备跳转至 HoloWorldAI 页面。");
+        await randomDelay(2000, 4000);
+        window.location.href = 'https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd';
+
+    }
+    // 脚本11：HoloWorldAI 自动化操作
+    async function executeScript11() {
+        log("执行 HoloWorldAI 自动化脚本。");
+    
+        // 随机延迟2-5秒后开始执行脚本
+        var initialDelay = Math.random() * 3000 + 2000; // 2000ms到5000ms之间
+        log('页面加载完成，等待 ' + (initialDelay / 1000).toFixed(2) + ' 秒开始执行脚本');
+    
+        await new Promise(resolve => setTimeout(resolve, initialDelay));
+    
+        log('开始监测区域1是否存在');
+    
+        var region1Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[2]/div[2]/div/div[3]/div[1]';
+        var maxChecks = 60; // 最大检查次数（相当于30秒）
+        var checks = 0;
+        var checkInterval = 500; // 每500ms检查一次
+    
+        // 使用 while 循环和 await 来替代 setInterval
+        while (checks < maxChecks) {
+            var region1 = document.evaluate(region1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            if (region1) {
+                log('区域1已加载');
+                // 开始执行第一步
+                await stepOne(region1);
+                break;
+            } else {
+                await new Promise(resolve => setTimeout(resolve, checkInterval));
+                checks++;
+                if (checks >= maxChecks) {
+                    log('等待区域1超时');
+                }
+            }
+        }
+    
+        // 定义第一步
+        async function stepOne(region1) {
+            log('第一步：开始随机点击两个按钮');
+    
+            // 在区域1中获取所有按钮
+            var buttons = region1.getElementsByTagName('button');
+            var buttonsArray = Array.prototype.slice.call(buttons);
+    
+            if (buttonsArray.length < 2) {
+                log('按钮数量不足两个，无法执行操作');
+                return;
+            }
+    
+            // 随机打乱按钮数组
+            buttonsArray.sort(() => Math.random() - 0.5);
+    
+            var button1 = buttonsArray[0];
+            var button2 = buttonsArray[1];
+    
+            // 点击第一个按钮
+            button1.click();
+            log('已点击第一个随机按钮');
+    
+            // 等待12秒后点击第二个按钮
+            await new Promise(resolve => setTimeout(resolve, 12000));
+            button2.click();
+            log('已点击第二个随机按钮');
+    
+            // 等待7秒后执行第二步
+            await new Promise(resolve => setTimeout(resolve, 7000));
+            await stepTwo();
+        }
+    
+        // 定义第二步
+        async function stepTwo() {
+            log('第二步：等待元素1并点击');
+    
+            var element1Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[1]/div[3]/div[2]/div[1]/button/img';
+            var maxChecks = 60; // 最大检查次数（相当于30秒）
+            var checks = 0;
+            var checkInterval = 500; // 每500ms检查一次
+    
+            while (checks < maxChecks) {
+                var element1 = document.evaluate(element1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element1) {
+                    element1.click();
+                    log('已点击元素1');
+    
+                    // 继续等待元素2并点击
+                    await waitForElement2();
+                    break;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    checks++;
+                    if (checks >= maxChecks) {
+                        log('等待元素1超时');
+                    }
+                }
+            }
+        }
+    
+        async function waitForElement2() {
+            log('第二步：等待元素2并点击');
+    
+            var element2Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[2]/div[2]';
+            var maxChecks = 60;
+            var checks = 0;
+            var checkInterval = 500;
+    
+            while (checks < maxChecks) {
+                var element2 = document.evaluate(element2Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element2) {
+                    element2.click();
+                    log('已点击元素2');
+    
+                    // 进入第三步
+                    await stepThree();
+                    break;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    checks++;
+                    if (checks >= maxChecks) {
+                        log('等待元素2超时');
+                    }
+                }
+            }
+        }
+    
+        // 定义第三步
+        async function stepThree() {
+            log('第三步：等待元素3并点击');
+    
+            var element3Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[2]/div[1]/button';
+            var maxChecks = 60;
+            var checks = 0;
+            var checkInterval = 500;
+    
+            while (checks < maxChecks) {
+                var element3 = document.evaluate(element3Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element3) {
+                    element3.click();
+                    log('已点击元素3');
+    
+                    // 开始监测元素5
+                    await waitForElement5();
+                    break;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    checks++;
+                    if (checks >= maxChecks) {
+                        log('等待元素3超时');
+                    }
+                }
+            }
+        }
+    
+        async function waitForElement5() {
+            log('第三步：等待元素5并点击');
+    
+            var element5Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[4]/div/div/div/div[2]/div[2]/button';
+            var maxChecks = 60;
+            var checks = 0;
+            var checkInterval = 500;
+    
+            while (checks < maxChecks) {
+                var element5 = document.evaluate(element5Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element5) {
+                    element5.click();
+                    log('已点击元素5');
+    
+                    // 继续等待元素4
+                    await waitForElement4();
+                    break;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    checks++;
+                    if (checks >= maxChecks) {
+                        log('等待元素5超时');
+                    }
+                }
+            }
+        }
+    
+        async function waitForElement4() {
+            log('第三步：等待元素4');
+    
+            var element4Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[5]/div/div/div[4]/button';
+            var maxChecks = 60;
+            var checks = 0;
+            var checkInterval = 500;
+    
+            while (checks < maxChecks) {
+                var element4 = document.evaluate(element4Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element4) {
+                    log('元素4已出现，随机等待10-13秒后点击');
+    
+                    var delay = Math.random() * 3000 + 10000; // 10000ms到13000ms之间
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    element4.click();
+                    log('已点击元素4');
+                    log('HoloWorldAI 脚本执行完毕，脚本结束。');
+                    break;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    checks++;
+                    if (checks >= maxChecks) {
+                        log('等待元素4超时');
+                    }
+                }
+            }
         }
     }
 
