@@ -1,0 +1,170 @@
+// ==UserScript==
+// @name         HoloWorldAI 自动化脚本
+// @namespace    http://tampermonkey.net/
+// @version      1.2
+// @description  自动执行指定操作的脚本
+// @author
+// @match        https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 等待页面完全加载
+    window.addEventListener('load', function() {
+        // 随机延迟2-5秒后开始执行脚本
+        var initialDelay = Math.random() * 3000 + 4000; // 2000ms到5000ms之间
+        console.log('页面加载完成，等待 ' + (initialDelay / 1000).toFixed(2) + ' 秒开始执行脚本');
+
+        setTimeout(function() {
+            // 获取区域1
+            var region1Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[2]/div[2]/div/div[3]/div[1]';
+            var region1 = document.evaluate(region1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+            if (!region1) {
+                console.log('区域1未找到');
+                return;
+            }
+
+            // 在区域1中获取所有按钮
+            var buttons = region1.getElementsByTagName('button');
+            var buttonsArray = Array.prototype.slice.call(buttons);
+
+            // 定义第一步
+            function stepOne() {
+                console.log('第一步：开始随机点击两个按钮');
+
+                if (buttonsArray.length < 2) {
+                    console.log('按钮数量不足两个，无法执行操作');
+                    return;
+                }
+
+                // 随机打乱按钮数组
+                buttonsArray.sort(() => Math.random() - 0.5);
+
+                var button1 = buttonsArray[0];
+                var button2 = buttonsArray[1];
+
+                // 点击第一个按钮
+                button1.click();
+                console.log('已点击第一个随机按钮');
+
+                // 等待7秒后点击第二个按钮
+                setTimeout(function() {
+                    button2.click();
+                    console.log('已点击第二个随机按钮');
+
+                    // 等待5秒后执行第二步
+                    setTimeout(stepTwo, 7000);
+                }, 7000);
+            }
+
+            // 定义第二步
+            function stepTwo() {
+                console.log('第二步：点击元素1和元素2');
+
+                var element1Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[1]/div[3]/div[2]/div[1]/button/img';
+                var element1 = document.evaluate(element1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                if (!element1) {
+                    console.log('元素1未找到');
+                    return;
+                }
+
+                element1.click();
+                console.log('已点击元素1');
+
+                // 等待3秒后点击元素2
+                setTimeout(function() {
+                    var element2Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[2]/div[2]';
+                    var element2 = document.evaluate(element2Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                    if (!element2) {
+                        console.log('元素2未找到');
+                        return;
+                    }
+
+                    element2.click();
+                    console.log('已点击元素2');
+
+                    // 等待2秒后执行第三步
+                    setTimeout(stepThree, 5000);
+                }, 3000);
+            }
+
+            // 定义第三步
+            function stepThree() {
+                console.log('第三步：点击元素3并等待小窗口1出现');
+
+                var element3Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[2]/div[1]/button';
+                var element3 = document.evaluate(element3Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                if (!element3) {
+                    console.log('元素3未找到');
+                    return;
+                }
+
+                element3.click();
+                console.log('已点击元素3');
+
+                // 轮询检查小窗口1是否出现
+                var checkInterval = 1000; // 每1000ms检查一次
+                var maxChecks = 30; // 最多检查30次（30秒）
+                var checks = 0;
+
+                var checkExist = setInterval(function() {
+                    var xiaokuan1Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[4]/div/div/div/div[2]';
+                    var xiaokuan1 = document.evaluate(xiaokuan1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                    if (xiaokuan1) {
+                        clearInterval(checkExist);
+                        console.log('小窗口1已出现');
+
+                        // 等待3-5秒后点击元素5
+                        var delay = Math.random() * 2000 + 4000; // 3000ms到5000ms之间
+                        console.log('等待 ' + (delay / 1000).toFixed(2) + ' 秒后点击元素5');
+
+                        setTimeout(function() {
+                            var element5Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[4]/div/div/div/div[2]/div[2]/button';
+                            var element5 = document.evaluate(element5Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                            if (!element5) {
+                                console.log('元素5未找到');
+                                return;
+                            }
+
+                            element5.click();
+                            console.log('已点击元素5');
+
+                            // 等待5秒后点击元素4
+                            setTimeout(function() {
+                                var element4Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[5]/div/div/div[4]/button';
+                                var element4 = document.evaluate(element4Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                                if (!element4) {
+                                    console.log('元素4未找到');
+                                    return;
+                                }
+
+                                element4.click();
+                                console.log('已点击元素4');
+                                console.log('脚本执行完毕');
+                            }, 7000);
+                        }, delay);
+                    } else {
+                        checks++;
+                        if (checks >= maxChecks) {
+                            clearInterval(checkExist);
+                            console.log('等待小窗口1超时');
+                        }
+                    }
+                }, checkInterval);
+            }
+
+            // 开始执行第一步
+            stepOne();
+
+        }, initialDelay);
+    });
+})();
