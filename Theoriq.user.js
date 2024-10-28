@@ -6,6 +6,8 @@
 // @author
 // @match        https://infinity.theoriq.ai/studio/chat
 // @grant        none
+// @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/Theoriq.user.js
+// @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/Theoriq.user.js
 // ==/UserScript==
 
 (function() {
