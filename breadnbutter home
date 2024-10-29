@@ -1,0 +1,112 @@
+// ==UserScript==
+// @name         自动点击元素脚本
+// @namespace    http://tampermonkey.net/
+// @version      1.1
+// @description  自动点击指定元素的脚本，添加了小窗口监测功能
+// @author       
+// @match        https://m.breadnbutter.fun/home
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 等待页面完全加载
+    window.addEventListener('load', function() {
+        // 随机延迟5-10秒后开始执行脚本
+        let initialDelay = getRandomInt(5000, 10000);
+        console.log(`页面加载完成，等待 ${initialDelay / 1000} 秒后开始执行脚本`);
+        setTimeout(startScript, initialDelay);
+    });
+
+    let element1Count = 0;
+    let element2Count = 0;
+
+    function startScript() {
+        // 开始监测小窗口
+        monitorPopup();
+        // 开始执行第一步
+        stepOne();
+    }
+
+    // 监测并处理小窗口的函数
+    function monitorPopup() {
+        setInterval(() => {
+            let popup = document.evaluate('//*[@id="root"]/div/div/div/div/div[2]/div/div[2]/div', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            if (popup) {
+                let targetElement = document.evaluate('//*[@id="root"]/div/div/div/div/div[2]/div/div[2]/div/div[1]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (targetElement) {
+                    targetElement.click();
+                    console.log('检测到小窗口，已点击目标元素');
+                }
+            }
+        }, 1000); // 每秒检测一次
+    }
+
+    // 第一步：点击元素1
+    function stepOne() {
+        if (element1Count >= 50) {
+            console.log('已点击50个元素1，开始执行第二步');
+            stepTwo();
+            return;
+        }
+
+        let elements = Array.from(document.querySelectorAll('div.css-146c3p1.r-lrvibr'))
+            .filter(el => el.textContent.trim() === '' && isInViewport(el) && !el.dataset.clicked);
+
+        if (elements.length === 0) {
+            // 向下滚动页面
+            window.scrollBy(0, window.innerHeight);
+            console.log('未找到未点击的元素1，向下滚动页面');
+            setTimeout(stepOne, 1000); // 等待1秒后继续
+        } else {
+            let el = elements[0];
+            el.click();
+            el.dataset.clicked = 'true';
+            element1Count++;
+            console.log(`已点击第 ${element1Count} 个元素1`);
+            // 随机延迟2-3秒
+            let delay = getRandomInt(2000, 3000);
+            setTimeout(stepOne, delay);
+        }
+    }
+
+    // 第二步：点击元素2
+    function stepTwo() {
+        if (element2Count >= 20) {
+            console.log('已点击20个元素2，脚本结束');
+            return;
+        }
+
+        let buttons = Array.from(document.querySelectorAll('button'))
+            .filter(btn => btn.textContent.trim().toLowerCase() === 'follow' && isInViewport(btn) && !btn.dataset.clicked);
+
+        if (buttons.length === 0) {
+            // 向下滚动页面
+            window.scrollBy(0, window.innerHeight);
+            console.log('未找到未点击的元素2，向下滚动页面');
+            setTimeout(stepTwo, 1000); // 等待1秒后继续
+        } else {
+            let btn = buttons[0];
+            btn.click();
+            btn.dataset.clicked = 'true';
+            element2Count++;
+            console.log(`已点击第 ${element2Count} 个元素2`);
+            // 随机延迟6-8秒
+            let delay = getRandomInt(6000, 8000);
+            setTimeout(stepTwo, delay);
+        }
+    }
+
+    // 检查元素是否在视窗内
+    function isInViewport(el) {
+        let rect = el.getBoundingClientRect();
+        return rect.top >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight);
+    }
+
+    // 获取随机整数
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+})();
