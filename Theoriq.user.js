@@ -155,7 +155,7 @@
                 "Could you describe the type of discussions and support available on this agent’s community platforms, such as Discord or X?"
             ];
 
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 15; i++) {
                 // 等待输入框可用
                 let inputBox = await waitForSelector(inputBoxSelector);
                 while (inputBox.disabled || inputBox.readOnly) {
