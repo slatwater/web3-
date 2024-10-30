@@ -20,7 +20,7 @@
         setTimeout(function() {
             console.log('开始监测区域1是否存在');
 
-            var region1Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[2]/div[2]/div/div[3]/div[1]';
+            var region1Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[2]/div[2]/div/div[3]/div[1]';
             var maxChecks = 60; // 最大检查次数（相当于30秒）
             var checks = 0;
             var checkInterval = 500; // 每500ms检查一次
@@ -79,7 +79,7 @@
             function stepTwo() {
                 console.log('第二步：等待元素1并点击');
 
-                var element1Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[1]/div[3]/div[2]/div[1]/button/img';
+                var element1Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[1]/div[3]/div[2]/div[1]/button/img';
                 var maxChecks = 60; // 最大检查次数（相当于30秒）
                 var checks = 0;
                 var checkInterval = 500; // 每500ms检查一次
@@ -106,7 +106,7 @@
             function waitForElement2() {
                 console.log('第二步：等待元素2并点击');
 
-                var element2Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[2]/div[2]';
+                var element2Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[6]/div[2]/div/div[2]/div[2]';
                 var maxChecks = 60;
                 var checks = 0;
                 var checkInterval = 500;
@@ -134,7 +134,7 @@
             function stepThree() {
                 console.log('第三步：等待元素3并点击');
 
-                var element3Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[2]/div[1]/button';
+                var element3Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[6]/div[2]/div/div[3]/div/div[2]/div[1]/button';
                 var maxChecks = 60;
                 var checks = 0;
                 var checkInterval = 500;
@@ -161,7 +161,7 @@
             function waitForElement5() {
                 console.log('第三步：等待元素5并点击');
 
-                var element5Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[4]/div/div/div/div[2]/div[2]/button';
+                var element5Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[6]/div[2]/div/div[3]/div/div[4]/div/div/div/div[2]/div[2]/button';
                 var maxChecks = 60;
                 var checks = 0;
                 var checkInterval = 500;
@@ -188,7 +188,7 @@
             function waitForElement4() {
                 console.log('第三步：等待元素4');
 
-                var element4Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[5]/div/div/div[4]/button';
+                var element4Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[6]/div[2]/div/div[3]/div/div[5]/div/div/div[4]/button';
                 var maxChecks = 60;
                 var checks = 0;
                 var checkInterval = 500;
