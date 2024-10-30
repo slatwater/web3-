@@ -45,7 +45,7 @@
 
     // 第一步：点击元素1
     function stepOne() {
-        if (element1Count >= 50) {
+        if (element1Count >= 60) {
             console.log('已点击50个元素1，开始执行第二步');
             stepTwo();
             return;
@@ -73,7 +73,7 @@
 
     // 第二步：点击元素2
     function stepTwo() {
-        if (element2Count >= 20) {
+        if (element2Count >= 25) {
             console.log('已点击20个元素2，脚本结束');
             return;
         }
