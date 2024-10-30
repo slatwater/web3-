@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Infinity Theoriq AI 自动化脚本
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.5
 // @description  在 Infinity Theoriq AI 网站上自动执行特定任务
 // @author
 // @match        https://infinity.theoriq.ai/studio/chat
@@ -122,8 +122,7 @@
             // 随机点击元素2、3或4
             const elementsOptions = [
                 '/html/body/div[2]/div/section/div[3]/div/div[1]',
-                '/html/body/div[2]/div/section/div[3]/div/div[2]',
-                '/html/body/div[2]/div/section/div[3]/div/div[5]'
+                '/html/body/div[2]/div/section/div[3]/div/div[2]'
             ];
             const randomElementXPath = elementsOptions[Math.floor(Math.random() * elementsOptions.length)];
             const randomElement = await waitForXPath(randomElementXPath);
