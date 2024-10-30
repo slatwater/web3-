@@ -4,6 +4,8 @@
 // @version      1.3
 // @description  自动点击MintChain页面上的动态按钮（移除第二个元素点击功能）
 // @match        *://www.mintchain.io/mint-forest*
+// @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/Mint%E7%82%B9%E5%87%BB.user.js
+// @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/Mint%E7%82%B9%E5%87%BB.user.js
 // @grant        none
 // @run-at       document-idle
 // ==/UserScript==
