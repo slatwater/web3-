@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动点击元素脚本
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  自动点击指定元素的脚本，添加了小窗口监测功能
 // @author       
 // @match        https://m.breadnbutter.fun/home
@@ -45,7 +45,7 @@
 
     // 第一步：点击元素1
     function stepOne() {
-        if (element1Count >= 60) {
+        if (element1Count >= 65) {
             console.log('已点击50个元素1，开始执行第二步');
             stepTwo();
             return;
