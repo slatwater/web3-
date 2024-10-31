@@ -1,0 +1,164 @@
+// ==UserScript==
+// @name         Reiki Taskboard Automation Script
+// @namespace    http://tampermonkey.net/
+// @version      1.4
+// @description  自动完成Reiki任务板上的指定操作
+// @match        https://reiki.web3go.xyz/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 等待页面完全加载
+    window.addEventListener('load', function() {
+        // 随机延迟5-10秒后开始执行脚本
+        let initialDelay = getRandomInt(5000, 10000);
+        console.log(`页面加载完成，等待 ${initialDelay / 1000} 秒后开始执行脚本`);
+        setTimeout(startScript, initialDelay);
+    });
+
+    function startScript() {
+        stepOne();
+    }
+
+    function stepOne() {
+        console.log('执行第一步：检查元素1是否存在');
+        waitForElement('/html/body/div[1]/div/div[1]/div/div/div[1]/div[2]/div[5]/div', 3, function(element1) {
+            if (element1) {
+                console.log('元素1存在，点击元素1');
+                element1.click();
+                // 随机延迟2-3秒后点击元素2
+                let delay = getRandomInt(2000, 3000);
+                setTimeout(function() {
+                    waitForElementByText('div.style_connectWalletLabel__xAI78', 'Log in with Google', 30, function(element2) {
+                        if (element2) {
+                            console.log('点击元素2');
+                            element2.click();
+                            stepTwo();
+                        } else {
+                            console.log('未找到元素2，继续进入第二步');
+                            stepTwo();
+                        }
+                    });
+                }, delay);
+            } else {
+                console.log('元素1不存在，直接进入第二步');
+                stepTwo();
+            }
+        });
+    }
+
+    function stepTwo() {
+        console.log('执行第二步：点击元素3并重复点击元素4');
+        loopClickElements();
+    }
+
+    function loopClickElements() {
+        // 检查是否出现了目标元素
+        let collectedElement = document.querySelector('a.CheckInComponent_style_collectBtn__ZYOOg');
+        if (collectedElement && collectedElement.textContent.trim() === 'Collected') {
+            console.log('已检测到元素 "Collected"，脚本结束');
+            return;
+        }
+
+        // 尝试使用第一个XPath查找元素3
+        waitForElement('//*[@id="root"]/div/header/nav/div/ul/li[2]/img', 3, function(element3) {
+            if (!element3) {
+                // 如果未找到，尝试第二个XPath
+                console.log('未找到元素3，尝试使用备用XPath');
+                waitForElement('/html/body/div[1]/div/div[1]/div/div/div[1]/div[2]/img[2]', 3, function(element3Alt) {
+                    if (element3Alt) {
+                        element3 = element3Alt;
+                        proceedWithElement3(element3);
+                    } else {
+                        console.log('仍未找到元素3，等待1秒后重试');
+                        setTimeout(loopClickElements, 1000);
+                    }
+                });
+            } else {
+                proceedWithElement3(element3);
+            }
+        });
+    }
+
+    function proceedWithElement3(element3) {
+        console.log('点击元素3');
+        element3.click();
+        // 随机延迟2-3秒后点击元素4三次
+        let delay = getRandomInt(2000, 3000);
+        setTimeout(function() {
+            clickElement4(3, function() {
+                // 随机延迟2-3秒后再次循环
+                let loopDelay = getRandomInt(2000, 3000);
+                setTimeout(loopClickElements, loopDelay);
+            });
+        }, delay);
+    }
+
+    function clickElement4(times, callback) {
+        if (times <= 0) {
+            callback();
+            return;
+        }
+        waitForElement('//*[@id="root"]/div/main/div[2]/div[2]/div/div[2]/div[2]/div[1]/div/div/a', 30, function(element4) {
+            if (element4) {
+                console.log(`点击元素4，剩余次数：${times}`);
+                element4.click();
+                // 随机延迟2-3秒后继续点击
+                let delay = getRandomInt(2000, 3000);
+                setTimeout(function() {
+                    clickElement4(times - 1, callback);
+                }, delay);
+            } else {
+                console.log('未找到元素4，等待1秒后重试');
+                setTimeout(function() {
+                    clickElement4(times, callback);
+                }, 1000);
+            }
+        });
+    }
+
+    // 等待XPath元素出现，增加了最大尝试次数参数
+    function waitForElement(xpath, maxAttempts, callback) {
+        let attempts = 0;
+        let interval = setInterval(function() {
+            let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            if (element) {
+                clearInterval(interval);
+                callback(element);
+            } else {
+                attempts++;
+                if (attempts >= maxAttempts) {
+                    clearInterval(interval);
+                    callback(null);
+                }
+            }
+        }, 1000);
+    }
+
+    // 根据类名和文本内容等待元素出现
+    function waitForElementByText(className, textContent, maxAttempts, callback) {
+        let attempts = 0;
+        let interval = setInterval(function() {
+            let elements = document.querySelectorAll(className);
+            let element = Array.from(elements).find(el => el.textContent.trim() === textContent);
+            if (element) {
+                clearInterval(interval);
+                callback(element);
+            } else {
+                attempts++;
+                if (attempts >= maxAttempts) {
+                    clearInterval(interval);
+                    callback(null);
+                }
+            }
+        }, 1000);
+    }
+
+    // 获取随机整数（毫秒）
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+})();
