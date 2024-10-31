@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reiki Taskboard Automation Script
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @description  自动完成Reiki任务板上的指定操作
 // @match        https://reiki.web3go.xyz/*
 // @grant        none
@@ -13,7 +13,7 @@
     // 等待页面完全加载
     window.addEventListener('load', function() {
         // 随机延迟5-10秒后开始执行脚本
-        let initialDelay = getRandomInt(5000, 10000);
+        let initialDelay = getRandomInt(2000, 3000);
         console.log(`页面加载完成，等待 ${initialDelay / 1000} 秒后开始执行脚本`);
         setTimeout(startScript, initialDelay);
     });
@@ -28,8 +28,8 @@
             if (element1) {
                 console.log('元素1存在，点击元素1');
                 element1.click();
-                // 随机延迟2-3秒后点击元素2
-                let delay = getRandomInt(2000, 3000);
+                // 随机延迟1-2秒后点击元素2
+                let delay = getRandomInt(1000, 2000);
                 setTimeout(function() {
                     waitForElementByText('div.style_connectWalletLabel__xAI78', 'Log in with Google', 30, function(element2) {
                         if (element2) {
@@ -50,71 +50,57 @@
     }
 
     function stepTwo() {
-        console.log('执行第二步：点击元素3并重复点击元素4');
-        loopClickElements();
+        console.log('执行第二步：监测并点击元素4或元素3');
+        loopCheckElements();
     }
 
-    function loopClickElements() {
-        // 检查是否出现了目标元素
+    function loopCheckElements() {
+        // 检查是否出现了目标元素 "Collected"
         let collectedElement = document.querySelector('a.CheckInComponent_style_collectBtn__ZYOOg');
         if (collectedElement && collectedElement.textContent.trim() === 'Collected') {
             console.log('已检测到元素 "Collected"，脚本结束');
             return;
         }
 
-        // 尝试使用第一个XPath查找元素3
-        waitForElement('//*[@id="root"]/div/header/nav/div/ul/li[2]/img', 3, function(element3) {
-            if (!element3) {
-                // 如果未找到，尝试第二个XPath
-                console.log('未找到元素3，尝试使用备用XPath');
-                waitForElement('/html/body/div[1]/div/div[1]/div/div/div[1]/div[2]/img[2]', 3, function(element3Alt) {
-                    if (element3Alt) {
-                        element3 = element3Alt;
-                        proceedWithElement3(element3);
-                    } else {
-                        console.log('仍未找到元素3，等待1秒后重试');
-                        setTimeout(loopClickElements, 1000);
-                    }
-                });
+        // 检查元素4是否存在
+        waitForElement('//*[@id="root"]/div/main/div[2]/div[2]/div/div[2]/div[2]/div[1]/div/div/a', 1, function(element4) {
+            if (element4) {
+                console.log('元素4存在，点击元素4');
+                element4.click();
+                // 随机延迟2-3秒后再次检查
+                let delay = getRandomInt(2000, 3000);
+                setTimeout(loopCheckElements, delay);
             } else {
-                proceedWithElement3(element3);
+                console.log('元素4不存在，点击元素3');
+                clickElement3(function() {
+                    // 随机延迟2-3秒后再次循环
+                    let delay = getRandomInt(2000, 3000);
+                    setTimeout(loopCheckElements, delay);
+                });
             }
         });
     }
 
-    function proceedWithElement3(element3) {
-        console.log('点击元素3');
-        element3.click();
-        // 随机延迟2-3秒后点击元素4三次
-        let delay = getRandomInt(2000, 3000);
-        setTimeout(function() {
-            clickElement4(3, function() {
-                // 随机延迟2-3秒后再次循环
-                let loopDelay = getRandomInt(2000, 3000);
-                setTimeout(loopClickElements, loopDelay);
-            });
-        }, delay);
-    }
-
-    function clickElement4(times, callback) {
-        if (times <= 0) {
-            callback();
-            return;
-        }
-        waitForElement('//*[@id="root"]/div/main/div[2]/div[2]/div/div[2]/div[2]/div[1]/div/div/a', 30, function(element4) {
-            if (element4) {
-                console.log(`点击元素4，剩余次数：${times}`);
-                element4.click();
-                // 随机延迟2-3秒后继续点击
-                let delay = getRandomInt(2000, 3000);
-                setTimeout(function() {
-                    clickElement4(times - 1, callback);
-                }, delay);
+    function clickElement3(callback) {
+        // 尝试使用第一个XPath查找元素3
+        waitForElement('//*[@id="root"]/div/header/nav/div/ul/li[2]/img', 3, function(element3) {
+            if (element3) {
+                console.log('点击元素3');
+                element3.click();
+                callback();
             } else {
-                console.log('未找到元素4，等待1秒后重试');
-                setTimeout(function() {
-                    clickElement4(times, callback);
-                }, 1000);
+                // 如果未找到，尝试第二个XPath
+                console.log('未找到元素3，尝试使用备用XPath');
+                waitForElement('/html/body/div[1]/div/div[1]/div/div/div[1]/div[2]/img[2]', 3, function(element3Alt) {
+                    if (element3Alt) {
+                        console.log('点击备用元素3');
+                        element3Alt.click();
+                        callback();
+                    } else {
+                        console.log('仍未找到元素3，等待1秒后重试');
+                        setTimeout(callback, 1000);
+                    }
+                });
             }
         });
     }
@@ -138,10 +124,10 @@
     }
 
     // 根据类名和文本内容等待元素出现
-    function waitForElementByText(className, textContent, maxAttempts, callback) {
+    function waitForElementByText(selector, textContent, maxAttempts, callback) {
         let attempts = 0;
         let interval = setInterval(function() {
-            let elements = document.querySelectorAll(className);
+            let elements = document.querySelectorAll(selector);
             let element = Array.from(elements).find(el => el.textContent.trim() === textContent);
             if (element) {
                 clearInterval(interval);
