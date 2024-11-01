@@ -130,7 +130,7 @@
                 const addressInput = await waitForElement('input[data-testid="recipient-input"]', 10000);
                 if (addressInput) {
                     console.log('Input field for address found');
-                    const address = 'xion1qez8aqn45l5znqp49pu3esj9fs8pul023033mahkze8jstz2e0zsyxaenl';
+                    const address = 'xion1xuzjdjrczr9kch4gm9puvrq6upavxlw4g0m9sufnajftuzz3pq6sa70sep';
                     console.log('Address inputted:', address);
                     setNativeValue(addressInput, address);
                 } else {
