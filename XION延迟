@@ -1,0 +1,206 @@
+// ==UserScript==
+// @name         Burnt Dashboard Automation with Looping (Updated)
+// @namespace    http://tampermonkey.net/
+// @version      2.6
+// @description  Automates actions on the Burnt Dashboard testnet site with updated selectors and improved loading handling
+// @author
+// @match        https://testnet.dashboard.burnt.com/*
+// @grant        none
+// ==/UserScript==
+
+(async function() {
+    'use strict';
+
+    // 循环次数
+    const LOOP_COUNT = 50;
+
+    // 延迟函数
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // 获取随机延迟时间（毫秒）
+    function getRandomDelay(min = 1000, max = 2000) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // 等待元素出现的函数，返回 Promise
+    function waitForElement(selector, timeout = 30000) {
+        return new Promise((resolve, reject) => {
+            const isXPath = selector.startsWith('/') || selector.startsWith('(') || selector.startsWith('.//');
+            const getElement = () => {
+                if (isXPath) {
+                    return document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                } else {
+                    return document.querySelector(selector);
+                }
+            };
+
+            let element = getElement();
+            if (element) {
+                console.log('Element found:', selector);
+                return resolve(element);
+            }
+
+            const observer = new MutationObserver((mutations, me) => {
+                element = getElement();
+                if (element) {
+                    console.log('Element found:', selector);
+                    me.disconnect();
+                    resolve(element);
+                }
+            });
+
+            observer.observe(document, {
+                childList: true,
+                subtree: true
+            });
+
+            setTimeout(() => {
+                observer.disconnect();
+                reject(new Error(`Timeout waiting for element: ${selector}`));
+            }, timeout);
+        });
+    }
+
+    // 使用原生的 value setter 来正确地设置输入框的值
+    function setNativeValue(element, value) {
+        const valueSetter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(element), 'value').set;
+        valueSetter.call(element, value);
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    // 主函数
+    async function main() {
+        // 确保文档已加载完成
+        if (document.readyState !== 'complete') {
+            console.log('Document not ready, waiting...');
+            await new Promise(resolve => window.addEventListener('load', resolve));
+            console.log('Document loaded.');
+        }
+
+        // 增加页面加载后延迟5-6秒的功能
+        const initialDelay = Math.floor(Math.random() * (6000 - 5000 + 1)) + 5000; // 随机延迟5-6秒
+        console.log(`Waiting for ${initialDelay} milliseconds before starting the script.`);
+        await delay(initialDelay);
+
+        // 等待页面主要内容加载完成
+        try {
+            await waitForElement('//*[@id="root"]', 30000);
+            console.log('Main content loaded.');
+        } catch (e) {
+            console.error('Main content did not load in time:', e);
+            return;
+        }
+
+        for (let i = 0; i < LOOP_COUNT; i++) {
+            console.log(`Starting iteration ${i + 1} of ${LOOP_COUNT}`);
+            try {
+                // 步骤1：点击第一个按钮
+                const firstButton = await waitForElement('//*[@id="root"]/div/div[2]/div[2]/div/div/div[1]/div[1]/div[2]/div/button[2]/div', 10000);
+                if (firstButton) {
+                    console.log('Clicking the first button');
+                    firstButton.click();
+                } else {
+                    console.error('First button not found.');
+                    continue;
+                }
+
+                // 在点击后增加随机延迟
+                await delay(getRandomDelay());
+
+                // 步骤2：输入随机数
+                const amountInput = await waitForElement('input[placeholder="0"]', 10000);
+                if (amountInput) {
+                    console.log('Input field for random number found');
+                    const min = 0.00012;
+                    const max = 0.00111;
+                    const randomNum = (Math.random() * (max - min) + min).toFixed(5);
+                    console.log('Random number generated:', randomNum);
+                    setNativeValue(amountInput, randomNum);
+                } else {
+                    console.error('Amount input field not found.');
+                    continue;
+                }
+
+                // 在输入后增加随机延迟
+                await delay(getRandomDelay());
+
+                // 步骤3：输入地址
+                const addressInput = await waitForElement('input[data-testid="recipient-input"]', 10000);
+                if (addressInput) {
+                    console.log('Input field for address found');
+                    const address = 'xion1qez8aqn45l5znqp49pu3esj9fs8pul023033mahkze8jstz2e0zsyxaenl';
+                    console.log('Address inputted:', address);
+                    setNativeValue(addressInput, address);
+                } else {
+                    console.error('Address input field not found.');
+                    continue;
+                }
+
+                // 在输入后增加随机延迟
+                await delay(getRandomDelay());
+
+                // 步骤4：点击“REVIEW”按钮
+                const reviewButton = await waitForElement("//button[contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'REVIEW')]", 10000);
+                if (reviewButton) {
+                    console.log('Clicking the REVIEW button');
+                    reviewButton.click();
+                } else {
+                    console.error('REVIEW button not found.');
+                    continue;
+                }
+
+                // 在点击后增加随机延迟
+                await delay(getRandomDelay());
+
+                // 步骤5：点击“CONFIRM”按钮
+                const confirmButton = await waitForElement("//button[contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'CONFIRM')]", 10000);
+                if (confirmButton) {
+                    console.log('Clicking the CONFIRM button');
+                    confirmButton.click();
+                } else {
+                    console.error('CONFIRM button not found.');
+                    continue;
+                }
+
+                // 在点击后增加随机延迟
+                await delay(getRandomDelay());
+
+                // 步骤6：点击“CONFIRM”、“GOTCHA”或“CLOSE”按钮
+                const finalButton = await waitForElement("//button[contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'CONFIRM') or contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'GOTCHA') or contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'CLOSE')]", 30000);
+                if (finalButton) {
+                    console.log('Clicking the final button');
+                    finalButton.click();
+                } else {
+                    console.error('Final button not found.');
+                    // 输出当前页面所有按钮的文本内容，帮助调试
+                    const allButtons = document.querySelectorAll('button');
+                    console.log('Available buttons on the page:');
+                    allButtons.forEach((btn, index) => {
+                        console.log(`Button ${index + 1}: "${btn.textContent.trim()}"`);
+                    });
+                    continue;
+                }
+
+                // 在点击后增加随机延迟
+                await delay(getRandomDelay());
+
+                console.log(`Iteration ${i + 1} completed`);
+
+                // 循环之间增加随机延迟
+                await delay(getRandomDelay(5000, 7000));
+
+            } catch (error) {
+                console.error(`An error occurred during iteration ${i + 1}:`, error);
+                // 如果发生错误，您可以选择是否继续循环
+                // break; // 如果想在出错时停止循环，可以取消注释这行
+            }
+        }
+        console.log('All iterations completed');
+    }
+
+    // 开始执行主函数
+    main();
+
+})();
