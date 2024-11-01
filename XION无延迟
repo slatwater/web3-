@@ -12,7 +12,7 @@
     'use strict';
 
     // 循环次数
-    const LOOP_COUNT = 150;
+    const LOOP_COUNT = 50;
 
     // 延迟函数
     function delay(ms) {
