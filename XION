@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Burnt Dashboard Automation with Looping (Updated)
 // @namespace    http://tampermonkey.net/
-// @version      2.4
+// @version      2.5
 // @description  Automates actions on the Burnt Dashboard testnet site with updated selectors and improved loading handling
 // @author
 // @match        https://testnet.dashboard.burnt.com/*
@@ -74,12 +74,12 @@
             console.log('Document loaded.');
         }
 
-        // **修改点1：增加页面加载后延迟5-6秒的功能**
+        // 增加页面加载后延迟5-6秒的功能
         const initialDelay = Math.floor(Math.random() * (6000 - 5000 + 1)) + 5000; // 随机延迟5-6秒
         console.log(`Waiting for ${initialDelay} milliseconds before starting the script.`);
         await delay(initialDelay);
 
-        // 等待页面主要内容加载完成（更新选择器）
+        // 等待页面主要内容加载完成
         try {
             await waitForElement('//*[@id="root"]', 30000);
             console.log('Main content loaded.');
@@ -91,7 +91,7 @@
         for (let i = 0; i < LOOP_COUNT; i++) {
             console.log(`Starting iteration ${i + 1} of ${LOOP_COUNT}`);
             try {
-                // 步骤1：点击第一个按钮（使用更新的 XPath）
+                // 步骤1：点击第一个按钮
                 const firstButton = await waitForElement('//*[@id="root"]/div/div[2]/div[2]/div/div/div[1]/div[1]/div[2]/div/button[2]/div', 10000);
                 if (firstButton) {
                     console.log('Clicking the first button');
@@ -103,7 +103,6 @@
 
                 await delay(1000);
 
-                // **修改点2：更新随机数输入框的选择器和输入方法**
                 // 步骤2：输入随机数
                 const amountInput = await waitForElement('input[placeholder="0"]', 10000);
                 if (amountInput) {
@@ -120,7 +119,6 @@
 
                 await delay(500);
 
-                // **修改点3：更新地址输入框的选择器**
                 // 步骤3：输入地址
                 const addressInput = await waitForElement('input[data-testid="recipient-input"]', 10000);
                 if (addressInput) {
@@ -136,7 +134,7 @@
                 await delay(500);
 
                 // 步骤4：点击“REVIEW”按钮
-                const reviewButton = await waitForElement("//button[contains(., 'REVIEW')]", 10000);
+                const reviewButton = await waitForElement("//button[contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'REVIEW')]", 10000);
                 if (reviewButton) {
                     console.log('Clicking the REVIEW button');
                     reviewButton.click();
@@ -148,7 +146,7 @@
                 await delay(2000);
 
                 // 步骤5：点击“CONFIRM”按钮
-                const confirmButton = await waitForElement("//button[contains(., 'CONFIRM')]", 10000);
+                const confirmButton = await waitForElement("//button[contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'CONFIRM')]", 10000);
                 if (confirmButton) {
                     console.log('Clicking the CONFIRM button');
                     confirmButton.click();
@@ -159,13 +157,20 @@
 
                 await delay(5000);
 
-                // 步骤6：点击“CONFIRM”、“GOTCHA”或“Close”按钮
-                const finalButton = await waitForElement("//button[contains(., 'CONFIRM') or contains(., 'GOTCHA') or contains(., 'Close')]", 30000);
+                // 步骤6：点击“CONFIRM”、“GOTCHA”或“CLOSE”按钮
+                // **更新 XPath 表达式，使用 translate 函数，忽略大小写**
+                const finalButton = await waitForElement("//button[contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'CONFIRM') or contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'GOTCHA') or contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'CLOSE')]", 30000);
                 if (finalButton) {
                     console.log('Clicking the final button');
                     finalButton.click();
                 } else {
                     console.error('Final button not found.');
+                    // 输出当前页面所有按钮的文本内容，帮助调试
+                    const allButtons = document.querySelectorAll('button');
+                    console.log('Available buttons on the page:');
+                    allButtons.forEach((btn, index) => {
+                        console.log(`Button ${index + 1}: "${btn.textContent.trim()}"`);
+                    });
                     continue;
                 }
 
