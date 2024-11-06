@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2
+// @version      2.1.3
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -961,91 +961,115 @@
         }
     }
     // 脚本8：BreadnButter 自动化操作
+    // 执行主函数
     async function executeScript8() {
         log("执行 BreadnButter 自动化脚本。");
-
+    
         // 定义元素的XPath
         const element1Xpath = '//*[@id="root"]/div/div/div/div/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/div[2]/button/div';
         const element2Xpath = '//*[@id="root"]/div/div/div/div/div[3]/div[1]/div[2]/div[3]/div/div';
-        const element3Xpath = '//*[@id="root"]/div/div[2]/div[1]/div[2]/div[1]/div/div/div/div[2]';
-        const element4Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[9]/div/div/div/div[2]';
-        const element5Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[8]/div/div/div/div[1]/div[2]/span';
-        const element6Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[8]/div/div/div/div[2]';
-
+    
         // 检查元素1是否存在
         try {
             const element1 = await waitForXPath(element1Xpath, 10000);
-
+    
             if (element1) {
                 log('元素1存在，开始点击元素1');
                 // 点击元素1
                 element1.click();
-
+    
                 // 设置随机延迟，然后等待元素2出现
                 const delay = Math.floor(Math.random() * 2000) + 1000;
                 log(`等待 ${delay} 毫秒后，等待元素2出现并点击`);
                 await randomDelay(delay, delay + 500); // 1-1.5秒
-
+    
                 try {
                     const element2 = await waitForXPath(element2Xpath, 10000);
                     log('元素2已出现，点击元素2');
                     element2.click();
-
+    
                     // 随机延迟后，进行第二步
                     const delayStep2 = Math.floor(Math.random() * 2000) + 1000;
                     log(`等待 ${delayStep2} 毫秒后，开始执行第二步`);
                     await randomDelay(delayStep2, delayStep2 + 500); // 1-1.5秒
-
-                    await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+    
+                    await secondStep();
                 } catch (error) {
                     log('元素2未出现，直接进行第二步');
-                    await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+                    await secondStep();
                 }
             } else {
                 log('元素1不存在，直接进行第二步');
-                await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+                await secondStep();
             }
         } catch (error) {
             log('元素1不存在，直接进行第二步');
-            await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+            await secondStep();
         }
-
-        // 不在这里执行重定向
     }
-
+    
     // 第二步函数
-    async function secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath) {
+    async function secondStep() {
         log('开始执行第二步');
+    
+        // 定义新的元素的XPath
+        const element1Xpath = '//*[@id="root"]/div/div[2]/div[1]/div[2]/div/div/div/div/div[2]';
+        const element2Xpath = '//*[@id="root"]/div/div[2]/div[2]/div[2]/div[1]/div/div/div/div[2]';
+        const element3Xpath = '//*[@id="root"]/div/div[2]/div[5]/div[2]/div[9]/div/div/div/div[2]';
+        const element4Xpath = '//*[@id="root"]/div/div[2]/div[5]/div[2]/div[8]/div/div/div/div[1]/div[2]/span';
+        const element5Xpath = '//*[@id="root"]/div/div[2]/div[5]/div[2]/div[8]/div/div/div/div[2]';
+    
         try {
+            // 点击元素1
+            const element1 = await waitForXPath(element1Xpath, 10000);
+            log('点击元素1');
+            element1.click();
+            log('已点击元素1');
+    
+            // 随机延迟
+            const delay1 = Math.floor(Math.random() * 2000) + 1000;
+            log(`等待 ${delay1} 毫秒后，点击元素2`);
+            await randomDelay(delay1, delay1 + 500);
+    
+            // 点击元素2
+            const element2 = await waitForXPath(element2Xpath, 10000);
+            log('点击元素2');
+            element2.click();
+            log('已点击元素2');
+    
+            // 随机延迟
+            const delay2 = Math.floor(Math.random() * 2000) + 1000;
+            log(`等待 ${delay2} 毫秒后，点击元素3`);
+            await randomDelay(delay2, delay2 + 500);
+    
+            // 点击元素3
             const element3 = await waitForXPath(element3Xpath, 10000);
             log('点击元素3');
             element3.click();
             log('已点击元素3');
-
-            const delay = Math.floor(Math.random() * 2000) + 1000;
-            log(`等待 ${delay} 毫秒后，点击元素4`);
-            await randomDelay(delay, delay + 500); // 1-1.5秒
-
+    
+            // 随机延迟
+            const delay3 = Math.floor(Math.random() * 2000) + 1000;
+            log(`等待 ${delay3} 毫秒后，点击元素4`);
+            await randomDelay(delay3, delay3 + 500);
+    
+            // 点击元素4
             const element4 = await waitForXPath(element4Xpath, 10000);
             log('点击元素4');
             element4.click();
             log('已点击元素4');
-
-            const delay2 = Math.floor(Math.random() * 2000) + 1000;
-            log(`等待 ${delay2} 毫秒后，点击元素5`);
-            await randomDelay(delay2, delay2 + 500); // 1-1.5秒
-
+    
+            // 等待8秒钟
+            log('等待8秒钟后，点击元素5');
+            await new Promise(resolve => setTimeout(resolve, 8000));
+    
+            // 点击元素5
             const element5 = await waitForXPath(element5Xpath, 10000);
-            log('点击元素5，等待12秒钟');
+            log('点击元素5，脚本执行完毕');
             element5.click();
-            await new Promise(resolve => setTimeout(resolve, 12000)); // 等待12秒
-
-            const element6 = await waitForXPath(element6Xpath, 10000);
-            log('点击元素6，脚本执行完毕');
-            element6.click();
-            log('已点击元素6，脚本执行完毕');
-
-            // 确保点击元素6后完成所有操作，再进行重定向
+            log('已点击元素5，脚本执行完毕');
+    
+            // 完成后重定向
             log("所有 BreadnButter 操作已完成，准备跳转至 CommunityGaming 页面。");
             await randomDelay(2000, 4000); // 延迟2-4秒
             log("即将跳转至 CommunityGaming 页面。");
@@ -1066,6 +1090,7 @@
             log(`执行第二步时发生错误：${error.message}`);
         }
     }
+
 
 
     // 脚本9：CommunityGaming Quests 自动化操作
