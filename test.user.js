@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.1.6
+// @version      2.1.7
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -961,7 +961,7 @@
         }
     }
     // 脚本8：BreadnButter 自动化操作
-    // 主函数
+    // 主执行函数
     async function executeScript8() {
         log("执行 BreadnButter 自动化脚本。");
     
@@ -1012,16 +1012,16 @@
     async function secondStep() {
         log('开始执行第二步');
     
-        // 定义新的元素的 CSS 选择器
-        const element1Selector = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(1) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
-        const element2Selector = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(2) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(1) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
-        const element3Selector = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
-        const element4Selector = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(8) > div > div > div > div.flex.flex-col.w-full.justify-center > div.flex.flex-row.items-center.mt-0\\.5.h-\\[18px\\].cursor-pointer > span';
-        const element5Selector = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(8) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        // 定义新的元素的选择器
+        const selector1 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(1) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector2 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(2) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(1) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector3 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector4 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(8) > div > div > div > div.flex.flex-col.w-full.justify-center > div.flex.flex-row.items-center.mt-0\\.5.h-\\[18px\\].cursor-pointer > span';
+        const selector5 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(8) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
     
         try {
             // 点击元素1
-            const element1 = await waitForSelector(element1Selector, 10000);
+            const element1 = await waitForSelector(selector1, 10000);
             log('点击元素1');
             element1.click();
             log('已点击元素1');
@@ -1032,7 +1032,7 @@
             await randomDelay(delay1, delay1 + 500);
     
             // 点击元素2
-            const element2 = await waitForSelector(element2Selector, 10000);
+            const element2 = await waitForSelector(selector2, 10000);
             log('点击元素2');
             element2.click();
             log('已点击元素2');
@@ -1043,7 +1043,7 @@
             await randomDelay(delay2, delay2 + 500);
     
             // 点击元素3
-            const element3 = await waitForSelector(element3Selector, 10000);
+            const element3 = await waitForSelector(selector3, 10000);
             log('点击元素3');
             element3.click();
             log('已点击元素3');
@@ -1054,7 +1054,7 @@
             await randomDelay(delay3, delay3 + 500);
     
             // 点击元素4
-            const element4 = await waitForSelector(element4Selector, 10000);
+            const element4 = await waitForSelector(selector4, 10000);
             log('点击元素4');
             element4.click();
             log('已点击元素4');
@@ -1064,7 +1064,7 @@
             await new Promise(resolve => setTimeout(resolve, 8000));
     
             // 点击元素5
-            const element5 = await waitForSelector(element5Selector, 10000);
+            const element5 = await waitForSelector(selector5, 10000);
             log('点击元素5，脚本执行完毕');
             element5.click();
             log('已点击元素5，脚本执行完毕');
@@ -1090,53 +1090,7 @@
             log(`执行第二步时发生错误：${error.message}`);
         }
     }
-    
-    // 等待指定的 CSS 选择器元素出现
-    function waitForSelector(selector, timeout = 10000) {
-        return new Promise((resolve, reject) => {
-            let startTime = Date.now();
-            function search() {
-                let element = document.querySelector(selector);
-                if (element) {
-                    resolve(element);
-                } else if (Date.now() - startTime > timeout) {
-                    reject(new Error('等待元素超时：' + selector));
-                } else {
-                    setTimeout(search, 500);
-                }
-            }
-            search();
-        });
-    }
-    
-    // 等待指定的 XPath 元素出现
-    function waitForXPath(xpath, timeout = 10000) {
-        return new Promise((resolve, reject) => {
-            let startTime = Date.now();
-            function search() {
-                let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (element) {
-                    resolve(element);
-                } else if (Date.now() - startTime > timeout) {
-                    reject(new Error('等待元素超时：' + xpath));
-                } else {
-                    setTimeout(search, 500);
-                }
-            }
-            search();
-        });
-    }
-    
-    // 随机延迟函数
-    function randomDelay(min, max) {
-        let delay = Math.floor(Math.random() * (max - min)) + min;
-        return new Promise(resolve => setTimeout(resolve, delay));
-    }
-    
-    // 日志输出函数
-    function log(message) {
-        console.log(`[${new Date().toLocaleTimeString()}] ${message}`);
-    }
+
 
 
 
