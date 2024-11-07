@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Infinity Theoriq AI 自动化脚本
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @description  在 Infinity Theoriq AI 网站上自动执行特定任务
 // @author
 // @match        https://infinity.theoriq.ai/studio/chat
@@ -142,13 +142,11 @@
             const sendButtonSelector = 'button[type="submit"]';
 
             const messages = [
-                "What are the main features available in Launch in Studio for this agent, and how can users benefit from them?",
                 "Could you provide an overview of the latest updates or insights shared by this agent on their X (Twitter) feed?",
                 "What resources or guides are available through this agent's platform to support users' career development?",
                 "How can I access and join the community on Discord for this agent, and what topics are commonly discussed there?",
                 "What kind of industry insights or news does this agent publish on their Medium or Documentation platform?",
                 "What makes this agent's approach to community building and user support unique within its field?",
-                "Are there any standout features in Launch in Studio for users interested in exploring Web3 or blockchain-related jobs?",
                 "How does this agent’s platform help companies and job seekers connect more effectively?",
                 "What types of updates or announcements should I look out for from this agent on their social media channels?",
                 "Could you describe the type of discussions and support available on this agent’s community platforms, such as Discord or X?"
