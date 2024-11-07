@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.1.8
+// @version      2.1.9
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1098,26 +1098,26 @@
     // 脚本9：CommunityGaming Quests 自动化操作
     async function executeScript9() {
         log("执行 CommunityGaming Quests 自动化脚本。");
-
+    
         // 版本标记
-        const SCRIPT2_VERSION = '1.7.6';
-
+        const SCRIPT2_VERSION = '1.7.7';
+    
         // 随机延迟函数，返回Promise
         function randomDelayScript2(min = 500, max = 1500) {
             const delay = Math.floor(Math.random() * (max - min + 1)) + min;
             return new Promise(resolve => setTimeout(resolve, delay));
         }
-
+    
         // 固定延迟函数，返回Promise
         function fixedDelayScript2(ms = 2000) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
-
+    
         // 使用XPath获取单个元素
         function getElementByXPathScript2(xpath, context = document) {
             return document.evaluate(xpath, context, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         }
-
+    
         // 使用XPath获取所有匹配的元素
         function getAllElementsByXPathScript2(xpath, context = document) {
             const result = [];
@@ -1127,23 +1127,23 @@
             }
             return result;
         }
-
+    
         // 使用CSS选择器获取单个元素
         function getElementBySelectorScript2(selector) {
             return document.querySelector(selector);
         }
-
+    
         // 日志输出
         function logScript2(message) {
             console.log(`%c[脚本 v${SCRIPT2_VERSION}] ${message}`, 'color: green; font-weight: bold;');
         }
-
+    
         // 等待元素出现
-        function waitForElementScript2(selectorOrXPath, type = 'selector', timeout = 20000, context = document) { // 增加了超时时间
+        function waitForElementScript2(selectorOrXPath, type = 'selector', timeout = 20000, context = document) {
             return new Promise((resolve, reject) => {
                 const intervalTime = 500;
                 let elapsed = 0;
-
+    
                 const interval = setInterval(() => {
                     let element;
                     if (type === 'selector') {
@@ -1151,7 +1151,7 @@
                     } else if (type === 'xpath') {
                         element = getElementByXPathScript2(selectorOrXPath, context);
                     }
-
+    
                     if (element) {
                         clearInterval(interval);
                         resolve(element);
@@ -1165,22 +1165,22 @@
                 }, intervalTime);
             });
         }
-
+    
         // 主异步函数
         async function mainCommunityGaming() {
             try {
                 logScript2('脚本开始执行，等待页面完全加载...');
                 await randomDelayScript2(2000, 4000); // 增加初始等待时间确保页面加载
-
+    
                 // 步骤1：遍历点击元素1
                 logScript2('开始执行步骤1：遍历并点击元素1');
-
+    
                 // 元素1的XPath：查找所有包含特定文本的div，并获取其父按钮
                 const element1XPath = "//div[contains(@class, 'd-flex') and contains(@class, 'align-items-center') and normalize-space(text())='LIKE & REPOST']/ancestor::button[1]";
                 const element1Buttons = getAllElementsByXPathScript2(element1XPath);
-
+    
                 logScript2(`在页面中找到 ${element1Buttons.length} 个元素1`);
-
+    
                 if (element1Buttons.length === 0) {
                     logScript2('未找到任何元素1，跳过步骤1');
                 } else {
@@ -1189,17 +1189,17 @@
                         logScript2(`点击元素1 (${i + 1}/${element1Buttons.length})`);
                         elem1Button.click();
                         await randomDelayScript2();
-
+    
                         // 等待小窗口1出现
                         logScript2('等待小窗口1出现...');
                         try {
                             const smallWindow1 = await waitForElementScript2('#ActivityModal > div > div', 'selector', 10000);
                             logScript2('小窗口1已出现，开始延迟1-2秒后点击元素2');
-
+    
                             // 延迟1-2秒
-                            await randomDelayScript2(2000, 2500);
+                            await randomDelayScript2(1000, 2000);
                             logScript2('延迟完成，点击小窗口1中的元素2');
-
+    
                             // 元素2的XPath
                             const elem2XPath = '/html/body/div[4]/div/div/div/div[4]/button[2]';
                             const elem2 = getElementByXPathScript2(elem2XPath);
@@ -1215,29 +1215,33 @@
                             logScript2(error.message);
                             continue;
                         }
-
+    
                         // 等待小窗口2出现
                         logScript2('等待小窗口2出现...');
                         try {
                             const smallWindow2 = await waitForElementScript2('#ModalXPCompletedXpedition > div > div', 'selector', 20000); // 增加等待时间
                             logScript2('小窗口2已出现，等待3秒后继续下一个元素');
-
+    
                             // 等待3秒
                             await new Promise(resolve => setTimeout(resolve, 3000));
                         } catch (error) {
                             logScript2(error.message);
                             continue;
                         }
-
+    
                         logScript2(`已完成元素1 (${i + 1}/${element1Buttons.length}) 的点击流程`);
                         await randomDelayScript2(); // 随机延迟后继续下一个元素
                     }
                 }
-
+    
+                // 步骤一完成后延迟1-2秒
+                logScript2('步骤一已完成，延迟1-2秒后开始步骤二');
+                await randomDelayScript2(1000, 2000);
+    
                 // 步骤2：持续点击元素4
                 logScript2('开始执行步骤2：持续点击元素4，直到小窗口3出现');
                 let continueClicking = true;
-
+    
                 // 设置一个监听器来监控小窗口3的出现
                 const observer = new MutationObserver((mutations, obs) => {
                     const smallWindow3 = getElementBySelectorScript2('#ModalXPSpin > div > div');
@@ -1247,9 +1251,9 @@
                         obs.disconnect();
                     }
                 });
-
+    
                 observer.observe(document.body, { childList: true, subtree: true });
-
+    
                 while (continueClicking) {
                     // 更新后的元素4的XPath
                     const elem4XPath = "/html/body/div[1]/main/div[3]/div/div[3]/div[2]/div[2]/div[1]/div[2]/div[2]/button";
@@ -1263,7 +1267,7 @@
                     }
                     await fixedDelayScript2(1000); // 设置固定1秒的间隔
                 }
-
+    
                 // 等待2秒后结束脚本
                 logScript2('等待2秒后结束脚本');
                 await new Promise(resolve => setTimeout(resolve, 2000));
@@ -1272,16 +1276,17 @@
                 logScript2(`脚本执行出错: ${error.message}`);
             }
         }
-
+    
         // 主异步函数执行
         await mainCommunityGaming();
-
+    
         // 在CommunityGaming脚本执行完毕后，自动结束脚本或执行其他操作
         log("CommunityGaming 脚本执行完毕，脚本结束。");
         log("CommunityGaming 脚本执行完毕，准备跳转至 Pentagon Games 页面。");
         await randomDelay(2000, 4000); // 延迟2-4秒
         window.location.href = 'https://pentagon.games/airdrop/ascended';
     }
+    
 
     // 脚本10：Pentagon Games Airdrop 自动化操作
     async function executeScript10() {
