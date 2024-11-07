@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.0.8
+// @version      2.1.8
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -14,6 +14,7 @@
 // @match        https://*.breadnbutter.fun/*
 // @match        https://www.communitygaming.io/quests
 // @match        https://pentagon.games/airdrop/ascended
+// @match        https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @grant        none
@@ -160,6 +161,9 @@
             } else if (currentURL.includes('pentagon.games/airdrop/ascended')) {
                 // 执行脚本10的功能
                 await executeScript10();
+            } else if (currentURL.includes('www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd')) {
+                // 执行脚本11的功能
+                await executeScript11();             
             } else {
                 log("当前页面不在脚本的处理范围内。");
             }
@@ -957,91 +961,115 @@
         }
     }
     // 脚本8：BreadnButter 自动化操作
+    // 主执行函数
     async function executeScript8() {
         log("执行 BreadnButter 自动化脚本。");
-
+    
         // 定义元素的XPath
         const element1Xpath = '//*[@id="root"]/div/div/div/div/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/div[2]/button/div';
         const element2Xpath = '//*[@id="root"]/div/div/div/div/div[3]/div[1]/div[2]/div[3]/div/div';
-        const element3Xpath = '//*[@id="root"]/div/div[2]/div[1]/div[2]/div[1]/div/div/div/div[2]';
-        const element4Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[9]/div/div/div/div[2]';
-        const element5Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[8]/div/div/div/div[1]/div[2]/span';
-        const element6Xpath = '//*[@id="root"]/div/div[2]/div[4]/div[2]/div[8]/div/div/div/div[2]';
-
+    
         // 检查元素1是否存在
         try {
             const element1 = await waitForXPath(element1Xpath, 10000);
-
+    
             if (element1) {
                 log('元素1存在，开始点击元素1');
                 // 点击元素1
                 element1.click();
-
+    
                 // 设置随机延迟，然后等待元素2出现
                 const delay = Math.floor(Math.random() * 2000) + 1000;
                 log(`等待 ${delay} 毫秒后，等待元素2出现并点击`);
                 await randomDelay(delay, delay + 500); // 1-1.5秒
-
+    
                 try {
                     const element2 = await waitForXPath(element2Xpath, 10000);
                     log('元素2已出现，点击元素2');
                     element2.click();
-
+    
                     // 随机延迟后，进行第二步
                     const delayStep2 = Math.floor(Math.random() * 2000) + 1000;
                     log(`等待 ${delayStep2} 毫秒后，开始执行第二步`);
                     await randomDelay(delayStep2, delayStep2 + 500); // 1-1.5秒
-
-                    await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+    
+                    await secondStep();
                 } catch (error) {
                     log('元素2未出现，直接进行第二步');
-                    await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+                    await secondStep();
                 }
             } else {
                 log('元素1不存在，直接进行第二步');
-                await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+                await secondStep();
             }
         } catch (error) {
             log('元素1不存在，直接进行第二步');
-            await secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath);
+            await secondStep();
         }
-
-        // 不在这里执行重定向
     }
-
+    
     // 第二步函数
-    async function secondStep(element3Xpath, element4Xpath, element5Xpath, element6Xpath) {
+    async function secondStep() {
         log('开始执行第二步');
+    
+        // 定义新的元素的选择器
+        const selector1 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(1) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector2 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(2) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(1) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector3 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector4 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(8) > div > div > div > div.flex.flex-col.w-full.justify-center > div.flex.flex-row.items-center.mt-0\\.5.h-\\[18px\\].cursor-pointer > span';
+        const selector5 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(8) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+    
         try {
-            const element3 = await waitForXPath(element3Xpath, 10000);
+            // 点击元素1
+            const element1 = await waitForSelector(selector1, 10000);
+            log('点击元素1');
+            element1.click();
+            log('已点击元素1');
+    
+            // 随机延迟
+            const delay1 = Math.floor(Math.random() * 2000) + 1000;
+            log(`等待 ${delay1} 毫秒后，点击元素2`);
+            await randomDelay(delay1, delay1 + 500);
+    
+            // 点击元素2
+            const element2 = await waitForSelector(selector2, 10000);
+            log('点击元素2');
+            element2.click();
+            log('已点击元素2');
+    
+            // 随机延迟
+            const delay2 = Math.floor(Math.random() * 2000) + 1000;
+            log(`等待 ${delay2} 毫秒后，点击元素3`);
+            await randomDelay(delay2, delay2 + 500);
+    
+            // 点击元素3
+            const element3 = await waitForSelector(selector3, 10000);
             log('点击元素3');
             element3.click();
             log('已点击元素3');
-
-            const delay = Math.floor(Math.random() * 2000) + 1000;
-            log(`等待 ${delay} 毫秒后，点击元素4`);
-            await randomDelay(delay, delay + 500); // 1-1.5秒
-
-            const element4 = await waitForXPath(element4Xpath, 10000);
+    
+            // 随机延迟
+            const delay3 = Math.floor(Math.random() * 2000) + 1000;
+            log(`等待 ${delay3} 毫秒后，点击元素4`);
+            await randomDelay(delay3, delay3 + 500);
+    
+            // 点击元素4
+            const element4 = await waitForSelector(selector4, 10000);
             log('点击元素4');
             element4.click();
             log('已点击元素4');
-
-            const delay2 = Math.floor(Math.random() * 2000) + 1000;
-            log(`等待 ${delay2} 毫秒后，点击元素5`);
-            await randomDelay(delay2, delay2 + 500); // 1-1.5秒
-
-            const element5 = await waitForXPath(element5Xpath, 10000);
-            log('点击元素5，等待12秒钟');
+    
+            // 等待8秒钟
+            log('等待8秒钟后，点击元素5');
+            await new Promise(resolve => setTimeout(resolve, 10000));
+    
+            // 点击元素5
+            const element5 = await waitForSelector(selector5, 10000);
+            log('点击元素5，脚本执行完毕');
             element5.click();
-            await new Promise(resolve => setTimeout(resolve, 12000)); // 等待12秒
-
-            const element6 = await waitForXPath(element6Xpath, 10000);
-            log('点击元素6，脚本执行完毕');
-            element6.click();
-            log('已点击元素6，脚本执行完毕');
-
-            // 确保点击元素6后完成所有操作，再进行重定向
+            log('已点击元素5，脚本执行完毕');
+    
+            // 完成后重定向
             log("所有 BreadnButter 操作已完成，准备跳转至 CommunityGaming 页面。");
             await randomDelay(2000, 4000); // 延迟2-4秒
             log("即将跳转至 CommunityGaming 页面。");
@@ -1062,6 +1090,9 @@
             log(`执行第二步时发生错误：${error.message}`);
         }
     }
+
+
+
 
 
     // 脚本9：CommunityGaming Quests 自动化操作
@@ -1580,6 +1611,216 @@
             await mainPentagon();
         } catch (error) {
             log(`❌ 执行脚本时发生错误: ${error.message}`);
+        }
+        log("Pentagon 脚本执行完毕，准备跳转至 HoloWorldAI 页面。");
+        await randomDelay(2000, 4000);
+        window.location.href = 'https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd';
+
+    }
+    // 脚本11：HoloWorldAI 自动化操作
+    async function executeScript11() {
+        log("执行 HoloWorldAI 自动化脚本。");
+    
+        // 随机延迟2-5秒后开始执行脚本
+        var initialDelay = Math.random() * 3000 + 2000; // 2000ms到5000ms之间
+        log('页面加载完成，等待 ' + (initialDelay / 1000).toFixed(2) + ' 秒开始执行脚本');
+    
+        await new Promise(resolve => setTimeout(resolve, initialDelay));
+    
+        log('开始监测区域1是否存在');
+    
+        var region1Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[2]/div[2]/div/div[3]/div[1]';
+        var maxChecks = 60; // 最大检查次数（相当于30秒）
+        var checks = 0;
+        var checkInterval = 500; // 每500ms检查一次
+    
+        // 使用 while 循环和 await 来替代 setInterval
+        while (checks < maxChecks) {
+            var region1 = document.evaluate(region1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            if (region1) {
+                log('区域1已加载');
+                // 开始执行第一步
+                await stepOne(region1);
+                break;
+            } else {
+                await new Promise(resolve => setTimeout(resolve, checkInterval));
+                checks++;
+                if (checks >= maxChecks) {
+                    log('等待区域1超时');
+                }
+            }
+        }
+    
+        // 定义第一步
+        async function stepOne(region1) {
+            log('第一步：开始随机点击两个按钮');
+    
+            // 在区域1中获取所有按钮
+            var buttons = region1.getElementsByTagName('button');
+            var buttonsArray = Array.prototype.slice.call(buttons);
+    
+            if (buttonsArray.length < 2) {
+                log('按钮数量不足两个，无法执行操作');
+                return;
+            }
+    
+            // 随机打乱按钮数组
+            buttonsArray.sort(() => Math.random() - 0.5);
+    
+            var button1 = buttonsArray[0];
+            var button2 = buttonsArray[1];
+    
+            // 点击第一个按钮
+            button1.click();
+            log('已点击第一个随机按钮');
+    
+            // 等待12秒后点击第二个按钮
+            await new Promise(resolve => setTimeout(resolve, 12000));
+            button2.click();
+            log('已点击第二个随机按钮');
+    
+            // 等待7秒后执行第二步
+            await new Promise(resolve => setTimeout(resolve, 7000));
+            await stepTwo();
+        }
+    
+        // 定义第二步
+        async function stepTwo() {
+            log('第二步：等待元素1并点击');
+    
+            var element1Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[1]/div[3]/div[2]/div[1]/button/img';
+            var maxChecks = 60; // 最大检查次数（相当于30秒）
+            var checks = 0;
+            var checkInterval = 500; // 每500ms检查一次
+    
+            while (checks < maxChecks) {
+                var element1 = document.evaluate(element1Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element1) {
+                    element1.click();
+                    log('已点击元素1');
+    
+                    // 继续等待元素2并点击
+                    await waitForElement2();
+                    break;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    checks++;
+                    if (checks >= maxChecks) {
+                        log('等待元素1超时');
+                    }
+                }
+            }
+        }
+    
+        async function waitForElement2() {
+            log('第二步：等待元素2并点击');
+    
+            var element2Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[6]/div[2]/div/div[2]/div[2]';
+            var maxChecks = 60;
+            var checks = 0;
+            var checkInterval = 500;
+    
+            while (checks < maxChecks) {
+                var element2 = document.evaluate(element2Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element2) {
+                    element2.click();
+                    log('已点击元素2');
+    
+                    // 进入第三步
+                    await stepThree();
+                    break;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    checks++;
+                    if (checks >= maxChecks) {
+                        log('等待元素2超时');
+                    }
+                }
+            }
+        }
+    
+        // 定义第三步
+        async function stepThree() {
+            log('第三步：等待元素3并点击');
+    
+            var element3Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[2]/div[1]/button';
+            var maxChecks = 60;
+            var checks = 0;
+            var checkInterval = 500;
+    
+            while (checks < maxChecks) {
+                var element3 = document.evaluate(element3Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element3) {
+                    element3.click();
+                    log('已点击元素3');
+    
+                    // 开始监测元素5
+                    await waitForElement5();
+                    break;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    checks++;
+                    if (checks >= maxChecks) {
+                        log('等待元素3超时');
+                    }
+                }
+            }
+        }
+    
+        async function waitForElement5() {
+            log('第三步：等待元素5并点击');
+    
+            var element5Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[4]/div/div/div/div[2]/div[2]/button';
+            var maxChecks = 60;
+            var checks = 0;
+            var checkInterval = 500;
+    
+            while (checks < maxChecks) {
+                var element5 = document.evaluate(element5Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element5) {
+                    element5.click();
+                    log('已点击元素5');
+    
+                    // 继续等待元素4
+                    await waitForElement4();
+                    break;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    checks++;
+                    if (checks >= maxChecks) {
+                        log('等待元素5超时');
+                    }
+                }
+            }
+        }
+    
+        async function waitForElement4() {
+            log('第三步：等待元素4');
+    
+            var element4Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[6]/div[2]/div/div[3]/div/div[2]/div/div/div[4]/button';
+            var maxChecks = 60;
+            var checks = 0;
+            var checkInterval = 500;
+    
+            while (checks < maxChecks) {
+                var element4 = document.evaluate(element4Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element4) {
+                    log('元素4已出现，随机等待10-13秒后点击');
+    
+                    var delay = Math.random() * 3000 + 10000; // 10000ms到13000ms之间
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    element4.click();
+                    log('已点击元素4');
+                    log('HoloWorldAI 脚本执行完毕，脚本结束。');
+                    break;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    checks++;
+                    if (checks >= maxChecks) {
+                        log('等待元素4超时');
+                    }
+                }
+            }
         }
     }
 
