@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.1.9
+// @version      2.2
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1100,7 +1100,7 @@
         log("执行 CommunityGaming Quests 自动化脚本。");
     
         // 版本标记
-        const SCRIPT2_VERSION = '1.7.7';
+        const SCRIPT2_VERSION = '1.7.8';
     
         // 随机延迟函数，返回Promise
         function randomDelayScript2(min = 500, max = 1500) {
@@ -1184,6 +1184,7 @@
                 if (element1Buttons.length === 0) {
                     logScript2('未找到任何元素1，跳过步骤1');
                 } else {
+                    // 确保按顺序处理每个元素1，并等待相关的异步操作完成
                     for (let i = 0; i < element1Buttons.length; i++) {
                         const elem1Button = element1Buttons[i];
                         logScript2(`点击元素1 (${i + 1}/${element1Buttons.length})`);
@@ -1220,10 +1221,20 @@
                         logScript2('等待小窗口2出现...');
                         try {
                             const smallWindow2 = await waitForElementScript2('#ModalXPCompletedXpedition > div > div', 'selector', 20000); // 增加等待时间
-                            logScript2('小窗口2已出现，等待3秒后继续下一个元素');
+                            logScript2('小窗口2已出现，等待3秒后关闭小窗口2');
     
                             // 等待3秒
                             await new Promise(resolve => setTimeout(resolve, 3000));
+    
+                            // 关闭小窗口2
+                            const closeBtnXPath = '//*[@id="ModalXPCompletedXpedition"]/div/div/div[1]/button';
+                            const closeBtn = getElementByXPathScript2(closeBtnXPath);
+                            if (closeBtn) {
+                                closeBtn.click();
+                                logScript2('已关闭小窗口2');
+                            } else {
+                                logScript2('未找到小窗口2的关闭按钮');
+                            }
                         } catch (error) {
                             logScript2(error.message);
                             continue;
@@ -1234,7 +1245,7 @@
                     }
                 }
     
-                // 步骤一完成后延迟1-2秒
+                // 确保所有元素1处理完成后再执行步骤二
                 logScript2('步骤一已完成，延迟1-2秒后开始步骤二');
                 await randomDelayScript2(1000, 2000);
     
@@ -1286,7 +1297,6 @@
         await randomDelay(2000, 4000); // 延迟2-4秒
         window.location.href = 'https://pentagon.games/airdrop/ascended';
     }
-    
 
     // 脚本10：Pentagon Games Airdrop 自动化操作
     async function executeScript10() {
