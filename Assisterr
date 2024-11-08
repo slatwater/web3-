@@ -1,0 +1,76 @@
+// ==UserScript==
+// @name         Assisterr 自动化脚本
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  [版本 1.0] 自动点击"Grab daily tokens"按钮。
+// @author       
+// @match        https://build.assisterr.ai/dashboard
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 随机延迟函数
+    function randomDelay(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // 等待包含特定文本的元素
+    function waitForElementContainingText(tag, text) {
+        return new Promise(function(resolve) {
+            function check() {
+                const elements = document.getElementsByTagName(tag);
+                for (let el of elements) {
+                    if (el.textContent.trim() === text) {
+                        return resolve(el);
+                    }
+                }
+            }
+            check();
+            const observer = new MutationObserver(function() {
+                check();
+            });
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    }
+
+    // 延迟函数
+    function delay(time) {
+        return new Promise(function(resolve) {
+            setTimeout(resolve, time);
+        });
+    }
+
+    // 主函数
+    async function main() {
+        console.log('脚本开始执行');
+
+        // 随机延迟
+        await delay(randomDelay(1000, 3000));
+
+        // 查找并点击元素1
+        const buttonText = 'Grab daily tokens';
+        const button = await waitForElementContainingText('button', buttonText);
+
+        if (button) {
+            console.log('找到按钮，准备点击');
+            await delay(randomDelay(500, 1500));
+            button.click();
+            console.log('已点击按钮');
+        } else {
+            console.log('未找到按钮');
+        }
+
+        console.log('脚本执行完毕');
+    }
+
+    // 页面加载完成后执行主函数
+    window.addEventListener('load', function() {
+        console.log('页面已加载，等待随机时间后开始执行脚本');
+        setTimeout(main, randomDelay(1000, 3000));
+    });
+})();
