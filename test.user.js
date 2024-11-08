@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.3
+// @version      2.4
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -467,7 +467,7 @@
         // 第三步：开始监测元素3的barValue值变化
         log("等待元素3加载完毕...");
         try {
-            const element3 = await waitForSelector(element3Selector, 50000);
+            const element3 = await waitForSelector(element3Selector, 20000);
             initialBarValue = getBarValue(element3);
             log(`初始的barValue值为：${initialBarValue}`);
 
@@ -485,7 +485,7 @@
                 window.location.href = 'https://points.reddio.com/task';
             });
 
-            // 第四步：点击元素2，并每隔30秒点击一次，直到barValue变化
+            // 第四步：点击元素2，并每隔50秒点击一次，直到barValue变化
             await clickElement2Periodically(element2Selector);
         } catch (error) {
             log(`未找到元素3或获取barValue失败：${error.message}`);
@@ -531,12 +531,12 @@
             }
 
             try {
-                const element2 = await waitForSelector(element2Selector, 20000);
+                const element2 = await waitForSelector(element2Selector, 50000);
                 await randomDelay(500, 1000);
                 element2.click();
                 log('已点击元素2。');
 
-                // 设置每隔20秒点击一次
+                // 设置每隔50秒点击一次
                 clickElement2IntervalId = setInterval(async () => {
                     if (!scriptStopped) {
                         try {
