@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.4
+// @version      2.5
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -531,7 +531,7 @@
             }
 
             try {
-                const element2 = await waitForSelector(element2Selector, 50000);
+                const element2 = await waitForSelector(element2Selector, 20000);
                 await randomDelay(500, 1000);
                 element2.click();
                 log('已点击元素2。');
@@ -555,7 +555,7 @@
                         log('barValue值已变化，停止点击元素2。');
                         clearInterval(clickElement2IntervalId);
                     }
-                }, 20000); // 20秒
+                }, 50000); // 50秒
             } catch (error) {
                 log(`未找到元素2或点击失败：${error.message}`);
             }
