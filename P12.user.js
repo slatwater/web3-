@@ -6,6 +6,8 @@
 // @author       Assistant
 // @match        https://arcana.p12.games/*
 // @grant        none
+// @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/P12.user.js
+// @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/P12.user.js
 // ==/UserScript==
 
 (function() {
