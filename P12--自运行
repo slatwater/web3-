@@ -1,12 +1,11 @@
 // ==UserScript==
-// @name         Auto Click on Arcana P12 Tasks with Random Delay and Random Element Selection
+// @name         Arcana P12 自动化脚本
 // @namespace    http://tampermonkey.net/
-// @version      2.4
-// @description  自动点击Arcana P12页面任务的脚本，添加随机延迟，并在点击任务后刷新页面进行验证
-// @match        *://arcana.p12.games/*
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @run-at       document-idle
+// @version      1.4
+// @description  [版本 1.4] 自动化执行指定步骤的脚本。
+// @author       Assistant
+// @match        https://arcana.p12.games/*
+// @grant        none
 // ==/UserScript==
 
 (function() {
@@ -14,119 +13,163 @@
 
     // 随机延迟函数
     function randomDelay(min, max) {
-        return new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * (max - min + 1)) + min));
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    // 等待元素出现的函数（带重试机制）
-    function waitForElement(selector, timeout = 20000, retryInterval = 1000) {
-        return new Promise((resolve, reject) => {
-            const startTime = Date.now();
-            (function check() {
-                let element;
-                if (selector.startsWith('/')) {
-                    element = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                } else {
-                    element = document.querySelector(selector);
-                }
+    // 等待元素出现的函数（使用 XPath）
+    function waitForElementByXpath(xpath) {
+        return new Promise(function(resolve) {
+            let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            if (element) {
+                return resolve(element);
+            }
+            const observer = new MutationObserver(function() {
+                element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 if (element) {
-                    resolve(element);
-                } else if (Date.now() - startTime > timeout) {
-                    reject(new Error(`Timeout: Element ${selector} not found`));
-                } else {
-                    setTimeout(check, retryInterval);  // 延迟后再次检查
+                    observer.disconnect();
+                    return resolve(element);
                 }
-            })();
+            });
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
         });
     }
 
-    // 设置执行标志，避免重复执行前几步
-    const taskCompleted = GM_getValue('taskCompleted', false);
-
-    // 执行 Arcana P12 页面上的任务
-    if (window.location.hostname === 'arcana.p12.games') {
-        console.log('Detected Arcana P12 page.');
-
-        async function executeArcanaTasks() {
-            try {
-                // 如果任务已经完成，则直接从第五步开始
-                if (!taskCompleted) {
-                    // 第一步：点击第一个区域
-                    const firstArea = await waitForElement('#__next > div > div.relative.h-full.__className_e04c4e.__variable_e04c4e > main > div > div.grid.w-full.grid-cols-3.gap-4.overflow-auto.px-15.pb-6.pt-4.\\32 xl\\:container.xl\\:px-4 > div.col-span-2.flex.w-full.gap-5 > div.guide-step-01.backdrop-box.flex.w-\\[480px\\].cursor-pointer.flex-col.overflow-hidden.rounded-lg.pb-4.transition-all.lg\\:flex-grow');
-                    await randomDelay(1000, 3000);  // 添加随机延迟
-                    firstArea.click();
-                    console.log('Clicked first area.');
-
-                    await randomDelay(2000, 4000);
-
-                    // 第二步：随机选择并点击以下元素之一
-                    const xpaths = [
-                        '//*[@id=":r11:"]/div/div/div[2]/div[2]/div[3]/div[1]/div/div[2]',
-                        '//*[@id=":r11:"]/div/div/div[2]/div[2]/div[3]/div[2]/div/div[2]',
-                        '//*[@id=":r11:"]/div/div/div[2]/div[2]/div[3]/div[3]/div/div[2]',
-                        '//*[@id=":r11:"]/div/div/div[2]/div[2]/div[3]/div[4]/div/div[2]',
-                        '//*[@id=":r11:"]/div/div/div[2]/div[2]/div[3]/div[7]/div/div[2]'
-                    ];
-
-                    const randomXPath = xpaths[Math.floor(Math.random() * xpaths.length)];
-                    const randomElement = await waitForElement(randomXPath);
-                    await randomDelay(1000, 3000);  // 添加随机延迟
-                    randomElement.click();
-                    console.log(`Clicked random element with XPath: ${randomXPath}`);
-
-                    await randomDelay(2000, 4000);
-
-                    // 第三步：点击小窗口中的 "Max" 按钮
-                    const maxButton = [...document.querySelectorAll('p.cursor-pointer')].find(el => el.textContent === 'Max');
-                    if (maxButton) {
-                        await randomDelay(1000, 3000);  // 添加随机延迟
-                        maxButton.click();
-                        console.log('Clicked Max button.');
-                    } else {
-                        throw new Error('Max button not found');
-                    }
-
-                    await randomDelay(2000, 4000);
-
-                    // 第四步：点击下一个元素
-                    const fourthElement = await waitForElement('//*[@id=":r1j:"]/div/div[2]/div[4]/button');
-                    await randomDelay(1000, 3000);  // 添加随机延迟
-                    fourthElement.click();
-                    console.log('Clicked fourth element.');
-
-                    await randomDelay(2000, 4000);
-
-                    // 标记任务已完成前四步
-                    GM_setValue('taskCompleted', true);
-
-                    // 第五步：刷新网页
-                    console.log('Refreshing the page...');
-                    window.location.reload();
-                } else {
-                    // 第六步：点击任务元素
-                    console.log('Page reloaded, continuing the task.');
-                    await randomDelay(3000, 5000); // 等待网页加载完成后延迟
-
-                    const taskElement = await waitForElement('//*[@id="task"]');
-                    await randomDelay(1000, 3000);  // 添加随机延迟
-                    taskElement.click();
-                    console.log('Clicked task element.');
-
-                    await randomDelay(2000, 4000);
-
-                    // 第七步：点击 "Verify" 按钮
-                    const verifyButton = await waitForElement('//*[@id="panel:r3:1"]/div/div/div[2]/div/div[2]');
-                    await randomDelay(1000, 3000);  // 添加随机延迟
-                    verifyButton.click();
-                    console.log('Clicked Verify button.');
-
-                    // 清除任务标志，防止下次循环时跳过前几步
-                    GM_setValue('taskCompleted', false);
-                }
-            } catch (error) {
-                console.error('自动化过程出错：', error);
+    // 等待元素出现的函数（使用选择器）
+    function waitForElementBySelector(selector) {
+        return new Promise(function(resolve) {
+            let element = document.querySelector(selector);
+            if (element) {
+                return resolve(element);
             }
+            const observer = new MutationObserver(function() {
+                element = document.querySelector(selector);
+                if (element) {
+                    observer.disconnect();
+                    return resolve(element);
+                }
+            });
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    }
+
+    // 延迟函数
+    function delay(time) {
+        return new Promise(function(resolve) {
+            setTimeout(resolve, time);
+        });
+    }
+
+    // 主函数
+    async function main() {
+        console.log('脚本开始执行');
+
+        // 随机延迟
+        await delay(randomDelay(1000, 3000));
+
+        // 第一步：点击元素1
+        const element1Xpath = '//*[@id="__next"]/div/div[1]/main/div/div[2]/div[2]/div[2]';
+        const element1 = await waitForElementByXpath(element1Xpath);
+        console.log('找到元素1，准备点击');
+        await delay(randomDelay(500, 1500));
+        element1.click();
+        console.log('已点击元素1');
+
+        // 第二步：等待小窗口1出现
+        const smallWindow1Xpath = '//*[@id=":r11:"]/div/div';
+        const smallWindow1 = await waitForElementByXpath(smallWindow1Xpath);
+        console.log('小窗口1已出现');
+
+        // 第三步：随机点击小窗口1中的一个元素2
+        await delay(randomDelay(500, 1500));
+        const element2List = Array.from(smallWindow1.querySelectorAll('div')).filter(el => {
+            return el.textContent.trim() === 'Featured';
+        });
+
+        if (element2List.length === 0) {
+            console.log('未找到元素2');
+            return;
         }
 
-        executeArcanaTasks();
+        const randomElement2 = element2List[Math.floor(Math.random() * element2List.length)];
+        console.log('找到元素2，准备点击');
+        await delay(randomDelay(500, 1500));
+        randomElement2.click();
+        console.log('已点击元素2');
+
+        // 第四步：等待小窗口2出现
+        const smallWindow2Xpath = '//*[@id=":r1j:"]/div/div[2]';
+        const smallWindow2 = await waitForElementByXpath(smallWindow2Xpath);
+        console.log('小窗口2已出现');
+
+        // 第五步：点击小窗口2中的元素3
+        const element3Xpath = '//*[@id=":r1j:"]/div/div[2]/div[4]/div/div[2]/div[1]/p[2]';
+        const element3 = await waitForElementByXpath(element3Xpath);
+        console.log('找到元素3，准备点击');
+        await delay(randomDelay(500, 1500));
+        element3.click();
+        console.log('已点击元素3');
+
+        // 第六步：点击小窗口2中的元素4
+        const element4Xpath = '//*[@id=":r1j:"]/div/div[2]/div[4]/button';
+        const element4 = await waitForElementByXpath(element4Xpath);
+        console.log('找到元素4，准备点击');
+        await delay(randomDelay(500, 1500));
+        element4.click();
+        console.log('已点击元素4');
+
+        // 第七步：点击元素5
+        const element5Selector = '#\\:r1j\\: > div > div.flex-center.absolute.right-7.top-7.h-4.w-4.cursor-pointer > svg';
+        const element5 = await waitForElementBySelector(element5Selector);
+        console.log('找到元素5，准备点击');
+        await delay(randomDelay(500, 1500));
+
+        // 修正点击 SVG 元素的方法
+        const clickEvent = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true
+        });
+        element5.dispatchEvent(clickEvent);
+        console.log('已点击元素5');
+
+        // 第八步：点击元素6
+        const element6Selector = '#\\:r11\\: > div > div > div.flex.items-center.justify-between > svg';
+        const element6 = await waitForElementBySelector(element6Selector);
+        console.log('找到元素6，准备点击');
+        await delay(randomDelay(500, 1500));
+
+        // 使用同样的方法点击 SVG 元素
+        element6.dispatchEvent(clickEvent);
+        console.log('已点击元素6');
+
+        // 第九步：点击元素7
+        const element7Xpath = '//*[@id="task"]';
+        const element7 = await waitForElementByXpath(element7Xpath);
+        console.log('找到元素7，准备点击');
+        await delay(randomDelay(500, 1500));
+        element7.click();
+        console.log('已点击元素7');
+
+        // 第十步：点击元素8
+        const element8Xpath = '//*[@id="panel:r3:1"]/div/div/div[2]/div/div[2]';
+        const element8 = await waitForElementByXpath(element8Xpath);
+        console.log('找到元素8，准备点击');
+        await delay(randomDelay(500, 1500));
+        element8.click();
+        console.log('已点击元素8');
+
+        console.log('脚本执行完毕');
     }
+
+    // 页面加载完成后执行主函数
+    window.addEventListener('load', function() {
+        console.log('页面已加载，等待随机时间后开始执行脚本');
+        setTimeout(main, randomDelay(1000, 3000));
+    });
 })();
