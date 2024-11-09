@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.5
+// @version      2.6
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -717,7 +717,7 @@
                 }
 
                 // 添加随机延迟后执行步骤2
-                const delayAfterStep1 = Math.floor(Math.random() * 2000) + 1000; // 1-3秒
+                const delayAfterStep1 = Math.floor(Math.random() * 2000) + 2000; // 2-4秒
                 log(`步骤1执行完毕，等待随机延迟 ${delayAfterStep1} 毫秒后执行步骤2。`);
                 await new Promise(resolve => setTimeout(resolve, delayAfterStep1));
 
