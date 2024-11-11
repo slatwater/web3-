@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.6
+// @version      2.7
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -717,7 +717,7 @@
                 }
 
                 // 添加随机延迟后执行步骤2
-                const delayAfterStep1 = Math.floor(Math.random() * 2000) + 2000; // 2-4秒
+                const delayAfterStep1 = Math.floor(Math.random() * 2000) + 3000; // 3-5秒
                 log(`步骤1执行完毕，等待随机延迟 ${delayAfterStep1} 毫秒后执行步骤2。`);
                 await new Promise(resolve => setTimeout(resolve, delayAfterStep1));
 
@@ -1492,7 +1492,7 @@
                             // 点击元素2
                             await simulateDetailedClick(element2, '元素2');
                             log('✅ 已点击元素2');
-                            await randomDelay(500, 1500);
+                            await randomDelay(1000, 2000);
     
                             // 模拟点击页面的其他部分，以确保触发相关事件
                             await simulateClickBody();
@@ -1515,25 +1515,25 @@
                         const element3 = await waitForXPath(element3Xpath, 5000);
                         await simulateDetailedClick(element3, '元素3');
                         log('✅ 已点击元素3');
-                        await randomDelay(500, 1500);
+                        await randomDelay(1000, 2000);
     
                         log('✅ 开始点击元素4');
                         const element4 = await waitForXPath(element4Xpath, 5000);
                         await simulateDetailedClick(element4, '元素4');
                         log('✅ 已点击元素4');
-                        await randomDelay(500, 1500);
+                        await randomDelay(1000, 2000);
     
                         log('✅ 开始点击元素5');
                         const element5 = await waitForXPath(element5Xpath, 5000);
                         await simulateDetailedClick(element5, '元素5');
                         log('✅ 已点击元素5');
-                        await randomDelay(500, 1500);
+                        await randomDelay(1000, 2000);
     
                         log('✅ 开始点击元素6');
                         const element6 = await waitForXPath(element6Xpath, 5000);
                         await simulateDetailedClick(element6, '元素6');
                         log('✅ 已点击元素6');
-                        await randomDelay(500, 1500);
+                        await randomDelay(1000, 2000);
     
                         log('✅ 步骤1操作完成，进入步骤2。');
                     } else {
