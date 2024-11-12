@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.8
+// @version      2.9
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -13,7 +13,7 @@
 // @match        https://cess.network/merkle/*
 // @match        https://*.breadnbutter.fun/*
 // @match        https://www.communitygaming.io/quests
-// @match        https://pentagon.games/airdrop/ascended
+// @match        https://pentagon.games/airdrop/*ascended
 // @match        https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
@@ -1305,7 +1305,7 @@
             log("执行 Pentagon Games Airdrop 自动化脚本。");
     
             // 版本标记
-            const SCRIPT10_VERSION = '2.1';
+            const SCRIPT10_VERSION = '2.2';
     
             // 随机延迟函数（范围：500ms - 2500ms）
             function randomDelay(min = 500, max = 2500) {
@@ -1331,8 +1331,8 @@
                     } else {
                         window.addEventListener('load', () => resolve());
                     }
-                    });
-                }
+                });
+            }
     
             // 模拟详细的鼠标和指针事件
             async function simulateDetailedClick(element, elementName) {
@@ -1465,7 +1465,7 @@
     
                 // 定义元素的XPath
                 const element1Xpath = '/html/body/main/div[1]/header/div/div/div[3]/a[5]/button';
-                const element4Xpath = '//*[@id="headlessui-menu-button-:R2mt9sla:"]/a';
+                const element4Xpath = '/html/body/main/div[1]/header/div/div/div[2]/div[5]/div/div/button/a'; // 使用新的 full XPath
                 const element5Xpath = '/html/body/main/div[2]/div[2]/div/img';
                 const element6Xpath = '/html/body/main/div[2]/div[3]/div/div/div[7]/div/div/div[2]/a/button';
     
@@ -1507,7 +1507,7 @@
                 }
             }
     
-            // 第二步操作
+            // 第二步操作（保持不变）
             async function stepTwoPentagon() {
                 log('步骤2：执行点击元素7和元素8操作。');
     
