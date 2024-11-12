@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      3.2
+// @version      3.3
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1305,7 +1305,7 @@
             log("执行 Pentagon Games Airdrop 自动化脚本。");
     
             // 版本标记
-            const SCRIPT10_VERSION = '2.4';
+            const SCRIPT10_VERSION = '2.5';
     
             // 随机延迟函数（范围：500ms - 2500ms）
             function randomDelay(min = 500, max = 2500) {
@@ -1334,67 +1334,10 @@
                 });
             }
     
-            // 模拟详细的鼠标和指针事件
-            async function simulateDetailedClick(element, elementName) {
-                if (!element) {
-                    log(`⚠️ 元素 ${elementName} 不存在`);
-                    return;
-                }
-    
-                try {
-                    // 确保元素在视口中
-                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    await randomDelay(200, 500);
-    
-                    // 获取元素的位置信息
-                    const rect = element.getBoundingClientRect();
-                    const x = rect.left + rect.width / 2;
-                    const y = rect.top + rect.height / 2;
-    
-                    // 创建和分发 PointerEvent（更接近真实用户交互）
-                    const pointerDownEvent = new PointerEvent('pointerdown', {
-                        view: window,
-                        bubbles: true,
-                        cancelable: true,
-                        clientX: x,
-                        clientY: y,
-                        pointerId: 1,
-                        pointerType: 'mouse',
-                        isPrimary: true
-                    });
-    
-                    const pointerUpEvent = new PointerEvent('pointerup', {
-                        view: window,
-                        bubbles: true,
-                        cancelable: true,
-                        clientX: x,
-                        clientY: y,
-                        pointerId: 1,
-                        pointerType: 'mouse',
-                        isPrimary: true
-                    });
-    
-                    // 创建和分发 MouseEvent
-                    const clickEvent = new MouseEvent('click', {
-                        view: window,
-                        bubbles: true,
-                        cancelable: true,
-                        clientX: x,
-                        clientY: y,
-                        button: 0
-                    });
-    
-                    // 分发事件顺序
-                    element.dispatchEvent(pointerDownEvent);
-                    await randomDelay(100, 200);
-                    element.dispatchEvent(pointerUpEvent);
-                    await randomDelay(100, 200);
-                    element.dispatchEvent(clickEvent);
-    
-                    log(`✅ 成功模拟详细点击 ${elementName}`);
-                } catch (error) {
-                    log(`❌ 模拟详细点击 ${elementName} 失败: ${error.message}`);
-                }
+            // 直接导航到链接
+            function navigateToUrl(url) {
+                window.location.href = url;
+                log(`✅ 已导航到 ${url}`);
             }
     
             // 模拟点击页面的其他部分以触发页面识别用户交互
@@ -1402,7 +1345,7 @@
                 const body = document.querySelector('body');
                 if (body) {
                     log('✅ 模拟点击页面的其他部分（body）');
-                    await simulateDetailedClick(body, '页面主体');
+                    body.click();
                     await randomDelay(500, 1000);
                 } else {
                     log('⚠️ 未找到页面主体');
@@ -1447,7 +1390,7 @@
                     // 模拟点击页面的其他部分，以确保页面识别用户交互
                     await simulateClickBody();
     
-                    // 第一步操作：点击元素1、元素4 等
+                    // 第一步操作：点击元素1，然后直接导航到元素4的目标链接
                     await stepOnePentagon();
     
                     // 第二步操作：点击元素7、元素8 等
@@ -1465,7 +1408,7 @@
     
                 // 定义元素的XPath
                 const element1Xpath = '/html/body/main/div[1]/header/div/div/div[3]/a[5]/button';
-                const element4Xpath = '//*[@id="headlessui-menu-button-:R2mt9sla:"]/a/span'; // 修改后的XPath
+                const element4Url = '/airdrop'; // 元素4的目标链接
                 const element5Xpath = '/html/body/main/div[2]/div[2]/div/img';
                 const element6Xpath = '/html/body/main/div[2]/div[3]/div/div/div[7]/div/div/div[2]/a/button';
     
@@ -1474,27 +1417,34 @@
                     const element1 = await waitForXPath(element1Xpath, 10000);
                     if (element1) {
                         log('✅ 元素1存在，开始点击元素1');
-                        await simulateDetailedClick(element1, '元素1');
-                        await randomDelay(3000, 4000); // 等待3-4秒后点击元素4
+                        element1.click();
+                        await randomDelay(3000, 4000); // 等待3-4秒后处理元素4
     
-                        // 开始点击元素4
-                        log('✅ 开始点击元素4');
-                        const element4 = await waitForXPath(element4Xpath, 5000);
-                        await simulateDetailedClick(element4, '元素4');
-                        log('✅ 已点击元素4');
+                        // 直接导航到元素4的目标链接
+                        log('✅ 直接导航到元素4的目标链接');
+                        navigateToUrl(element4Url);
+                        await waitForPageLoad();
                         await randomDelay(1000, 2000);
     
                         // 继续点击其他元素
                         log('✅ 开始点击元素5');
                         const element5 = await waitForXPath(element5Xpath, 5000);
-                        await simulateDetailedClick(element5, '元素5');
-                        log('✅ 已点击元素5');
+                        if (element5) {
+                            element5.click();
+                            log('✅ 已点击元素5');
+                        } else {
+                            log('⚠️ 未找到元素5');
+                        }
                         await randomDelay(1000, 2000);
     
                         log('✅ 开始点击元素6');
                         const element6 = await waitForXPath(element6Xpath, 5000);
-                        await simulateDetailedClick(element6, '元素6');
-                        log('✅ 已点击元素6');
+                        if (element6) {
+                            element6.click();
+                            log('✅ 已点击元素6');
+                        } else {
+                            log('⚠️ 未找到元素6');
+                        }
                         await randomDelay(1000, 2000);
     
                         log('✅ 步骤1操作完成，进入步骤2。');
@@ -1523,8 +1473,12 @@
     
                     log('✅ 开始点击元素7');
                     const element7 = await waitForXPath(element7Xpath, 10000);
-                    await simulateDetailedClick(element7, '元素7');
-                    log('✅ 已点击元素7');
+                    if (element7) {
+                        element7.click();
+                        log('✅ 已点击元素7');
+                    } else {
+                        log('⚠️ 未找到元素7');
+                    }
                     await randomDelay(1000, 2000); // 增加1-2秒的延迟
     
                     log('✅ 开始持续点击元素8，直到小窗口1出现');
@@ -1544,7 +1498,7 @@
                         // 点击元素8（转盘）
                         const element8 = getElementByXpath(element8Xpath);
                         if (element8) {
-                            await simulateDetailedClick(element8, '元素8');
+                            element8.click();
                             log('✅ 已点击元素8');
                         } else {
                             log('⚠️ 未找到元素8，等待下一次尝试。');
@@ -1573,6 +1527,7 @@
         window.location.href = 'https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd';
     
     }
+
 
 
     // 脚本11：HoloWorldAI 自动化操作
