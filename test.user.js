@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      3.1
+// @version      3.2
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -13,7 +13,7 @@
 // @match        https://cess.network/merkle/*
 // @match        https://*.breadnbutter.fun/*
 // @match        https://www.communitygaming.io/quests
-// @match        https://pentagon.games/airdrop/*
+// @match        https://pentagon.games/airdrop*
 // @match        https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
@@ -1305,7 +1305,7 @@
             log("执行 Pentagon Games Airdrop 自动化脚本。");
     
             // 版本标记
-            const SCRIPT10_VERSION = '2.3';
+            const SCRIPT10_VERSION = '2.4';
     
             // 随机延迟函数（范围：500ms - 2500ms）
             function randomDelay(min = 500, max = 2500) {
@@ -1465,8 +1465,7 @@
     
                 // 定义元素的XPath
                 const element1Xpath = '/html/body/main/div[1]/header/div/div/div[3]/a[5]/button';
-                const element4Xpath = '/html/body/main/div[1]/header/div/div/div[2]/div[5]/div/div/button'; // 更新为按钮的XPath
-                const element4MenuItemSelector = 'div[role="menu"] a[href="/airdrop"]'; // 菜单项的CSS选择器
+                const element4Xpath = '//*[@id="headlessui-menu-button-:R2mt9sla:"]/a/span'; // 修改后的XPath
                 const element5Xpath = '/html/body/main/div[2]/div[2]/div/img';
                 const element6Xpath = '/html/body/main/div[2]/div[3]/div/div/div[7]/div/div/div[2]/a/button';
     
@@ -1478,17 +1477,11 @@
                         await simulateDetailedClick(element1, '元素1');
                         await randomDelay(3000, 4000); // 等待3-4秒后点击元素4
     
-                        // 开始点击元素4（下拉菜单按钮）
-                        log('✅ 开始点击元素4（下拉菜单按钮）');
+                        // 开始点击元素4
+                        log('✅ 开始点击元素4');
                         const element4 = await waitForXPath(element4Xpath, 5000);
                         await simulateDetailedClick(element4, '元素4');
-                        await randomDelay(500, 1000);
-    
-                        // 点击下拉菜单中的 "Airdrop" 项
-                        log('✅ 开始点击元素4的菜单项（Airdrop）');
-                        const menuItem = await waitForSelector(element4MenuItemSelector, 5000);
-                        await simulateDetailedClick(menuItem, 'Airdrop 菜单项');
-                        log('✅ 已点击 Airdrop 菜单项');
+                        log('✅ 已点击元素4');
                         await randomDelay(1000, 2000);
     
                         // 继续点击其他元素
@@ -1570,27 +1563,6 @@
                 }
             }
     
-            // 等待特定CSS选择器元素出现
-            async function waitForSelector(selector, timeout = 30000) {
-                return new Promise((resolve, reject) => {
-                    const interval = 500;
-                    let elapsed = 0;
-                    const timer = setInterval(() => {
-                        const element = document.querySelector(selector);
-                        if (element) {
-                            clearInterval(timer);
-                            resolve(element);
-                        } else {
-                            elapsed += interval;
-                            if (elapsed >= timeout) {
-                                clearInterval(timer);
-                                reject(new Error(`等待选择器 ${selector} 超时`));
-                            }
-                        }
-                    }, interval);
-                });
-            }
-    
             // 执行主函数
             await mainPentagon();
         } catch (error) {
@@ -1601,6 +1573,7 @@
         window.location.href = 'https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd';
     
     }
+
 
     // 脚本11：HoloWorldAI 自动化操作
     async function executeScript11() {
