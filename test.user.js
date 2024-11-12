@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      2.7
+// @version      2.8
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1299,12 +1299,13 @@
     }
 
     // 脚本10：Pentagon Games Airdrop 自动化操作
+    
     async function executeScript10() {
         try {
             log("执行 Pentagon Games Airdrop 自动化脚本。");
     
             // 版本标记
-            const SCRIPT10_VERSION = '2.0';
+            const SCRIPT10_VERSION = '2.1';
     
             // 随机延迟函数（范围：500ms - 2500ms）
             function randomDelay(min = 500, max = 2500) {
@@ -1330,8 +1331,8 @@
                     } else {
                         window.addEventListener('load', () => resolve());
                     }
-                });
-            }
+                    });
+                }
     
             // 模拟详细的鼠标和指针事件
             async function simulateDetailedClick(element, elementName) {
@@ -1408,28 +1409,25 @@
                 }
             }
     
-            // 直接提交表单
-            async function directSubmitForm(form, formName = '表单') {
-                if (!form) {
-                    log(`⚠️ ${formName} 不存在，无法直接提交`);
-                    return;
-                }
-    
-                try {
-                    // 触发 'submit' 事件
-                    const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-                    const eventNotPrevented = form.dispatchEvent(submitEvent);
-    
-                    if (eventNotPrevented) {
-                        // 如果事件未被取消，则提交表单
-                        form.submit();
-                        log(`✅ 已直接提交 ${formName}`);
-                    } else {
-                        log(`⚠️ ${formName} 的提交事件被取消`);
-                    }
-                } catch (error) {
-                    log(`❌ 直接提交 ${formName} 失败: ${error.message}`);
-                }
+            // 等待特定XPath元素出现
+            async function waitForXPath(xpath, timeout = 30000) {
+                return new Promise((resolve, reject) => {
+                    const interval = 500;
+                    let elapsed = 0;
+                    const timer = setInterval(() => {
+                        const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                        if (result.singleNodeValue) {
+                            clearInterval(timer);
+                            resolve(result.singleNodeValue);
+                        } else {
+                            elapsed += interval;
+                            if (elapsed >= timeout) {
+                                clearInterval(timer);
+                                reject(new Error(`等待XPath ${xpath} 超时`));
+                            }
+                        }
+                    }, interval);
+                });
             }
     
             // 主执行函数
@@ -1449,7 +1447,7 @@
                     // 模拟点击页面的其他部分，以确保页面识别用户交互
                     await simulateClickBody();
     
-                    // 第一步操作：点击元素1、元素2 等
+                    // 第一步操作：点击元素1、元素4 等
                     await stepOnePentagon();
     
                     // 第二步操作：点击元素7、元素8 等
@@ -1465,11 +1463,9 @@
             async function stepOnePentagon() {
                 log('步骤1：执行点击操作。');
     
-                // 定义元素的XPath和CSS选择器
-                const element1Xpath = '/html/body/main/div[1]/header/div/div/a[2]/button';
-                const element2Selector = 'body > main > div.bg-img-main-bg-sm.md\\:bg-img-main-bg-md.lg\\:bg-img-main-bg.bg-black.bg-center.bg-no-repeat.bg-top.min-h-screen.flex.flex-col.justify-between > div > div > div > form > div.w-full.flex.justify-center.mt-\\[43px\\].md\\:mt-\\[51px\\].lg\\:mt-\\[45px\\] > input';
-                const element3Xpath = '/html/body/main/div[1]/header/div/div/div/a[2]/label';
-                const element4Xpath = '//*[@id="airdrop"]/div/div[1]/a/button';
+                // 定义元素的XPath
+                const element1Xpath = '/html/body/main/div[1]/header/div/div/div[3]/a[5]/button';
+                const element4Xpath = '//*[@id="headlessui-menu-button-:R2mt9sla:"]/a';
                 const element5Xpath = '/html/body/main/div[2]/div[2]/div/img';
                 const element6Xpath = '/html/body/main/div[2]/div[3]/div/div/div[7]/div/div/div[2]/a/button';
     
@@ -1479,50 +1475,16 @@
                     if (element1) {
                         log('✅ 元素1存在，开始点击元素1');
                         await simulateDetailedClick(element1, '元素1');
-                        await randomDelay(500, 1500);
+                        await randomDelay(3000, 4000); // 等待3-4秒后点击元素4
     
-                        log('✅ 开始点击元素2');
-                        const element2 = getElementBySelector(element2Selector);
-                        if (element2) {
-                            // 先聚焦元素2
-                            element2.focus();
-                            log('✅ 已聚焦元素2');
-                            await randomDelay(500, 1000); // 聚焦后等待
-    
-                            // 点击元素2
-                            await simulateDetailedClick(element2, '元素2');
-                            log('✅ 已点击元素2');
-                            await randomDelay(1000, 2000);
-    
-                            // 模拟点击页面的其他部分，以确保触发相关事件
-                            await simulateClickBody();
-    
-                            // 尝试直接提交表单
-                            log('⚠️ 尝试直接提交表单');
-                            const form = element2.closest('form');
-                            if (form) {
-                                await directSubmitForm(form, '表单');
-                                await randomDelay(500, 1500);
-                            } else {
-                                log('⚠️ 未找到包含元素2的表单，无法直接提交');
-                            }
-                        } else {
-                            log('⚠️ 未找到元素2，跳过点击元素2');
-                        }
-    
-                        // 继续点击其他元素
-                        log('✅ 开始点击元素3');
-                        const element3 = await waitForXPath(element3Xpath, 5000);
-                        await simulateDetailedClick(element3, '元素3');
-                        log('✅ 已点击元素3');
-                        await randomDelay(1000, 2000);
-    
+                        // 开始点击元素4
                         log('✅ 开始点击元素4');
                         const element4 = await waitForXPath(element4Xpath, 5000);
                         await simulateDetailedClick(element4, '元素4');
                         log('✅ 已点击元素4');
                         await randomDelay(1000, 2000);
     
+                        // 继续点击其他元素
                         log('✅ 开始点击元素5');
                         const element5 = await waitForXPath(element5Xpath, 5000);
                         await simulateDetailedClick(element5, '元素5');
@@ -1601,27 +1563,6 @@
                 }
             }
     
-            // 等待特定XPath元素出现
-            async function waitForXPath(xpath, timeout = 30000) {
-                return new Promise((resolve, reject) => {
-                    const interval = 500;
-                    let elapsed = 0;
-                    const timer = setInterval(() => {
-                        const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                        if (result.singleNodeValue) {
-                            clearInterval(timer);
-                            resolve(result.singleNodeValue);
-                        } else {
-                            elapsed += interval;
-                            if (elapsed >= timeout) {
-                                clearInterval(timer);
-                                reject(new Error(`等待XPath ${xpath} 超时`));
-                            }
-                        }
-                    }, interval);
-                });
-            }
-    
             // 执行主函数
             await mainPentagon();
         } catch (error) {
@@ -1630,8 +1571,9 @@
         log("Pentagon 脚本执行完毕，准备跳转至 HoloWorldAI 页面。");
         await randomDelay(2000, 4000);
         window.location.href = 'https://www.holoworldai.com/chat/YbkygYZ9lsDhCz5VbiRd';
-
+    
     }
+
     // 脚本11：HoloWorldAI 自动化操作
     async function executeScript11() {
         log("执行 HoloWorldAI 自动化脚本。");
