@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      3.5
+// @version      3.6
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1298,7 +1298,7 @@
         log("CommunityGaming 脚本执行完毕，脚本结束。");
         log("CommunityGaming 脚本执行完毕，准备跳转至 Pentagon Games 页面。");
         await randomDelay(2000, 4000); // 延迟2-4秒
-        window.location.href = 'https://pentagon.games/airdrop/account';
+        window.location.href = 'https://pentagon.games/account';
     }
 
     // 脚本10：Pentagon Games 自动化操作
