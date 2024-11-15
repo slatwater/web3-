@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      4.1
+// @version      4.2
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -963,6 +963,7 @@
             log(`发生错误: ${error.message}`);
         }
     }
+
     // 脚本8：BreadnButter 自动化操作
     // 主执行函数
     async function executeScript8() {
@@ -1015,12 +1016,12 @@
     async function secondStep() {
         log('开始执行第二步');
     
-        // 定义新的元素的选择器
+        // 定义新的元素的选择器，并修复方括号转义问题
         const selector1 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(1) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
         const selector2 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(2) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(1) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
-        const selector3 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(10) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\[69px\].px-4.cursor-pointer';
-        const selector4 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.flex.flex-col.w-full.justify-center > div.flex.flex-row.items-center.mt-0\.5.h-\[18px\].cursor-pointer > span';
-        const selector5 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\[69px\].px-4.cursor-pointer';
+        const selector3 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(10) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector4 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.flex.flex-col.w-full.justify-center > div.flex.flex-row.items-center.mt-0\\.5.h-\\[18px\\].cursor-pointer > span';
+        const selector5 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
     
         try {
             // 点击元素1
@@ -1093,7 +1094,6 @@
             log(`执行第二步时发生错误：${error.message}`);
         }
     }
-
 
 
 
