@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      4.5
+// @version      4.6
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1499,7 +1499,7 @@
             log('已点击第二个随机按钮');
     
             // 等待7秒后执行第二步
-            await new Promise(resolve => setTimeout(resolve, 7000));
+            await new Promise(resolve => setTimeout(resolve, 10000));
             await stepTwo();
         }
     
