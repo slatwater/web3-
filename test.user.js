@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      4.2
+// @version      4.3
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1448,7 +1448,7 @@
     
         log('开始监测区域1是否存在');
     
-        var region1Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[2]/div[2]/div/div[3]/div[1]';
+        var region1Xpath = '//*[@id="__next"]/div/div/div[1]/div[8]/div/div[2]/div[2]/div/div[3]/div[1]';
         var maxChecks = 60; // 最大检查次数（相当于30秒）
         var checks = 0;
         var checkInterval = 500; // 每500ms检查一次
@@ -1507,7 +1507,7 @@
         async function stepTwo() {
             log('第二步：等待元素1并点击');
     
-            var element1Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[1]/div[3]/div[2]/div[1]/button/img';
+            var element1Xpath = '//*[@id="__next"]/div/div/div[1]/div[8]/div/div[1]/div[3]/div[2]/div[1]/button/img';
             var maxChecks = 60; // 最大检查次数（相当于30秒）
             var checks = 0;
             var checkInterval = 500; // 每500ms检查一次
@@ -1534,7 +1534,7 @@
         async function waitForElement2() {
             log('第二步：等待元素2并点击');
     
-            var element2Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[6]/div[2]/div/div[2]/div[2]';
+            var element2Xpath = '//*[@id="__next"]/div/div/div[1]/div[8]/div/div[6]/div[2]/div/div[2]/div[2]';
             var maxChecks = 60;
             var checks = 0;
             var checkInterval = 500;
@@ -1558,65 +1558,14 @@
             }
         }
     
-        // 定义第三步
-        async function stepThree() {
-            log('第三步：等待元素3并点击');
+
     
-            var element3Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[2]/div[1]/button';
-            var maxChecks = 60;
-            var checks = 0;
-            var checkInterval = 500;
-    
-            while (checks < maxChecks) {
-                var element3 = document.evaluate(element3Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (element3) {
-                    element3.click();
-                    log('已点击元素3');
-    
-                    // 开始监测元素5
-                    await waitForElement5();
-                    break;
-                } else {
-                    await new Promise(resolve => setTimeout(resolve, checkInterval));
-                    checks++;
-                    if (checks >= maxChecks) {
-                        log('等待元素3超时');
-                    }
-                }
-            }
-        }
-    
-        async function waitForElement5() {
-            log('第三步：等待元素5并点击');
-    
-            var element5Xpath = '//*[@id="__next"]/div/div/div[1]/div[6]/div/div[6]/div[2]/div/div[3]/div/div[4]/div/div/div/div[2]/div[2]/button';
-            var maxChecks = 60;
-            var checks = 0;
-            var checkInterval = 500;
-    
-            while (checks < maxChecks) {
-                var element5 = document.evaluate(element5Xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (element5) {
-                    element5.click();
-                    log('已点击元素5');
-    
-                    // 继续等待元素4
-                    await waitForElement4();
-                    break;
-                } else {
-                    await new Promise(resolve => setTimeout(resolve, checkInterval));
-                    checks++;
-                    if (checks >= maxChecks) {
-                        log('等待元素5超时');
-                    }
-                }
-            }
-        }
+
     
         async function waitForElement4() {
             log('第三步：等待元素4');
     
-            var element4Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[6]/div[2]/div/div[3]/div/div[2]/div/div/div[4]/button';
+            var element4Xpath = '//*[@id="__next"]/div/div/div[1]/div[8]/div/div[6]/div[2]/div/div[3]/div/div[2]/div/div/div[4]/button';
             var maxChecks = 60;
             var checks = 0;
             var checkInterval = 500;
@@ -1626,7 +1575,7 @@
                 if (element4) {
                     log('元素4已出现，随机等待10-13秒后点击');
     
-                    var delay = Math.random() * 3000 + 10000; // 10000ms到13000ms之间
+                    var delay = Math.random() * 2000 + 2000; // 10000ms到13000ms之间
                     await new Promise(resolve => setTimeout(resolve, delay));
                     element4.click();
                     log('已点击元素4');
