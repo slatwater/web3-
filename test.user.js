@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      4.6
+// @version      4.7
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1448,7 +1448,7 @@
     
         log('开始监测区域1是否存在');
     
-        var region1Xpath = '//*[@id="__next"]/div/div/div[1]/div[8]/div/div[2]/div[2]/div/div[3]/div[1]';
+        var region1Xpath = '//*[@id="__next"]/div/div/div[1]/div[7]/div/div[2]/div[2]/div/div[3]/div[1]';
         var maxChecks = 60; // 最大检查次数（相当于30秒）
         var checks = 0;
         var checkInterval = 500; // 每500ms检查一次
