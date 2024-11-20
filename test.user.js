@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      5.2
+// @version      5.3
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -640,7 +640,7 @@
             log('✅ 页面已完全加载');
 
             // 随机延迟1-3秒后开始执行
-            const initialDelay = Math.floor(Math.random() * 2000) + 1000;
+            const initialDelay = Math.floor(Math.random() * 3000) + 2000;
             log(`⏳ 等待 ${initialDelay} 毫秒后开始执行脚本`);
             await new Promise(resolve => setTimeout(resolve, initialDelay));
 
@@ -664,7 +664,7 @@
 
         // 在Reddio脚本执行完毕后，自动跳转至XtremeVerse目标网址
         log("Reddio脚本执行完毕，准备跳转至 XtremeVerse 页面。");
-        await randomDelay(2000, 4000);
+        await randomDelay(3000, 5000);
         window.location.href = 'https://xnet.xtremeverse.xyz/earn?index=1';
     }
 
