@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      4.8
+// @version      4.9
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1356,15 +1356,17 @@
                     element1.click();
                     await randomDelay(500, 1500);
     
-                    log('开始持续点击元素2，直到元素3出现');
+                    log('开始持续点击元素2，直到元素3或元素4出现');
                     const element2Xpath = '/html/body/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/div/canvas';
                     const element3Xpath = '//*[@id="headlessui-dialog-panel-:r1:"]/div/div[2]/div/div/label';
+                    const element4Xpath = '//*[@id="headlessui-dialog-panel-:r2:"]';
     
                     let element3 = null;
+                    let element4 = null;
                     const maxAttempts = 50; // 最大尝试次数
                     let attempts = 0;
     
-                    while (!element3 && attempts < maxAttempts) {
+                    while (!element3 && !element4 && attempts < maxAttempts) {
                         const element2 = getElementByXpath(element2Xpath);
                         if (element2) {
                             element2.click();
@@ -1380,19 +1382,28 @@
                             element3 = null;
                         }
     
+                        // 如果元素3未出现，检查元素4
+                        if (!element3) {
+                            try {
+                                element4 = await waitForXPath(element4Xpath, 2000);
+                            } catch {
+                                element4 = null;
+                            }
+                        }
+    
                         attempts++;
                         await randomDelay(1000, 1500);
                     }
     
-                    if (element3) {
-                        log('元素3已出现，等待随机2-3秒后执行第三步');
+                    if (element3 || element4) {
+                        log('元素3或元素4已出现，等待随机2-3秒后执行第三步');
                         await randomDelay(2000, 3000);
     
                         // 执行第三步
                         log('执行第三步：跳转至 url4');
                         window.location.href = url4;
                     } else {
-                        log('在最大尝试次数内，元素3未出现，脚本结束');
+                        log('在最大尝试次数内，元素3和元素4均未出现，脚本结束');
                     }
                 } else {
                     log('元素1未出现，脚本结束');
