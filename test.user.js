@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      5.1
+// @version      5.2
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1332,7 +1332,7 @@
         }
     
         // 等待特定XPath元素出现
-        async function waitForXPath(xpath, timeout = 30000) {
+        async function waitForXPath(xpath, timeout = 5000) {
             return new Promise((resolve, reject) => {
                 const interval = 500;
                 let elapsed = 0;
@@ -1371,17 +1371,17 @@
                     element1.click();
                     await randomDelay(500, 1500);
     
-                    log('开始持续点击元素2，直到元素3或元素4出现');
+                    log('开始点击元素2，直到元素3或元素4出现');
                     const element2Xpath = '/html/body/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/div/canvas';
                     const element3Xpath = '//*[@id="headlessui-dialog-panel-:r1:"]/div/div[2]/div/div/label';
                     const element4Xpath = '//*[@id="headlessui-dialog-panel-:r2:"]';
     
-                    let element3 = null;
-                    let element4 = null;
                     const maxAttempts = 50; // 最大尝试次数
                     let attempts = 0;
+                    let element3 = null;
+                    let element4 = null;
     
-                    while (!element3 && !element4 && attempts < maxAttempts) {
+                    while ((element3 === null && element4 === null) && attempts < maxAttempts) {
                         const element2 = getElementByXpath(element2Xpath);
                         if (element2) {
                             element2.click();
@@ -1390,20 +1390,24 @@
                             log('未找到元素2，等待下一次尝试');
                         }
     
-                        // 检查元素3是否出现
+                        // 等待元素3或元素4出现
+                        log('等待元素3或元素4出现');
                         try {
-                            element3 = await waitForXPath(element3Xpath, 2000);
+                            element3 = await waitForXPath(element3Xpath, 5000);
                         } catch {
                             element3 = null;
                         }
     
-                        // 如果元素3未出现，检查元素4
                         if (!element3) {
                             try {
-                                element4 = await waitForXPath(element4Xpath, 2000);
+                                element4 = await waitForXPath(element4Xpath, 5000);
                             } catch {
                                 element4 = null;
                             }
+                        }
+    
+                        if (element3 || element4) {
+                            break;
                         }
     
                         attempts++;
@@ -1443,8 +1447,8 @@
                 await randomDelay(2000, 2000);
                 window.location.href = url3;
             } else if (currentUrl.startsWith(url2)) {
-                log('检测到当前页面为 url2，等待 5 秒后跳转至 url3');
-                await randomDelay(5000, 5000);
+                log('检测到当前页面为 url2，等待 7 秒后跳转至 url3');
+                await randomDelay(7000, 7000);
                 window.location.href = url3;
             } else if (currentUrl.startsWith(url3)) {
                 log('检测到当前页面为 url3，开始执行第二步');
