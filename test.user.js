@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      4.9
+// @version      5.1
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -176,58 +176,73 @@
         }
     }
 
-    // 脚本1：Space3 Missions 自动化操作
+    // 脚本1：Space3 Missions 自动化操作 
     async function executeScript1() {
-        log("执行Space3 Missions 自动化脚本。");
-
+        log("执行 Space3 Missions 自动化脚本。");
+    
         const area1Selector = '#daily-checkin-container > div.space-3-row.css-kda75v > div.space-3-col.space-3-col-24.overlay-container.css-kda75v > div';
-        // 已删除小窗口1的检测逻辑
-
+    
         try {
             await waitForSelector(area1Selector);
         } catch (error) {
             log(`未找到区域1，选择器为：${area1Selector}`);
             return;
         }
-
+    
         await randomDelay(2000, 4000);
         log("页面加载完成，开始执行点击操作。");
-
+    
         // 获取区域1
         const area1 = document.querySelector(area1Selector);
         if (!area1) {
             log(`未找到区域1，选择器为：${area1Selector}`);
             return;
         }
-
-        // 获取所有符合条件的img元素
-        let imgElements = area1.querySelectorAll('img[alt="Daily Reward"].space-3-image-img.checkin-reward-card__contents--thumb.css-kda75v[src="https://psyxmwdgtfwzworjuzqw.supabase.co/storage/v1/object/public/space3/public/41fc685129ab4ca651f337dad12f0dd7a81714a34cd6fa0561f06840d5b5e4d2"]');
-        log(`在区域1中找到 ${imgElements.length} 个符合条件的img元素。`);
-
-        for (let i = 0; i < imgElements.length; i++) {
-            const img = imgElements[i];
-            if (img) {
-                log(`点击第 ${i + 1} 个符合条件的img元素。`);
-                img.scrollIntoView({ behavior: 'smooth', block: 'center' }); // 确保元素在视野内
-                await randomDelay(500, 1500); // 在点击前稍作延迟
-
-                img.click();
-                log(`已点击第 ${i + 1} 个img元素`);
-                await randomDelay(500,1000 ); // 在点击后稍作延迟
-
-                // 已删除URL变化检测逻辑
-
-                // 随机延迟后继续
-                await randomDelay(500, 1000);
-            } else {
-                log(`第 ${i + 1} 个img元素不存在，跳过。`);
-            }
-        }
-
-        log("Space3 Missions 自动化脚本执行完毕，已点击所有符合条件的img元素，跳转到 SideQuest 任务页面。");
+    
+        // 调用新的点击函数
+        await clickAllMatchingElements();
+    
+        log("Space3 Missions 自动化脚本执行完毕，已点击所有符合条件的元素，跳转到 SideQuest 任务页面。");
         await randomDelay(2000, 4000);
         window.location.href = 'https://sidequest.rcade.game/quests';
     }
+    
+    // 遍历点击所有指定 class 的元素
+    async function clickAllMatchingElements() {
+        const targetRange = document.evaluate('//*[@id="daily-checkin-container"]/div[1]/div[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        if (targetRange) {
+            log('找到目标区域。');
+            const matchingElements = targetRange.querySelectorAll('.space-3-image-img.checkin-reward-card__contents--thumb.css-kda75v');
+    
+            if (matchingElements.length > 0) {
+                log(`找到 ${matchingElements.length} 个匹配的元素，依次点击...`);
+    
+                for (let i = 0; i < matchingElements.length; i++) {
+                    const element = matchingElements[i];
+    
+                    // 使用 async/await 和延迟函数
+                    await (async () => {
+                        // 确保元素可见
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+                        // 等待随机延迟
+                        await randomDelay(1000, 2000);
+    
+                        // 尝试直接点击元素
+                        log(`正在点击第 ${i + 1} 个元素...`);
+                        element.click();
+    
+                        log(`已点击第 ${i + 1} 个元素。`);
+                    })();
+                }
+            } else {
+                log('未找到匹配的元素。');
+            }
+        } else {
+            log('未找到目标区域。');
+        }
+    }
+
 
     // 脚本2：SideQuest 自动化操作
     async function executeScript2() {
