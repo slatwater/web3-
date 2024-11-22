@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      5.6
+// @version      5.7
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -18,6 +18,7 @@
 // @match        https://pentagon.games/sign-in
 // @match        https://pentagon.games/airdrop/ascended
 // @match        https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd
+// @match        https://quest.redactedairways.com/home
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @grant        none
@@ -166,7 +167,10 @@
                 await executeScript10();
             } else if (currentURL.includes('https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd')) {
                 // 执行脚本11的功能
-                await executeScript11();             
+                await executeScript11();   
+            } else if (currentURL.includes('quest.redactedairways.com/home')) {
+                // 执行脚本12的功能
+                await executeScript12();   
             } else {
                 log("当前页面不在脚本的处理范围内。");
             }
@@ -1599,6 +1603,130 @@
                 }
             }
         }
+        // 执行完毕后，跳转到脚本12的目标网址
+        log('HoloWorldAI 脚本执行完毕，跳转到 Redacted Airways Quests 页面。');
+        window.location.href = 'https://quest.redactedairways.com/home';
+
+    }
+
+    // 脚本12：Redacted Airways Quests 自动化操作
+    async function executeScript12() {
+        log('执行 Redacted Airways Quests 自动化脚本');
+    
+        // 主函数逻辑
+    
+        // 区域1的选择器
+        const area1Selector = '#social-quests > section:nth-child(1) > div.max-h-\\[320px\\].md\\:max-h-\\[260px\\].desktop\\:max-h-\\[340px\\].overflow-auto.md\\:max-w-\\[720px\\].desktop\\:max-w-\\[950px\\].mt-4.w-full.mx-auto > div > div:nth-child(1)';
+    
+        // 等待区域1出现
+        let area1;
+        try {
+            area1 = await waitForSelector(area1Selector, 10000);
+            log('区域1已找到');
+        } catch (error) {
+            log('未找到区域1，脚本结束');
+            return;
+        }
+    
+        // 定义循环执行的函数
+        async function executeSteps() {
+            while (true) {
+                // 第一步：检查判断属性是否为0
+                const attributeElement = area1.querySelector('span.text-primary');
+                if (attributeElement && attributeElement.textContent.trim() === '0') {
+                    log('判断属性为0，脚本结束');
+                    break;
+                } else {
+                    log('判断属性不为0，开始执行第二步');
+    
+                    // 第二步：点击区域1中的元素1
+                    const buttons = area1.querySelectorAll('button');
+                    let foundButton = false;
+                    for (let button of buttons) {
+                        const buttonText = button.textContent.replace(/\s+/g, '').toLowerCase();
+                        if (['like', 'retweet', 'follow', 'continue'].includes(buttonText)) {
+                            // 确保按钮可见
+                            button.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            // 等待一下
+                            await delay(500);
+                            // 使用更可靠的点击方法
+                            button.focus();
+                            button.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                            log(`已点击按钮：${button.textContent.trim()}`);
+                            foundButton = true;
+                            break;
+                        }
+                    }
+    
+                    if (!foundButton) {
+                        log('未找到匹配的按钮，等待2秒后重试');
+                        await delay(2000);
+                        continue;
+                    }
+    
+                    // 监测小窗口1的出现并处理
+                    await handlePopup();
+    
+                    // 随机延迟1-2秒后继续下一次循环
+                    log('等待 1-2 秒后继续');
+                    await randomDelay(1000, 2000);
+                }
+            }
+        }
+    
+        // 处理小窗口1的函数
+        async function handlePopup() {
+            const popupXpath = '//*[@id="root"]/div/div[2]/div/div[4]/div';
+    
+            try {
+                // 等待小窗口1出现
+                let popup = await waitForXPath(popupXpath, 10000);
+                log('小窗口1已出现');
+    
+                // 持续监测并点击小窗口1中的元素1
+                while (true) {
+                    // 重新获取 popup 元素，防止内容变化导致引用失效
+                    popup = document.evaluate(popupXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (!popup) {
+                        log('小窗口1已消失');
+                        break;
+                    }
+    
+                    const popupButtons = popup.querySelectorAll('button');
+                    let foundPopupButton = false;
+                    for (let button of popupButtons) {
+                        const buttonText = button.textContent.replace(/\s+/g, '').toLowerCase();
+                        if (['like', 'retweet', 'follow', 'continue'].includes(buttonText)) {
+                            // 确保按钮可见
+                            button.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            // 等待一下
+                            await delay(500);
+                            // 使用更可靠的点击方法
+                            button.focus();
+                            button.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                            log(`已点击小窗口中的按钮：${button.textContent.trim()}`);
+                            foundPopupButton = true;
+                            // 等待一下以便处理后续动作
+                            await delay(1000);
+                            break;
+                        }
+                    }
+    
+                    if (!foundPopupButton) {
+                        log('未找到小窗口中的匹配按钮，等待1秒后重试');
+                        await delay(1000);
+                    }
+                }
+    
+            } catch (error) {
+                log('未检测到小窗口1');
+            }
+        }
+    
+        // 开始执行步骤
+        await executeSteps();
+    
+        log('Redacted Airways Quests 自动化脚本已完成');
     }
 
 
