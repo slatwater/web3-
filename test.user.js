@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      5.7
+// @version      5.8
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -994,7 +994,7 @@
     
         // 检查元素1是否存在
         try {
-            const element1 = await waitForXPath(element1Xpath, 10000);
+            const element1 = await waitForXPath(element1Xpath, 5000);
     
             if (element1) {
                 log('元素1存在，开始点击元素1');
@@ -1605,6 +1605,7 @@
         }
         // 执行完毕后，跳转到脚本12的目标网址
         log('HoloWorldAI 脚本执行完毕，跳转到 Redacted Airways Quests 页面。');
+        await randomDelay(3000, 4000);
         window.location.href = 'https://quest.redactedairways.com/home';
 
     }
