@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      5.8
+// @version      5.9
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1425,12 +1425,12 @@
             log(`当前 URL: ${currentUrl}`);
     
             if (currentUrl.startsWith(url1)) {
-                log('检测到当前页面为 url1，等待 2 秒后跳转至 url3');
-                await randomDelay(2000, 2000);
+                log('检测到当前页面为 url1，等待 4 秒后跳转至 url3');
+                await randomDelay(4000, 4000);
                 window.location.href = url3;
             } else if (currentUrl.startsWith(url2)) {
-                log('检测到当前页面为 url2，等待 5 秒后跳转至 url3');
-                await randomDelay(5000, 5000);
+                log('检测到当前页面为 url2，等待 7 秒后跳转至 url3');
+                await randomDelay(7000, 7000);
                 window.location.href = url3;
             } else if (currentUrl.startsWith(url3)) {
                 log('检测到当前页面为 url3，开始执行第二步');
