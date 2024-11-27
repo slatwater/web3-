@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      5.9
+// @version      6.0
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -18,7 +18,7 @@
 // @match        https://pentagon.games/sign-in
 // @match        https://pentagon.games/airdrop/ascended
 // @match        https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd
-// @match        https://quest.redactedairways.com/home
+// @match        https://quest.redactedairways.com/*
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @grant        none
@@ -168,7 +168,7 @@
             } else if (currentURL.includes('https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd')) {
                 // 执行脚本11的功能
                 await executeScript11();   
-            } else if (currentURL.includes('quest.redactedairways.com/home')) {
+            } else if (currentURL.includes('quest.redactedairways.com')) {
                 // 执行脚本12的功能
                 await executeScript12();   
             } else {
