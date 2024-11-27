@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      6.0
+// @version      6.1
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1613,12 +1613,12 @@
     // 脚本12：Redacted Airways Quests 自动化操作
     async function executeScript12() {
         log('执行 Redacted Airways Quests 自动化脚本');
-    
+
         // 主函数逻辑
-    
+
         // 区域1的选择器
         const area1Selector = '#social-quests > section:nth-child(1) > div.max-h-\\[320px\\].md\\:max-h-\\[260px\\].desktop\\:max-h-\\[340px\\].overflow-auto.md\\:max-w-\\[720px\\].desktop\\:max-w-\\[950px\\].mt-4.w-full.mx-auto > div > div:nth-child(1)';
-    
+
         // 等待区域1出现
         let area1;
         try {
@@ -1628,7 +1628,7 @@
             log('未找到区域1，脚本结束');
             return;
         }
-    
+
         // 定义循环执行的函数
         async function executeSteps() {
             while (true) {
@@ -1639,7 +1639,7 @@
                     break;
                 } else {
                     log('判断属性不为0，开始执行第二步');
-    
+
                     // 第二步：点击区域1中的元素1
                     const buttons = area1.querySelectorAll('button');
                     let foundButton = false;
@@ -1658,32 +1658,32 @@
                             break;
                         }
                     }
-    
+
                     if (!foundButton) {
                         log('未找到匹配的按钮，等待2秒后重试');
                         await delay(2000);
                         continue;
                     }
-    
+
                     // 监测小窗口1的出现并处理
                     await handlePopup();
-    
+
                     // 随机延迟1-2秒后继续下一次循环
                     log('等待 1-2 秒后继续');
                     await randomDelay(1000, 2000);
                 }
             }
         }
-    
+
         // 处理小窗口1的函数
         async function handlePopup() {
             const popupXpath = '//*[@id="root"]/div/div[2]/div/div[4]/div';
-    
+
             try {
                 // 等待小窗口1出现
-                let popup = await waitForXPath(popupXpath, 10000);
+                let popup = await waitForElementByXpath(popupXpath, 10000);
                 log('小窗口1已出现');
-    
+
                 // 持续监测并点击小窗口1中的元素1
                 while (true) {
                     // 重新获取 popup 元素，防止内容变化导致引用失效
@@ -1692,7 +1692,7 @@
                         log('小窗口1已消失');
                         break;
                     }
-    
+
                     const popupButtons = popup.querySelectorAll('button');
                     let foundPopupButton = false;
                     for (let button of popupButtons) {
@@ -1712,23 +1712,24 @@
                             break;
                         }
                     }
-    
+
                     if (!foundPopupButton) {
                         log('未找到小窗口中的匹配按钮，等待1秒后重试');
                         await delay(1000);
                     }
                 }
-    
+
             } catch (error) {
                 log('未检测到小窗口1');
             }
         }
-    
+
         // 开始执行步骤
         await executeSteps();
-    
+
         log('Redacted Airways Quests 自动化脚本已完成');
     }
+
 
 
     // 等待页面完全加载后执行主函数
