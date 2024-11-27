@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      6.1
+// @version      6.2
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -41,6 +41,11 @@
         return new Promise(resolve => setTimeout(resolve, delay));
     }
 
+    // 固定延迟函数
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
     // 等待CSS选择器出现
     function waitForSelector(selector, timeout = 30000) {
         return new Promise((resolve, reject) => {
@@ -1681,7 +1686,7 @@
 
             try {
                 // 等待小窗口1出现
-                let popup = await waitForElementByXpath(popupXpath, 10000);
+                let popup = await waitForXPath(popupXpath, 10000);
                 log('小窗口1已出现');
 
                 // 持续监测并点击小窗口1中的元素1
