@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      6.6
+// @version      6.7
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -439,21 +439,22 @@
         }
     }
 
-    // 脚本4：Forge.gg Quests 自动化操作
+    // 脚本4：Forge.gg Quests 自动化操作（修改版）
+    
     async function executeScript4() {
         log("执行 Forge.gg Quests 自动化脚本。");
-
+    
         // 定义元素选择器
         const element1Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > button';
         const element2Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > div.home-rewards__head > div > button';
         const spinnerSelector = '#root > div > div.user__wrapper.bg-quest.content-paused > main > div.home-topcontent > header > p > span.spinner';
         const element3Selector = 'div.xpbar.xpbar--badge.margin-bottom';
-
+    
         // 记录初始的barValue值
         let initialBarValue = null;
         let scriptStopped = false; // 脚本停止标志
         let clickElement2IntervalId = null; // 定时器ID
-
+    
         // 第一步：重复点击元素1，直到spinner出现
         log("开始点击元素1，直到加载开始（spinner出现）...");
         try {
@@ -463,16 +464,15 @@
                 await randomDelay(500, 1000);
                 element1.click();
                 log("已点击元素1。");
-
+    
                 // 检查spinner是否出现
-                try {
-                    await waitForSelector(spinnerSelector, 3000);
+                if (document.querySelector(spinnerSelector)) {
                     log("加载已开始（spinner已出现）。");
                     spinnerAppeared = true;
-                } catch (error) {
+                } else {
                     log("spinner未出现，继续点击元素1...");
                 }
-
+    
                 // 添加适当的随机延迟
                 await randomDelay(1000, 2000);
             }
@@ -480,24 +480,24 @@
             log("未找到元素1或点击失败。");
             return;
         }
-
-        // 第二步：等待加载完成（等待spinner消失）
-        log("等待加载完成（等待spinner消失）...");
+    
+        // 第二步：等待加载完成（持续等待spinner消失）
+        log("等待加载完成（持续等待spinner消失）...");
         try {
-            await waitForElementToDisappear(spinnerSelector, 60000);
+            await waitForSpinnerToDisappear(spinnerSelector);
             log("加载已完成。");
         } catch (error) {
-            log("等待spinner消失超时或发生错误。");
+            log("等待spinner消失时发生错误：" + error.message);
             return;
         }
-
+    
         // 第三步：开始监测元素3的barValue值变化
         log("等待元素3加载完毕...");
         try {
             const element3 = await waitForSelector(element3Selector, 20000);
             initialBarValue = getBarValue(element3);
             log(`初始的barValue值为：${initialBarValue}`);
-
+    
             // 开始监测barValue变化
             observeBarValueChange(element3, (newBarValue) => {
                 log(`检测到barValue值变化，新的值为：${newBarValue}`);
@@ -511,16 +511,16 @@
                 log("自动跳转至 Reddio Points Task 页面。");
                 window.location.href = 'https://points.reddio.com/task';
             });
-
+    
             // 第四步：点击元素2，并每隔50秒点击一次，直到barValue变化
             await clickElement2Periodically(element2Selector);
         } catch (error) {
             log(`未找到元素3或获取barValue失败：${error.message}`);
             return;
         }
-
+    
         // 定义辅助函数
-
+    
         // 获取元素3的barValue值
         function getBarValue(element) {
             const style = element.getAttribute('style');
@@ -530,7 +530,7 @@
             }
             return null;
         }
-
+    
         // 监测元素3的barValue值变化
         function observeBarValueChange(element, callback) {
             const observer = new MutationObserver((mutations) => {
@@ -549,20 +549,20 @@
                 attributeFilter: ['style']
             });
         }
-
-        // 点击元素2，并每隔20秒点击一次，直到barValue变化
+    
+        // 点击元素2，并每隔50秒点击一次，直到barValue变化
         async function clickElement2Periodically(element2Selector) {
             if (scriptStopped) {
                 log('barValue值已变化，停止脚本。');
                 return;
             }
-
+    
             try {
                 const element2 = await waitForSelector(element2Selector, 20000);
                 await randomDelay(500, 1000);
                 element2.click();
                 log('已点击元素2。');
-
+    
                 // 设置每隔50秒点击一次
                 clickElement2IntervalId = setInterval(async () => {
                     if (!scriptStopped) {
@@ -587,6 +587,35 @@
                 log(`未找到元素2或点击失败：${error.message}`);
             }
         }
+    
+        // 新增持续等待spinner消失的函数
+        async function waitForSpinnerToDisappear(selector) {
+            while (document.querySelector(selector)) {
+                log("spinner仍在，继续等待...");
+                await randomDelay(1000, 2000);
+            }
+        }
+    }
+    
+    // 以下为工具函数，假设在同一脚本文件内已定义
+    
+    async function waitForSelector(selector, timeout = 10000) {
+        const start = Date.now();
+        while (Date.now() - start < timeout) {
+            const element = document.querySelector(selector);
+            if (element) return element;
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        throw new Error(`超时：未能在${timeout}毫秒内找到元素：${selector}`);
+    }
+    
+    async function randomDelay(min, max) {
+        const delay = Math.floor(Math.random() * (max - min)) + min;
+        return new Promise(resolve => setTimeout(resolve, delay));
+    }
+    
+    function log(message) {
+        console.log(`[脚本日志] ${message}`);
     }
 
     // 脚本5：Reddio Points Task 自动化点击
