@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      6.3
+// @version      6.5
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -484,7 +484,7 @@
         // 第二步：等待加载完成（等待spinner消失）
         log("等待加载完成（等待spinner消失）...");
         try {
-            await waitForElementToDisappear(spinnerSelector, 30000);
+            await waitForElementToDisappear(spinnerSelector, 60000);
             log("加载已完成。");
         } catch (error) {
             log("等待spinner消失超时或发生错误。");
