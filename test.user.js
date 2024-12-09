@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      6.8
+// @version      6.9
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1397,49 +1397,51 @@
             return new Promise(resolve => setTimeout(resolve, delay));
         }
     
-        // 第二步操作
+        // 第二步操作：元素1出现后，持续点击元素1直到元素2出现，然后持续点击元素2直到消失
         async function stepTwo() {
             try {
-                log('第二步：等待元素1出现并点击');
-    
+                log('第二步：等待元素1出现');
                 const element1Xpath = '/html/body/main/div[2]/div/div[2]/div[2]/img';
+                const element2Xpath = '/html/body/div[2]/div/div/div/div[2]/div/div/div/div/div/div/canvas';
+    
                 const element1 = await waitForXPath(element1Xpath, 30000);
     
                 if (element1) {
-                    log('元素1已出现，开始点击');
-                    element1.click();
-                    await randomDelay(500, 1500);
+                    log('元素1已出现，开始持续点击元素1直到元素2出现');
     
-                    log('等待元素2出现');
-                    const element2Xpath = '/html/body/div[2]/div/div/div/div[2]/div/div/div/div/div/div/canvas';
-                    const element2 = await waitForXPath(element2Xpath, 20000);
-    
-                    if (element2) {
-                        log('元素2已出现，开始持续点击元素2，直到其消失');
-    
-                        while (true) {
-                            // 检查元素2是否存在
-                            const currentElement2 = getElementByXpath(element2Xpath);
-                            if (currentElement2) {
-                                currentElement2.click();
-                                log('已点击元素2');
-                                // 等待1-1.5秒
-                                await randomDelay(1000, 1500);
-                            } else {
-                                log('元素2已消失');
-                                break;
-                            }
+                    // 持续点击element1，直到element2出现为止
+                    while (true) {
+                        const element2 = getElementByXpath(element2Xpath);
+                        if (element2) {
+                            log('元素2已出现，停止点击元素1');
+                            break;
+                        } else {
+                            element1.click();
+                            log('已再次点击元素1');
+                            await randomDelay(1000, 1500);
                         }
-    
-                        log('等待3-4秒后执行第三步');
-                        await randomDelay(3000, 4000);
-    
-                        // 执行第三步
-                        log('执行第三步：跳转至 url4');
-                        window.location.href = url4;
-                    } else {
-                        log('元素2未出现，脚本结束');
                     }
+    
+                    // 元素2已出现，开始持续点击元素2，直到其消失
+                    log('开始持续点击元素2，直到其消失');
+                    while (true) {
+                        const currentElement2 = getElementByXpath(element2Xpath);
+                        if (currentElement2) {
+                            currentElement2.click();
+                            log('已点击元素2');
+                            await randomDelay(1000, 1500);
+                        } else {
+                            log('元素2已消失');
+                            break;
+                        }
+                    }
+    
+                    log('等待3-4秒后执行第三步');
+                    await randomDelay(3000, 4000);
+    
+                    // 执行第三步
+                    log('执行第三步：跳转至 url4');
+                    window.location.href = url4;
                 } else {
                     log('元素1未出现，脚本结束');
                 }
@@ -1468,8 +1470,6 @@
                 window.location.href = url3;
             } else if (currentUrl.startsWith(url3)) {
                 log('检测到当前页面为 url3，开始执行第二步');
-    
-                // 执行第二步
                 await stepTwo();
             } else {
                 log('当前页面不在预期的 URL 列表中，脚本结束');
@@ -1478,6 +1478,11 @@
     
         // 执行主函数
         await mainPentagon();
+    }
+    
+    // 以下为日志函数示例
+    function log(message) {
+        console.log(`[脚本日志] ${message}`);
     }
 
 
