@@ -1,0 +1,543 @@
+// ==UserScript==
+// @name         CryptoPond Ideas 自动化脚本 (仅修复Publish Topic点击问题)
+// @namespace    http://tampermonkey.net/
+// @version      1.7修订4
+// @description  在cryptopond.xyz/ideas/create页面自动填写并提交表单，最后使用CSS选择器点击“Publish Topic”按钮。
+// @match        https://cryptopond.xyz/ideas/create
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    const inputData1 = [
+        "Autonomous Disaster Response System",
+        "Intelligent Personal Nutritionist",
+        "AI-Based Legal Compliance Checker",
+        "Smart Urban Planning Assistant",
+        "Real-Time Fraud Detection Engine",
+        "AI-Driven Personalized News Aggregator",
+        "Intelligent Manufacturing Quality Control",
+        "Virtual Reality Content Generator",
+        "AI-Powered Language Learning Companion",
+        "Autonomous Agricultural Yield Predictor",
+        "Smart Healthcare Resource Allocator",
+        "AI-Enhanced Virtual Therapist",
+        "AI-Powered Customer Support Bot",
+        "Predictive Traffic Management System",
+        "AI-Driven Financial Forecasting",
+        "Intelligent Content Personalizer",
+        "Smart Inventory Management System",
+        "AI-Powered Marketing Automation",
+        "AI-Based Job Matching Platform",
+        "Autonomous Supply Chain Optimizer",
+        "AI-Powered Health Monitoring System",
+        "Autonomous Fleet Management System",
+        "Intelligent Document Processing Tool",
+        "AI-Enhanced Virtual Assistant",
+        "Predictive Energy Consumption Model",
+        "AI-Based Smart Home Manager",
+        "AI-Driven Cybersecurity Threat Detection",
+        "Intelligent Climate Change Modeling System",
+        "Personalized Workout Planner",
+        "AI-Powered Fraud Prevention System",
+        "Real-Time Speech Recognition System",
+        "AI-Powered Image Classification",
+        "Smart Farm Management System",
+        "AI-Based Customer Retention Platform",
+        "Autonomous Logistics Coordination",
+        "Real-Time Language Translation System",
+        "AI-Powered Social Media Insights",
+        "AI-Based Data Cleaning Tool",
+        "Smart Manufacturing Efficiency Enhancer",
+        "AI-Enhanced Financial Risk Analysis",
+        "AI-Powered Resume Screening Tool",
+        "Personalized News Recommender System",
+        "AI-Driven Mental Health Support System",
+        "Autonomous Drone Delivery System",
+        "AI-Based Predictive Maintenance System",
+        "AI-Powered Virtual Design Assistant",
+        "Intelligent Education System",
+        "AI-Driven Personalized Learning Pathways",
+        "Autonomous Traffic Flow Optimizer",
+        "AI-Based Voice Command Recognition System",
+        "Smart Waste Management System"，
+        "Autonomous Agricultural Yield Predictor"
+    ];
+
+    const inputData2 = [
+        "An AI-driven platform designed to manage and coordinate disaster response efforts efficiently, utilizing real-time data from sensors and satellite imagery.",
+        "A personalized AI nutritionist that creates tailored meal plans based on individual dietary needs, health goals, and lifestyle preferences.",
+        "An AI tool that ensures organizational compliance with legal regulations by automating the review of contracts and policies.",
+        "An AI-powered assistant that aids urban planners in designing efficient, sustainable cities by analyzing population growth, traffic patterns, and environmental impact.",
+        "A robust AI system that identifies and prevents fraudulent activities across industries like finance, e-commerce, and insurance.",
+        "An intelligent news platform that curates personalized news content based on individual interests and reading habits.",
+        "An AI-based system that monitors and ensures manufacturing quality by detecting defects, predicting maintenance needs, and optimizing production parameters.",
+        "An AI-powered tool that generates immersive virtual reality content based on user preferences and context.",
+        "An interactive AI tutor that enhances language learning through personalized lessons, real-time feedback, and conversational practice.",
+        "An AI system that predicts crop yields by analyzing environmental data, soil conditions, weather patterns, and farming practices.",
+        "An AI-driven platform that optimizes the allocation of healthcare resources such as medical staff, equipment, and facilities based on real-time demand and availability.",
+        "An AI-powered platform that offers cognitive behavioral therapy (CBT) techniques, stress management strategies, and emotional support through conversational interactions.",
+        "A conversational AI system that automates customer inquiries, resolves issues, and provides personalized assistance across various industries.",
+        "An AI-driven platform that predicts traffic congestion, accidents, and optimal routes in real-time by analyzing data from cameras, sensors, and GPS.",
+        "An AI-based financial forecasting tool that analyzes economic indicators, market trends, and historical data to generate accurate financial predictions.",
+        "An AI-driven tool that creates highly personalized marketing campaigns by analyzing customer preferences, behaviors, and demographic data.",
+        "A machine learning-based system that automatically processes and classifies documents, extracting key information to reduce manual efforts in industries like legal, finance, and healthcare.",
+        "An AI-powered platform designed to predict energy consumption patterns and recommend efficient usage strategies for homes, offices, and industries.",
+        "An AI assistant that integrates with smart home systems to manage temperature, lighting, security, and appliances for greater comfort and efficiency.",
+        "An AI-driven system that detects and prevents cybersecurity threats by analyzing patterns and anomalies in network traffic and user behaviors.",
+        "A machine learning-based tool that models climate change impacts by analyzing environmental data, helping governments and organizations plan for sustainable development.",
+        "An AI-powered system that designs personalized workout plans based on individual fitness goals, health data, and exercise preferences.",
+        "An AI system that identifies potential fraudulent activities by analyzing transactional patterns, user behaviors, and other financial indicators in real-time.",
+        "An AI-powered real-time speech recognition system that transcribes conversations, detects context, and interprets verbal communication for various applications.",
+        "An AI model that analyzes visual data to classify and identify images, enabling automated sorting and categorization in industries like retail, healthcare, and security.",
+        "An AI-based farm management system that monitors soil health, crop growth, and weather conditions to optimize farming practices and increase yield.",
+        "An AI-powered platform that uses machine learning to predict customer churn and recommends strategies to improve retention rates and increase loyalty.",
+        "An autonomous logistics system that optimizes delivery routes and schedules by analyzing real-time data on traffic, weather, and inventory levels.",
+        "An AI-based language translation tool that provides real-time, accurate translations across multiple languages, making communication easier for global users.",
+        "A personalized AI-powered content recommendation system that analyzes user preferences, behaviors, and past interactions to deliver tailored articles, videos, and other media.",
+        "An AI-driven mental health support system that provides real-time support for anxiety, depression, and stress through conversational interactions and guidance.",
+        "An autonomous drone delivery system that uses AI to optimize flight paths, navigate obstacles, and deliver packages to customers with high efficiency.",
+        "A predictive maintenance system that leverages AI to analyze machinery data and predict failures, reducing downtime and improving equipment longevity.",
+        "An AI-powered virtual design assistant that helps create product designs by analyzing trends, user preferences, and market needs to offer innovative suggestions.",
+        "An AI-based learning platform that adapts lessons to individual learning styles and progress, ensuring personalized education for students of all levels.",
+        "An AI-driven platform that tailors educational content to individual students, helping them improve their understanding of complex topics at their own pace.",
+        "An AI model designed to predict and optimize traffic flow in real-time by analyzing traffic volume, speed, and congestion patterns, helping reduce urban congestion.",
+        "A voice command recognition AI system that enables hands-free control of devices and applications across various platforms, improving accessibility and user experience.",
+        "A smart waste management system that uses AI and IoT sensors to monitor waste levels and optimize collection routes for more efficient city waste management.",
+        "A predictive model that analyzes user behavior and data to recommend personalized advertisements, promotions, and offers, improving marketing targeting and effectiveness.",
+        "An AI-based system that continuously monitors and adjusts manufacturing processes in real-time to optimize production rates, quality, and resource utilization.",
+        "An AI model that can automatically generate reports, summaries, and insights from raw data, streamlining business analysis and decision-making.",
+        "A virtual assistant that helps users manage tasks, schedule appointments, and automate routine activities based on contextual understanding and personal preferences.",
+        "An AI-driven customer engagement platform that uses sentiment analysis and user feedback to provide personalized interactions, increasing customer satisfaction.",
+        "An AI tool designed to analyze large amounts of legal documents and highlight relevant precedents and statutes for lawyers, saving time and improving case outcomes.",
+        "A machine learning-powered system that predicts and tracks inventory demand based on sales trends and market conditions, optimizing stock levels in real-time.",
+        "An AI-powered model that enhances user experience by analyzing data and offering personalized recommendations for products, services, and content across various platforms.",
+        "An AI-based service that provides personalized health recommendations by analyzing data from fitness trackers, medical records, and lifestyle habits.",
+        "An AI-powered content moderation tool that automatically reviews user-generated content, detecting harmful or inappropriate material across social platforms.",
+        "An AI-powered chatbot that enhances customer service by providing quick, accurate responses to common inquiries and escalating complex issues to human agents.",
+        "An AI model that helps content creators generate social media posts, blogs, and videos by analyzing audience preferences and current trends for optimal engagement.",
+        "An AI system that uses behavioral data to anticipate customer needs and deliver proactive support or personalized product suggestions, improving customer experience.",
+        "A machine learning model designed to automate data entry tasks by extracting relevant information from documents, forms, and databases, improving efficiency and accuracy."
+    ];
+
+    const inputData3 = [
+
+
+        "Autonomous Disaster Response System,  
+        This AI-driven platform is designed to handle disaster management efficiently by autonomously analyzing real-time data from various sources such as satellite imagery, sensors, drones, and social media. It can predict natural disasters like earthquakes, floods, and wildfires, assess the damage, and optimize the allocation of resources during emergencies. The system can suggest the best routes for emergency responders, automatically adjust rescue operations, and coordinate communication among agencies. It also provides valuable insights by simulating disaster scenarios, enhancing preparedness strategies, and improving recovery times, making it crucial for disaster-prone areas worldwide.",
+        
+        "Intelligent Personal Nutritionist,  
+        This personalized AI nutritionist tailors meal plans to meet the health goals and dietary preferences of its users. By analyzing personal data such as age, weight, activity level, and medical history, it offers precise meal suggestions and tracks nutritional intake to promote overall wellness. It integrates with wearable devices and health apps to monitor exercise routines, sleep patterns, and stress levels, allowing it to adjust meal plans dynamically based on the user's changing needs. This system is particularly useful for individuals with specific health conditions such as diabetes, hypertension, or heart disease, providing real-time, actionable feedback and ongoing support for achieving nutritional goals.",
+        
+        "AI-Based Legal Compliance Checker,  
+        This AI tool automatically reviews contracts, policies, and organizational documents to ensure they comply with legal regulations and industry standards. It uses natural language processing to detect compliance gaps, flag high-risk areas, and suggest changes to mitigate legal exposure. The system tracks regulatory updates and automatically adjusts templates and policies to stay current with evolving laws. This helps businesses minimize legal risks, reduce the time spent on manual compliance checks, and ensure smooth audits.",
+        
+        "Smart Urban Planning Assistant,  
+        An AI-powered assistant that supports urban planners in designing efficient, sustainable cities. This model uses data from traffic patterns, population growth, environmental impact studies, and infrastructure usage to offer data-driven recommendations. It helps optimize land use, improve transportation networks, and reduce environmental footprints. The system simulates various development scenarios and provides insights into long-term effects, helping cities meet their sustainability goals while addressing housing, mobility, and public service needs.",
+        
+        "Real-Time Fraud Detection Engine,  
+        An AI model designed to continuously monitor transactions and detect fraudulent activities in real-time across sectors such as banking, e-commerce, and insurance. It analyzes large volumes of transaction data, comparing it to known fraud patterns and flagging any suspicious activity. The system uses machine learning to refine its detection methods and adapt to new fraud tactics. This tool is vital for minimizing financial losses, maintaining security, and ensuring the integrity of digital transactions.",
+        
+        "AI-Driven Personalized News Aggregator,  
+        An intelligent news platform that curates and delivers personalized news content by learning from a user’s preferences, reading history, and engagement behavior. It analyzes articles from a variety of sources, filtering out irrelevant information and presenting only the most relevant and timely news based on the user’s interests. The model employs natural language processing to summarize articles, track emerging trends, and ensure that the news delivered is engaging and aligned with the user's knowledge and preferences. The system also adapts as users’ interests evolve over time.",
+        
+        "Intelligent Manufacturing Quality Control,  
+        This AI system uses machine learning and computer vision to monitor production processes in real-time, detecting defects, and ensuring product quality. By analyzing data from cameras, sensors, and machines on the production line, it can identify inconsistencies or faults that might be missed by human inspectors. The system autonomously suggests adjustments to production processes to maintain high quality and reduce waste. With the ability to predict future defects and schedule maintenance proactively, it helps manufacturers optimize operations and ensure that the final products meet rigorous quality standards.",
+        
+        "Virtual Reality Content Generator,  
+        An AI-powered tool that automatically generates virtual reality (VR) content tailored to specific user needs, including interactive environments, training simulations, and gaming experiences. By analyzing user input and preferences, it customizes virtual scenarios, creating highly immersive, dynamic worlds. The system uses deep learning algorithms to improve content realism and interaction, adapting in real-time to the user’s actions and decisions. Whether for entertainment, education, or virtual meetings, this VR generator enhances the user experience with minimal manual effort from content creators.",
+        
+        "AI-Powered Language Learning Companion,  
+        An AI-driven tutor designed to assist language learners by providing personalized lessons, interactive practice sessions, and real-time feedback. The system adapts to the user’s proficiency level and learning speed, offering a customized curriculum based on speech recognition and natural language processing. It simulates real-life conversations, helping users practice their speaking, listening, and writing skills in an immersive, supportive environment. The system continuously learns from the user’s progress, adjusting difficulty levels and content to ensure steady advancement toward fluency.",
+        
+        "Autonomous Agricultural Yield Predictor,  
+        This AI system predicts crop yields by analyzing environmental data, including soil conditions, weather patterns, and historical crop performance. The system leverages machine learning models to forecast potential yields and optimize agricultural practices like planting schedules, irrigation, and fertilization. It helps farmers make data-driven decisions to maximize productivity while minimizing resource waste. By integrating IoT devices and drones for real-time monitoring, the system can adjust predictions and recommendations on the fly, improving overall crop health and yield efficiency.",
+        
+        "Smart Healthcare Resource Allocator,  
+        An AI-driven platform that optimizes the allocation of healthcare resources such as medical staff, equipment, and facilities based on real-time demand and availability. By analyzing patient data, hospital capacity, and treatment requirements, it ensures efficient distribution of resources to meet patient needs effectively. Utilizing machine learning and data analytics, this allocator enhances operational efficiency, reduces wait times, and improves patient care quality by ensuring that healthcare resources are utilized optimally and responsively. It also supports strategic planning and emergency preparedness in healthcare settings.",
+        
+        "AI-Enhanced Virtual Therapist,  
+        This AI system provides mental health support through conversational interactions, offering cognitive behavioral therapy (CBT) techniques, stress management strategies, and emotional support. Using natural language understanding, the system responds empathetically to users’ concerns and helps individuals cope with anxiety, depression, and other mental health challenges. It continuously adapts to the user’s emotional state, offering tailored advice and tools to improve mental well-being. This virtual therapist is accessible 24/7, making mental health resources more available and reducing the stigma associated with seeking help.",
+        
+        "AI-Powered Customer Support Bot,  
+        An intelligent chatbot that autonomously handles customer inquiries, resolves issues, and provides personalized assistance around the clock. Leveraging natural language processing and machine learning, it understands and responds to a wide range of customer queries with human-like accuracy. This model not only improves user satisfaction by delivering swift and accurate support but also reduces the workload on human support teams, allowing them to focus on more complex tasks.",
+        
+        "Predictive Traffic Management System,  
+        An AI-powered system that predicts traffic congestion, accidents, and optimal routes in real-time by analyzing data from cameras, sensors, GPS, and social media. It helps reduce traffic jams, improves vehicle flow, and optimizes traffic light patterns to improve commute times. This system also provides commuters with real-time traffic updates, alternative route suggestions, and forecasts based on historical traffic patterns, enhancing overall urban mobility and reducing environmental impact.",
+        
+        "AI-Driven Financial Forecasting,  
+        A sophisticated AI model that analyzes financial data, market trends, and economic indicators to predict future financial performance and market movements. By leveraging machine learning algorithms, it identifies patterns and generates accurate forecasts for investments, budgeting, and strategic planning. This tool aids financial analysts, investors, and businesses in making informed decisions, mitigating risks, and maximizing returns. It is particularly useful for stock market predictions, portfolio management, and economic trend analysis.",
+        
+        "Intelligent Content Personalizer,  
+        An AI model that delivers highly personalized content by analyzing user preferences, behavior, and contextual information. By understanding a user’s interests, viewing habits, and past interactions, it provides tailored recommendations for articles, videos, and other media. This system continuously learns from user feedback, adjusting content suggestions to improve engagement and satisfaction. It is ideal for media companies, e-commerce platforms, and social networks, driving higher user retention and content consumption.",
+        
+        "Smart Inventory Management System,  
+        This AI-powered inventory system autonomously tracks stock levels, predicts demand, and optimizes stock replenishment to prevent shortages and overstocking. By integrating with sales data, historical trends, and seasonal demand patterns, the system ensures inventory is managed efficiently across warehouses and retail outlets. It alerts managers to reorder items before they run out and offers insights to improve supply chain efficiency. This tool is especially valuable in e-commerce and retail environments, reducing waste and improving operational costs.",
+        
+        "AI-Powered Marketing Automation,  
+        An AI model that optimizes marketing campaigns by analyzing customer behavior, market trends, and campaign performance data. It uses machine learning to predict which customers are most likely to convert and delivers personalized advertisements and promotions. The system automatically adjusts campaign parameters based on real-time data, ensuring maximum reach and engagement. It also evaluates the effectiveness of campaigns, providing actionable insights that can help marketers fine-tune strategies to boost conversion rates.",
+        
+        "AI-Based Job Matching Platform,  
+        An AI platform designed to match job seekers with potential employers by analyzing resumes, job descriptions, and candidate profiles. Using natural language processing and machine learning, the system evaluates both hard and soft skills, cultural fit, and experience to recommend suitable matches. It streamlines the hiring process by automating candidate screening, suggesting qualified candidates, and even predicting long-term job satisfaction based on historical performance data. This model benefits both employers and job seekers, improving recruitment efficiency and job placement success.",
+        
+        "Autonomous Supply Chain Optimizer,  
+        This AI system autonomously optimizes the entire supply chain by analyzing data from suppliers, warehouses, logistics, and customer demand. It predicts supply chain disruptions, recommends preventive actions, and automates inventory management and order fulfillment. Using machine learning algorithms, the system continuously learns from past trends and current market conditions to make dynamic decisions on stock levels, delivery routes, and supplier performance. This model helps businesses improve delivery times, reduce costs, and enhance customer satisfaction.",
+        
+        "AI-Powered Health Monitoring System,  
+        This AI-driven health monitoring system tracks vital signs and health metrics in real time to detect early signs of potential health issues. By analyzing data from wearable devices, medical records, and environmental factors, it provides actionable insights into the user’s health status and suggests lifestyle adjustments to improve well-being. The system offers personalized health recommendations, such as exercise routines, sleep habits, and dietary changes, based on continuous data analysis, making it a powerful tool for proactive health management and disease prevention.",
+        
+        "Autonomous Fleet Management System,  
+        An AI model designed to optimize the operations of vehicle fleets by analyzing real-time data from GPS, sensors, and vehicle telematics. It autonomously schedules maintenance, adjusts routes based on traffic conditions, and monitors driver behavior to improve fuel efficiency and safety. The system provides real-time insights into fleet performance, tracks asset usage, and predicts maintenance needs to minimize downtime. It enhances logistics operations and fleet management, making transportation more efficient, cost-effective, and sustainable.",
+        
+        "Intelligent Document Processing Tool,  
+        This AI-powered document processing system automates the extraction, classification, and management of information from various document types, including invoices, contracts, and medical records. Using natural language processing and computer vision, the system scans and processes documents in real-time, extracting key information like dates, amounts, and terms. It can categorize documents, flag discrepancies, and streamline workflows by integrating with other systems like CRMs and ERPs, making it ideal for industries that rely heavily on document management, such as finance, healthcare, and legal sectors.",
+        
+        "AI-Enhanced Virtual Assistant,  
+        An AI-powered virtual assistant that leverages natural language understanding and machine learning to offer personalized support in tasks such as scheduling, communication, and data management. This assistant is capable of managing multiple tasks simultaneously, learning from user interactions to predict needs and provide proactive solutions. Whether assisting with email management, meeting coordination, or information retrieval, it continuously adapts to users' preferences, enhancing productivity and streamlining daily operations. It is particularly valuable in enterprise environments, where it can integrate with multiple internal systems to optimize workflows.",
+        
+        "Predictive Energy Consumption Model,  
+        This AI model analyzes historical energy usage data, weather patterns, and user behavior to predict future energy consumption. It can optimize energy management in both residential and commercial environments by adjusting heating, cooling, and lighting based on occupancy patterns and forecasted weather conditions. By identifying periods of peak demand, the system can make real-time adjustments to minimize energy usage, reduce costs, and promote sustainability. It is particularly useful in smart grid technologies, where it helps balance energy supply and demand more efficiently.",
+        
+        "AI-Based Smart Home Manager,  
+        An AI-driven platform that seamlessly integrates with IoT devices to manage and automate various aspects of a smart home. By analyzing data from sensors, cameras, and smart appliances, it optimizes home functions such as temperature control, lighting, and security. The system learns from user preferences and adjusts settings accordingly, ensuring comfort, safety, and energy efficiency. Through voice commands or app interfaces, homeowners can manage their environment with ease, while the AI continues to adapt to new behaviors, creating a fully personalized and responsive living space.",
+        
+        "AI-Driven Cybersecurity Threat Detection,  
+        This AI system continuously monitors network traffic, user activities, and system vulnerabilities to detect and prevent cybersecurity threats in real-time. It uses machine learning to identify abnormal patterns, flag potential risks, and automatically respond to security breaches. The system analyzes historical attack data to predict future threats and recommends proactive measures to enhance system security. With its ability to adapt to evolving cyberattack strategies, it provides ongoing protection and improves the overall security infrastructure for businesses, governments, and individuals.",
+        
+        "Intelligent Climate Change Modeling System,  
+        An AI-driven model that analyzes vast datasets from environmental sensors, satellites, and historical climate data to simulate and predict climate change scenarios. It can forecast long-term environmental impacts, such as sea level rise, temperature fluctuations, and ecosystem disruptions, providing actionable insights to governments and organizations. This system aids in planning mitigation strategies, developing renewable energy solutions, and assessing the potential effects of climate policies. It also supports environmental research by offering models that predict how various factors will interact over time.",
+        
+        "Personalized Workout Planner,  
+        This AI model provides personalized fitness plans based on user goals, physical conditions, and progress over time. By analyzing data from wearables, medical records, and personal preferences, the system generates dynamic workout routines, tracks performance, and adjusts exercises based on user feedback. It offers recommendations for rest, nutrition, and recovery, ensuring that fitness plans are balanced and optimized for individual needs. This model is ideal for fitness enthusiasts, athletes, and individuals recovering from injury, helping them achieve their health and fitness goals efficiently.",
+        
+        "AI-Powered Fraud Prevention System,  
+        An advanced AI tool designed to detect and prevent fraudulent activities across various platforms, such as banking, e-commerce, and insurance. It uses machine learning to analyze patterns in transactions, account activities, and customer behavior to identify suspicious activities in real-time. The system can flag potentially fraudulent transactions and offer immediate alerts to customers and security teams, minimizing financial losses. It continues to evolve and improve its detection capabilities by learning from new fraud tactics and data, ensuring constant adaptation to emerging threats.",
+        
+        "Real-Time Speech Recognition System,  
+        This AI-powered speech recognition system transcribes and interprets spoken language in real-time. It uses advanced natural language processing and machine learning algorithms to convert speech into text and understand context. The system can recognize different accents, handle noisy environments, and process multiple languages, making it ideal for applications in virtual assistants, transcription services, and real-time communication tools. It also integrates with other systems to provide voice-activated commands, improving accessibility and enabling hands-free interaction in a variety of devices.",
+        
+        "AI-Powered Image Classification,  
+        This AI model uses deep learning to classify and tag images accurately. By analyzing visual data from cameras or sensors, it identifies objects, patterns, and scenes in photos or videos. The system is capable of processing images in real-time, allowing for applications in surveillance, autonomous vehicles, and medical imaging. It can be trained to recognize specific objects or medical conditions, making it valuable in fields such as security, healthcare, and retail, where accurate image categorization is essential for operational efficiency.",
+        
+        "Smart Farm Management System,  
+        An AI-powered farm management system that integrates data from sensors, drones, and weather forecasts to optimize farming practices. By analyzing soil conditions, crop health, and environmental factors, it provides real-time recommendations for irrigation, fertilization, and pest control. The system helps farmers make data-driven decisions to increase yield, reduce waste, and improve sustainability. It also supports precision agriculture techniques, allowing farmers to tailor their practices to the specific needs of each crop, minimizing resource use and enhancing productivity.",
+        
+        "AI-Based Customer Retention Platform,  
+        This AI model uses customer data, such as purchase history, browsing behavior, and feedback, to predict churn and suggest personalized retention strategies. By analyzing patterns in customer behavior, the system can identify high-risk customers and automate targeted campaigns, such as personalized offers or reminders. It also evaluates the effectiveness of retention efforts in real-time, optimizing engagement strategies to keep customers satisfied and loyal. This model is essential for businesses aiming to improve customer loyalty, reduce churn, and enhance the overall customer experience.",
+        
+        "Autonomous Logistics Coordination,  
+        This AI system manages the coordination and optimization of logistics operations by analyzing real-time data on inventory levels, transportation routes, and customer demand. It can autonomously adjust delivery schedules, route optimization, and inventory management, reducing operational costs and improving delivery times. The system also tracks goods across the supply chain, offering real-time visibility to stakeholders and allowing for predictive maintenance to ensure minimal downtime. This tool is particularly beneficial for e-commerce companies, retailers, and logistics providers looking to enhance efficiency and reliability.",
+        
+        "Real-Time Language Translation System,  
+        An AI-powered translation system capable of providing real-time translations in multiple languages. The system uses machine learning and natural language processing to translate spoken or written content while maintaining context and meaning. It can handle both formal and informal language, making it valuable for travel, international business meetings, and customer service platforms. With the ability to adapt to the user’s communication style, the system enhances cross-cultural communication and helps break down language barriers effectively.",
+        
+        "AI-Powered Social Media Insights,  
+        An AI model designed to analyze social media data and generate insights into user behavior, trending topics, and sentiment analysis. By tracking keywords, hashtags, and user interactions, it helps businesses and brands understand their audience better and tailor their content accordingly. The system can also predict upcoming trends, optimize social media campaigns, and assess the effectiveness of posts in real-time. With the ability to segment audiences based on their interests and behaviors, this tool improves targeting and engagement strategies across platforms like Instagram, Twitter, and Facebook.",
+        
+        "AI-Based Data Cleaning Tool,  
+        This AI-driven data cleaning tool automates the process of identifying and correcting errors or inconsistencies in large datasets. It analyzes raw data to detect missing values, duplicates, outliers, and formatting issues, then suggests or makes automatic corrections based on predefined rules or learning models. By using machine learning, it can continuously improve its cleaning algorithms as it processes more data, making it essential for data scientists and analysts working with complex, unstructured data. This model ensures higher data quality, improving the reliability of analyses and decision-making.",
+        
+        "Smart Manufacturing Efficiency Enhancer,  
+        This AI model optimizes manufacturing processes by analyzing data from sensors, machines, and production lines in real-time. It uses machine learning algorithms to predict bottlenecks, adjust operational parameters, and ensure that equipment is running at peak efficiency. By continuously monitoring production cycles, the system can automate maintenance schedules, detect anomalies, and reduce waste. This tool improves throughput, decreases downtime, and enhances product quality, making it essential for industries such as automotive, electronics, and consumer goods manufacturing.",
+        
+        "AI-Enhanced Financial Risk Analysis,  
+        This AI model leverages vast amounts of historical financial data to assess and predict financial risks, such as market fluctuations, liquidity concerns, and credit defaults. Using advanced algorithms, the system identifies patterns and provides real-time risk assessments to assist decision-makers in financial planning and investment strategies. The tool can also simulate various financial scenarios, helping institutions assess the potential impacts of market changes, regulatory adjustments, and geopolitical events. It is invaluable for banks, investment firms, and insurance companies seeking to mitigate risks and improve their decision-making processes.",
+        
+        "AI-Powered Resume Screening Tool,  
+        An AI system that automates the recruitment process by scanning and analyzing resumes to identify the most qualified candidates. The tool uses natural language processing and machine learning to evaluate a candidate's skills, experience, and suitability based on the job description. It reduces bias and human error, making the recruitment process faster and more efficient. The system can also rank candidates, identify the best fits for specific roles, and provide hiring managers with detailed recommendations, streamlining the hiring process in industries like tech, finance, and healthcare.",
+        
+        "Personalized News Recommender System,  
+        An AI-driven news aggregator that curates content based on individual interests, reading habits, and preferences. By analyzing user behavior, past interactions, and engagement patterns, the system suggests relevant articles, blogs, and news sources tailored to each user’s needs. The model also utilizes natural language processing to summarize articles and present the key points, making news consumption more efficient. With its ability to learn from feedback, it adapts to evolving user preferences, ensuring a continuous stream of personalized, high-quality content.",
+        
+        "AI-Driven Mental Health Support System,  
+        This AI-powered system provides mental health support by offering real-time assessments of mood, stress levels, and emotional well-being through conversational interactions. It uses natural language processing to interpret user input, recognizing emotional cues and offering empathetic responses. By analyzing data from various sources, such as social media and wearable devices, the system can detect early signs of mental health issues like depression and anxiety, providing timely intervention strategies. The system can suggest relaxation techniques, cognitive behavioral therapy exercises, and recommend professional help when necessary.",
+        
+        "Autonomous Drone Delivery System,  
+        An AI model that autonomously manages drone operations for parcel deliveries. The system analyzes real-time data from GPS, weather, and sensors to determine the optimal flight paths, avoiding obstacles and ensuring safety. It autonomously handles the logistics of delivery, from warehouse to customer location, optimizing routes based on traffic, weather, and flight conditions. This system is designed to improve delivery efficiency, reduce human error, and lower costs, making it a game-changer for last-mile delivery in e-commerce and logistics industries.",
+        
+        "AI-Based Predictive Maintenance System,  
+        This AI model predicts the maintenance needs of machinery and equipment by analyzing sensor data and historical performance metrics. By identifying potential failures before they occur, the system helps organizations schedule maintenance proactively, reducing downtime and repair costs. The model continuously learns from operational data, improving its predictions over time. It is used in industries like manufacturing, energy, and transportation to enhance equipment reliability, increase efficiency, and extend the lifespan of assets.",
+        
+        "AI-Powered Virtual Design Assistant,  
+        An AI system designed to assist with the design process by offering intelligent suggestions based on user input, market trends, and user feedback. It integrates with design tools and software to generate optimized layouts, color schemes, and user interfaces that meet specific goals and preferences. The system analyzes patterns from existing successful designs and adjusts parameters to enhance creativity and user experience. This tool is especially useful for product designers, web developers, and branding professionals who need to create visually appealing, functional designs efficiently.",
+        
+        "Intelligent Education System,  
+        This AI model personalizes the learning experience for students by analyzing data on their learning styles, progress, and behavior. It adapts the curriculum to individual needs, offering tailored lessons, quizzes, and feedback. The system can predict students' performance, suggest improvements, and identify areas of struggle, providing real-time support. It also supports teachers by automating grading, tracking student engagement, and offering insights into class performance. This model can transform educational settings by providing a more personalized and efficient learning experience for students of all ages.",
+        
+        "AI-Driven Personalized Learning Pathways,  
+        An AI-powered platform that creates customized learning paths based on individual student needs, progress, and learning styles. The system collects data on how students engage with content, their strengths, and weaknesses, and then adapts lessons accordingly. By providing a personalized approach, the model helps students learn at their own pace and ensures they master each concept before moving on to the next. It can integrate with various educational platforms, making it ideal for both traditional education systems and online learning environments.",
+        
+        "Autonomous Traffic Flow Optimizer,  
+        This AI system analyzes real-time traffic data from sensors, cameras, and GPS to optimize traffic flow in urban areas. It adjusts traffic signals, routes, and vehicle speeds to reduce congestion, minimize travel times, and improve safety. The system uses machine learning to predict traffic patterns, account for road closures, and adapt to changing conditions like accidents or construction. By continuously analyzing traffic data, it helps create smoother transportation networks, reducing carbon emissions and improving overall mobility for commuters and delivery services.",
+        
+        "AI-Based Voice Command Recognition System,  
+        An AI-powered voice recognition system that allows users to control devices and applications with spoken commands. The system uses natural language processing and deep learning to accurately interpret speech and respond in real-time. It can be integrated into smart home systems, mobile apps, and enterprise tools to facilitate hands-free control. The system is capable of understanding various accents, dialects, and languages, making it highly accessible and ideal for users with physical disabilities, the elderly, or anyone looking for a more convenient, voice-driven experience.",
+        
+        "Smart Waste Management System,  
+        This AI-powered system uses IoT sensors and machine learning to optimize waste collection and recycling processes. By monitoring the fill levels of bins, identifying recyclable materials, and predicting waste generation patterns, it enables municipalities to plan waste collection routes and schedules more efficiently. The system helps reduce fuel consumption, labor costs, and environmental impact by minimizing unnecessary pickups and improving recycling rates. It is a valuable tool for cities looking to make their waste management systems more sustainable and efficient.",
+        
+        "Predictive Model for Real-Time Stock Trading,  
+        An AI model designed to predict stock market movements by analyzing financial data, news sentiment, and historical market trends. It uses machine learning algorithms to process vast amounts of data in real-time and make rapid predictions about stock prices and trends. The model can automate trading decisions, buying and selling stocks based on predicted price movements, thus optimizing returns for investors. It continuously learns from market behavior and adapts to new financial events, ensuring that its predictions remain accurate and relevant in an ever-changing market.",
+        
+        "AI-Powered Event Planner,  
+        An AI model that helps plan events by analyzing user preferences, venue availability, budget constraints, and logistical requirements. The system offers personalized recommendations for venues, catering, decorations, and entertainment, based on the event type and user preferences. It can automate tasks such as sending invitations, coordinating schedules, and managing event timelines. The AI continuously learns from past events to improve its suggestions and provide better planning insights, making it ideal for wedding planners, corporate event organizers, and social gatherings.",
+        
+        "Smart City Infrastructure Optimizer,  
+        An AI system designed to optimize the infrastructure of smart cities by analyzing data from various city systems such as traffic, utilities, and public services. The model can suggest improvements in areas like energy usage, waste management, and water distribution by identifying inefficiencies and predicting future needs. It helps city planners create smarter, more sustainable urban environments by integrating data from IoT devices and sensors to improve resource allocation, reduce costs, and enhance the quality of life for city residents."
+            ];
+
+    const inputData4 = [
+        "Highly accurate at detecting patterns, but requires large amounts of data for effective training.",
+        "Exceptional at understanding natural language, though it struggles with understanding context in ambiguous situations.",
+        "Provides great real-time insights, but the performance may degrade when handling large-scale data.",
+        "Extremely effective at automating repetitive tasks, yet may lack flexibility in handling complex scenarios.",
+        "Impressive in image recognition, but sensitive to lighting and image quality variations.",
+        "Excellent at predicting customer behavior, though it may sometimes generate overfitted models.",
+        "Strong in recognizing speech, but occasional misinterpretations occur with accents or background noise.",
+        "Highly efficient in processing large datasets, but it requires substantial computational resources.",
+        "Great at personalizing content, though it may require regular updates to maintain accuracy.",
+        "Remarkable in anomaly detection, but occasionally prone to false positives that need manual validation.",
+        
+        "Fantastic for real-time analytics, but scalability issues arise when handling millions of data points.",
+        "Highly adaptable for dynamic environments, yet its learning process is slow and resource-intensive.",
+        "Effective at sentiment analysis, though its understanding of sarcasm and irony is still developing.",
+        "Impressive at predicting trends, but it struggles with rare or unseen events in the data.",
+        "Great for automating workflows, though it may face challenges when dealing with multi-step processes.",
+        "Exceptional at recommending products, but might make irrelevant suggestions for niche markets.",
+        "Outstanding for medical diagnosis, but dependent on the quality and diversity of training data.",
+        "Robust for fraud detection, but may require frequent tuning to stay ahead of new tactics.",
+        "Highly effective at task automation, but the learning curve for initial setup can be steep.",
+        "Excellent at optimizing logistics, yet its adaptability to unpredictable events is limited.",
+        
+        "Strong at predictive analytics, but still needs improvements in understanding user intent in certain contexts.",
+        "Offers personalized recommendations, but may have trouble with diverse and changing user preferences.",
+        "Great at performing data-driven decision-making, but struggles with subjective judgment calls.",
+        "Efficient in real-time decision making, though its performance can deteriorate in highly variable environments.",
+        "Impressive in classifying images, but struggles with low-resolution or highly distorted images.",
+        "Reliable for managing supply chains, but can become inefficient when multiple supply chain variables change simultaneously.",
+        "Highly effective in voice recognition, but requires a quiet environment to operate optimally.",
+        "Fantastic at financial forecasting, though it needs a diverse dataset to improve accuracy.",
+        "Highly efficient for language translation, but may not always capture cultural nuances.",
+        "Great for predictive maintenance, but its accuracy can drop in highly dynamic environments.",
+        
+        "Strong at personalizing user experiences, but can become overly reliant on historical data, missing new trends.",
+        "Excellent in generating content, yet it sometimes produces text that lacks creativity or originality.",
+        "Highly effective in object detection, though it may struggle in cluttered or dynamic environments.",
+        "Great at summarizing large volumes of text, but occasionally misses key contextual details.",
+        "Impressive at monitoring real-time data streams, though its performance can be impacted by network latency.",
+        "Outstanding at automating document processing, but may struggle with unstructured data or handwritten text.",
+        "Excellent at language understanding, but may lack deep comprehension when dealing with complex concepts.",
+        "Efficient in identifying patterns in large datasets, though can struggle with sparse data or unbalanced categories.",
+        "Robust in analyzing historical data, but less effective in making predictions for outlier events.",
+        "Great at streamlining workflows, but requires a significant amount of pre-configuration to operate efficiently."
+    ];
+
+    const inputData5 = inputData4; // 与inputData4相同的数据
+
+    // 输入框5的selector（上一次您提供的）
+    const input5Selector = '#tabs-\\:r1d\\:--tabpanel-4 > div > div > div > div.css-ukwgyf > div.css-1nqcm94 > fieldset:nth-child(2) > div > div > div > div > div > div > div';
+
+    async function startScript() {
+        console.log('[脚本日志] 开始执行步骤1...');
+
+        const input1Selector = 'input[placeholder="Enter the title of your model idea"]';
+        const input2Selector = 'textarea[placeholder="Enter a brief summary of your model idea"]';
+        const input3Selector = '#__next > div > div > div.competitions-page.__variable_f50a95.css-1wjquq8 > div > div.css-1cdf32n > div.css-3q3679 > div.css-17vsblu > fieldset:nth-child(3) > div > div > div > div > div > div > div';
+
+        // 使用CSS类选择器点击"Save"按钮
+        const saveButtonSelector = 'button.chakra-button.css-hva83m';
+
+        // 元素5的xpath
+        const element5XPath = '/html/body/div[1]/div/div/div[1]/div/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[5]/div/div[1]/div/div/button';
+
+        const element2Text = "model factory";
+        const element3Text = "ongoing";
+        const element4Text = "discussion";
+        // const element6Text = "publish topic"; // 不再使用文本匹配点击publish topic
+
+        // Publish Topic按钮的CSS选择器
+        const publishButtonSelector = 'button.chakra-button.css-144iil6';
+
+        // 第一步操作
+        const input1 = await waitForElement(input1Selector);
+        setNativeInputValue(input1, getRandomItem(inputData1));
+        console.log('[脚本日志] 已在输入框1中输入内容');
+        await randomDelay(2000, 2000);
+
+        const input2 = await waitForElement(input2Selector);
+        setNativeInputValue(input2, getRandomItem(inputData2));
+        console.log('[脚本日志] 已在输入框2中输入内容');
+        await randomDelay(2000, 2000);
+
+        const input3 = await waitForElement(input3Selector);
+        await insertTextIntoProseMirror(input3, getRandomItem(inputData3));
+        console.log('[脚本日志] 已在输入框3中输入内容');
+        await randomDelay(2000, 2000);
+
+        console.log('[脚本日志] 正在等待 "Save" 按钮出现...');
+        const saveButton = await waitForElement(saveButtonSelector);
+        console.log('[脚本日志] "Save"按钮已出现，滚动到视图中...');
+        saveButton.scrollIntoView({behavior: "smooth", block: "center"});
+        await randomDelay(500, 1000);
+
+        console.log('[脚本日志] 尝试点击 "Save"按钮...');
+        saveButton.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, view:window}));
+        console.log('[脚本日志] 已尝试点击 "Save"按钮');
+        await randomDelay(3000, 3000);
+
+        console.log('[脚本日志] 开始执行步骤2...');
+
+        await clickTextElement(element2Text);
+        await randomDelay(2000, 3000);
+
+        await clickTextElement(element3Text);
+        await randomDelay(2000, 3000);
+
+        await clickTextElement(element4Text);
+        await randomDelay(2000, 3000);
+
+        console.log('[脚本日志] 等待并点击元素5(XPath) ...');
+        const element5 = await waitForElementXPath(element5XPath);
+        element5.scrollIntoView({behavior: "smooth", block: "center"});
+        await randomDelay(500, 1000);
+        element5.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, view:window}));
+        console.log('[脚本日志] 已点击元素5');
+        await randomDelay(2000, 3000);
+
+        const input4Selector = 'input[placeholder="Enter title"]';
+        const input4 = await waitForElement(input4Selector);
+        const input4Value = getRandomItem(inputData4);
+        setNativeInputValue(input4, input4Value);
+        console.log('[脚本日志] 已在输入框4中输入内容:', input4Value);
+        await randomDelay(2000, 2000);
+
+        console.log('[脚本日志] 等待输入框5出现...');
+        const input5 = await waitForElement(input5Selector);
+        console.log('[脚本日志] 输入框5已出现，开始输入与输入框4相同的内容...');
+        await insertTextIntoProseMirror(input5, input4Value);
+        console.log('[脚本日志] 已在输入框5中输入与输入框4相同的内容');
+        await randomDelay(2000, 2000);
+
+        // 使用CSS选择器点击“Publish Topic”按钮
+        console.log('[脚本日志] 正在等待 "Publish Topic" 按钮出现...');
+        const publishButton = await waitForElement(publishButtonSelector);
+        publishButton.scrollIntoView({behavior:"smooth", block:"center"});
+        await randomDelay(500,1000);
+        publishButton.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, view:window}));
+        console.log('[脚本日志] 已点击"Publish Topic"按钮，脚本结束。');
+    }
+
+    function getRandomItem(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function randomDelay(min, max) {
+        const delay = Math.floor(Math.random() * (max - min + 1)) + min;
+        return new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    function waitForElement(selector, timeout = 30000) {
+        return new Promise((resolve, reject) => {
+            const start = Date.now();
+            const timer = setInterval(() => {
+                const el = document.querySelector(selector);
+                if (el) {
+                    clearInterval(timer);
+                    resolve(el);
+                } else if (Date.now() - start >= timeout) {
+                    clearInterval(timer);
+                    reject(new Error(`等待元素 ${selector} 超时`));
+                }
+            }, 500);
+        });
+    }
+
+    function waitForElementXPath(xpath, timeout = 30000) {
+        const start = Date.now();
+        return new Promise((resolve, reject) => {
+            const timer = setInterval(() => {
+                const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (result) {
+                    clearInterval(timer);
+                    resolve(result);
+                } else if (Date.now() - start >= timeout) {
+                    clearInterval(timer);
+                    reject(new Error(`等待XPath元素超时: ${xpath}`));
+                }
+            }, 500);
+        });
+    }
+
+    function waitForTextElement(text, timeout = 30000) {
+        const lowerText = text.toLowerCase();
+        return new Promise((resolve, reject) => {
+            const start = Date.now();
+            const timer = setInterval(() => {
+                const allElems = document.querySelectorAll('button, div, span, a, p, h1, h2, h3, h4, h5, h6, li');
+                for (const el of allElems) {
+                    const elText = (el.textContent || '').trim().toLowerCase();
+                    if (elText === lowerText) {
+                        clearInterval(timer);
+                        resolve(el);
+                        return;
+                    }
+                }
+                if (Date.now() - start >= timeout) {
+                    clearInterval(timer);
+                    reject(new Error(`等待文本为 "${text}" 的元素超时`));
+                }
+            }, 500);
+        });
+    }
+
+    async function clickTextElement(text) {
+        const el = await waitForTextElement(text);
+        el.scrollIntoView({behavior: "smooth", block: "center"});
+        await randomDelay(500, 1000);
+        el.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, view:window}));
+        console.log(`[脚本日志] 已点击文本为 "${text}" 的元素`);
+    }
+
+    function setNativeInputValue(element, value) {
+        const prototype = Object.getPrototypeOf(element);
+        const descriptor = Object.getOwnPropertyDescriptor(prototype, 'value');
+        if (descriptor && descriptor.set) {
+            descriptor.set.call(element, value);
+        } else {
+            element.value = value;
+        }
+        element.dispatchEvent(new Event('input', {bubbles:true}));
+        element.dispatchEvent(new Event('change', {bubbles:true}));
+    }
+
+    async function insertTextIntoProseMirror(element, text) {
+        element.focus();
+        let p = element.querySelector('p');
+        if (!p) {
+            p = document.createElement('p');
+            element.innerHTML = '';
+            element.appendChild(p);
+        } else {
+            p.innerHTML = '';
+        }
+
+        const range = document.createRange();
+        range.selectNodeContents(p);
+        range.collapse(true);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+
+        for (const char of text) {
+            document.execCommand('insertText', false, char);
+            const inputEvt = new Event('input', {bubbles:true});
+            element.dispatchEvent(inputEvt);
+            await randomDelay(20, 40);
+        }
+    }
+
+    // 执行主函数
+    startScript();
+
+})();
