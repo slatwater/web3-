@@ -376,7 +376,7 @@
             document.execCommand('insertText', false, char);
             const inputEvt = new Event('input', {bubbles:true});
             element.dispatchEvent(inputEvt);
-            await randomDelay(30, 60);
+            await randomDelay(20, 40);
         }
     }
 
