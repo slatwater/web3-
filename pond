@@ -1,14 +1,17 @@
 // ==UserScript==
-// @name         CryptoPond Ideas 自动化脚本 (仅修复Publish Topic点击问题)
+// @name         CryptoPond Ideas 自动化脚本 (优化输入框5定位)
 // @namespace    http://tampermonkey.net/
-// @version      1.7修订4
-// @description  在cryptopond.xyz/ideas/create页面自动填写并提交表单，最后使用CSS选择器点击“Publish Topic”按钮。
+// @version      1.7修订5
+// @description  在cryptopond.xyz/ideas/create页面自动填写并提交表单，使用更通用的方式定位输入框5并点击“Publish Topic”按钮。
 // @match        https://cryptopond.xyz/ideas/create
 // @grant        none
+// @run-at       document-end
 // ==/UserScript==
 
 (function() {
     'use strict';
+
+    console.log('[脚本日志] 脚本已加载，等待页面DOM完成...');
 
     const inputData1 = [
         "Autonomous Disaster Response System",
@@ -118,7 +121,7 @@
         "An AI model that helps content creators generate social media posts, blogs, and videos by analyzing audience preferences and current trends for optimal engagement.",
         "An AI system that uses behavioral data to anticipate customer needs and deliver proactive support or personalized product suggestions, improving customer experience.",
         "A machine learning model designed to automate data entry tasks by extracting relevant information from documents, forms, and databases, improving efficiency and accuracy."
-            ];
+    ];
 
     const inputData3 = [
         "Autonomous Disaster Response System, This AI-driven platform is designed to handle disaster management efficiently by autonomously analyzing real-time data from various sources such as satellite imagery, sensors, drones, and social media. It can predict natural disasters like earthquakes, floods, and wildfires, assess the damage, and optimize the allocation of resources during emergencies. The system can suggest the best routes for emergency responders, automatically adjust rescue operations, and coordinate communication among agencies. It also provides valuable insights by simulating disaster scenarios, enhancing preparedness strategies, and improving recovery times, making it crucial for disaster-prone areas worldwide.",
@@ -178,8 +181,30 @@
 
     const inputData5 = inputData4; // 与inputData4相同的数据
 
-    // 输入框5的selector（上一次您提供的）
-    const input5Selector = '#tabs-\:r1k\:--tabpanel-4 > div > div > div > div.css-ukwgyf > div.css-1nqcm94 > fieldset:nth-child(2) > div > div > div > div > div > div > div';
+    // 使用通用方式等待ProseMirror编辑器（输入框5）出现
+    async function waitForProseMirrorEditor(timeout = 30000) {
+        const start = Date.now();
+        return new Promise((resolve, reject) => {
+            const timer = setInterval(() => {
+                // 查找所有ProseMirror编辑器
+                const editors = document.querySelectorAll('div.ProseMirror.bn-editor.bn-default-styles[contenteditable="true"]');
+                if (editors.length > 0) {
+                    clearInterval(timer);
+                    // 这里假设使用最后一个编辑器作为输入框5
+                    const targetEditor = editors[editors.length - 1];
+                    resolve(targetEditor);
+                } else if (Date.now() - start >= timeout) {
+                    clearInterval(timer);
+                    reject(new Error("等待ProseMirror编辑器出现超时"));
+                }
+            }, 500);
+        });
+    }
+
+    window.addEventListener('load', function() {
+        console.log('[脚本日志] 页面已加载完成，开始执行startScript...');
+        startScript();
+    });
 
     async function startScript() {
         console.log('[脚本日志] 开始执行步骤1...');
@@ -197,7 +222,6 @@
         const element2Text = "model factory";
         const element3Text = "ongoing";
         const element4Text = "discussion";
-        // const element6Text = "publish topic"; // 不再使用文本匹配点击publish topic
 
         // Publish Topic按钮的CSS选择器
         const publishButtonSelector = 'button.chakra-button.css-144iil6';
@@ -255,8 +279,8 @@
         console.log('[脚本日志] 已在输入框4中输入内容:', input4Value);
         await randomDelay(2000, 2000);
 
-        console.log('[脚本日志] 等待输入框5出现...');
-        const input5 = await waitForElement(input5Selector);
+        console.log('[脚本日志] 等待输入框5出现（通过更通用的定位方式）...');
+        const input5 = await waitForProseMirrorEditor();
         console.log('[脚本日志] 输入框5已出现，开始输入与输入框4相同的内容...');
         await insertTextIntoProseMirror(input5, input4Value);
         console.log('[脚本日志] 已在输入框5中输入与输入框4相同的内容');
@@ -379,8 +403,5 @@
             await randomDelay(20, 40);
         }
     }
-
-    // 执行主函数
-    startScript();
 
 })();
