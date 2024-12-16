@@ -179,7 +179,7 @@
     const inputData5 = inputData4; // 与inputData4相同的数据
 
     // 输入框5的selector（上一次您提供的）
-    const input5Selector = '#tabs-\\:r1d\\:--tabpanel-4 > div > div > div > div.css-ukwgyf > div.css-1nqcm94 > fieldset:nth-child(2) > div > div > div > div > div > div > div';
+    const input5Selector = '#tabs-\:r1k\:--tabpanel-4 > div > div > div > div.css-ukwgyf > div.css-1nqcm94 > fieldset:nth-child(2) > div > div > div > div > div > div > div';
 
     async function startScript() {
         console.log('[脚本日志] 开始执行步骤1...');
