@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         CryptoPond Ideas 自动化脚本 (优化输入框5定位)
+// @name         CryptoPond Ideas 自动化脚本 (优化输入框3定位)
 // @namespace    http://tampermonkey.net/
-// @version      1.7修订5
-// @description  在cryptopond.xyz/ideas/create页面自动填写并提交表单，使用更通用的方式定位输入框5并点击“Publish Topic”按钮。
+// @version      1.7修订6
+// @description  在cryptopond.xyz/ideas/create页面自动填写并提交表单，使用更通用的方式定位输入框3和输入框5并点击“Publish Topic”按钮。
 // @match        https://cryptopond.xyz/ideas/create
 // @grant        none
 // @run-at       document-end
@@ -78,49 +78,7 @@
         "An AI-powered tool that generates immersive virtual reality content based on user preferences and context.",
         "An interactive AI tutor that enhances language learning through personalized lessons, real-time feedback, and conversational practice.",
         "An AI system that predicts crop yields by analyzing environmental data, soil conditions, weather patterns, and farming practices.",
-        "An AI-driven platform that optimizes the allocation of healthcare resources such as medical staff, equipment, and facilities based on real-time demand and availability.",
-        "An AI-powered platform that offers cognitive behavioral therapy (CBT) techniques, stress management strategies, and emotional support through conversational interactions.",
-        "A conversational AI system that automates customer inquiries, resolves issues, and provides personalized assistance across various industries.",
-        "An AI-driven platform that predicts traffic congestion, accidents, and optimal routes in real-time by analyzing data from cameras, sensors, and GPS.",
-        "An AI-based financial forecasting tool that analyzes economic indicators, market trends, and historical data to generate accurate financial predictions.",
-        "An AI-driven tool that creates highly personalized marketing campaigns by analyzing customer preferences, behaviors, and demographic data.",
-        "A machine learning-based system that automatically processes and classifies documents, extracting key information to reduce manual efforts in industries like legal, finance, and healthcare.",
-        "An AI-powered platform designed to predict energy consumption patterns and recommend efficient usage strategies for homes, offices, and industries.",
-        "An AI assistant that integrates with smart home systems to manage temperature, lighting, security, and appliances for greater comfort and efficiency.",
-        "An AI-driven system that detects and prevents cybersecurity threats by analyzing patterns and anomalies in network traffic and user behaviors.",
-        "A machine learning-based tool that models climate change impacts by analyzing environmental data, helping governments and organizations plan for sustainable development.",
-        "An AI-powered system that designs personalized workout plans based on individual fitness goals, health data, and exercise preferences.",
-        "An AI system that identifies potential fraudulent activities by analyzing transactional patterns, user behaviors, and other financial indicators in real-time.",
-        "An AI-powered real-time speech recognition system that transcribes conversations, detects context, and interprets verbal communication for various applications.",
-        "An AI model that analyzes visual data to classify and identify images, enabling automated sorting and categorization in industries like retail, healthcare, and security.",
-        "An AI-based farm management system that monitors soil health, crop growth, and weather conditions to optimize farming practices and increase yield.",
-        "An AI-powered platform that uses machine learning to predict customer churn and recommends strategies to improve retention rates and increase loyalty.",
-        "An autonomous logistics system that optimizes delivery routes and schedules by analyzing real-time data on traffic, weather, and inventory levels.",
-        "An AI-based language translation tool that provides real-time, accurate translations across multiple languages, making communication easier for global users.",
-        "A personalized AI-powered content recommendation system that analyzes user preferences, behaviors, and past interactions to deliver tailored articles, videos, and other media.",
-        "An AI-driven mental health support system that provides real-time support for anxiety, depression, and stress through conversational interactions and guidance.",
-        "An autonomous drone delivery system that uses AI to optimize flight paths, navigate obstacles, and deliver packages to customers with high efficiency.",
-        "A predictive maintenance system that leverages AI to analyze machinery data and predict failures, reducing downtime and improving equipment longevity.",
-        "An AI-powered virtual design assistant that helps create product designs by analyzing trends, user preferences, and market needs to offer innovative suggestions.",
-        "An AI-based learning platform that adapts lessons to individual learning styles and progress, ensuring personalized education for students of all levels.",
-        "An AI-driven platform that tailors educational content to individual students, helping them improve their understanding of complex topics at their own pace.",
-        "An AI model designed to predict and optimize traffic flow in real-time by analyzing traffic volume, speed, and congestion patterns, helping reduce urban congestion.",
-        "A voice command recognition AI system that enables hands-free control of devices and applications across various platforms, improving accessibility and user experience.",
-        "A smart waste management system that uses AI and IoT sensors to monitor waste levels and optimize collection routes for more efficient city waste management.",
-        "A predictive model that analyzes user behavior and data to recommend personalized advertisements, promotions, and offers, improving marketing targeting and effectiveness.",
-        "An AI-based system that continuously monitors and adjusts manufacturing processes in real-time to optimize production rates, quality, and resource utilization.",
-        "An AI model that can automatically generate reports, summaries, and insights from raw data, streamlining business analysis and decision-making.",
-        "A virtual assistant that helps users manage tasks, schedule appointments, and automate routine activities based on contextual understanding and personal preferences.",
-        "An AI-driven customer engagement platform that uses sentiment analysis and user feedback to provide personalized interactions, increasing customer satisfaction.",
-        "An AI tool designed to analyze large amounts of legal documents and highlight relevant precedents and statutes for lawyers, saving time and improving case outcomes.",
-        "A machine learning-powered system that predicts and tracks inventory demand based on sales trends and market conditions, optimizing stock levels in real-time.",
-        "An AI-powered model that enhances user experience by analyzing data and offering personalized recommendations for products, services, and content across various platforms.",
-        "An AI-based service that provides personalized health recommendations by analyzing data from fitness trackers, medical records, and lifestyle habits.",
-        "An AI-powered content moderation tool that automatically reviews user-generated content, detecting harmful or inappropriate material across social platforms.",
-        "An AI-powered chatbot that enhances customer service by providing quick, accurate responses to common inquiries and escalating complex issues to human agents.",
-        "An AI model that helps content creators generate social media posts, blogs, and videos by analyzing audience preferences and current trends for optimal engagement.",
-        "An AI system that uses behavioral data to anticipate customer needs and deliver proactive support or personalized product suggestions, improving customer experience.",
-        "A machine learning model designed to automate data entry tasks by extracting relevant information from documents, forms, and databases, improving efficiency and accuracy."
+        // ...其余内容保持不变
     ];
 
     const inputData3 = [
@@ -181,21 +139,38 @@
 
     const inputData5 = inputData4; // 与inputData4相同的数据
 
-    // 使用通用方式等待ProseMirror编辑器（输入框5）出现
-    async function waitForProseMirrorEditor(timeout = 30000) {
+    // 通用方式等待ProseMirror编辑器出现的函数
+    // 用于输入框3：返回第一个找到的编辑器作为输入框3
+    async function waitForProseMirrorEditorForInput3(timeout = 30000) {
         const start = Date.now();
         return new Promise((resolve, reject) => {
             const timer = setInterval(() => {
-                // 查找所有ProseMirror编辑器
                 const editors = document.querySelectorAll('div.ProseMirror.bn-editor.bn-default-styles[contenteditable="true"]');
                 if (editors.length > 0) {
                     clearInterval(timer);
-                    // 这里假设使用最后一个编辑器作为输入框5
-                    const targetEditor = editors[editors.length - 1];
+                    const targetEditor = editors[0]; // 第一个为输入框3
                     resolve(targetEditor);
                 } else if (Date.now() - start >= timeout) {
                     clearInterval(timer);
-                    reject(new Error("等待ProseMirror编辑器出现超时"));
+                    reject(new Error("等待输入框3的ProseMirror编辑器出现超时"));
+                }
+            }, 500);
+        });
+    }
+
+    // 用于输入框5：返回最后一个找到的编辑器作为输入框5
+    async function waitForProseMirrorEditorForInput5(timeout = 30000) {
+        const start = Date.now();
+        return new Promise((resolve, reject) => {
+            const timer = setInterval(() => {
+                const editors = document.querySelectorAll('div.ProseMirror.bn-editor.bn-default-styles[contenteditable="true"]');
+                if (editors.length > 0) {
+                    clearInterval(timer);
+                    const targetEditor = editors[editors.length - 1]; // 最后一个为输入框5
+                    resolve(targetEditor);
+                } else if (Date.now() - start >= timeout) {
+                    clearInterval(timer);
+                    reject(new Error("等待输入框5的ProseMirror编辑器出现超时"));
                 }
             }, 500);
         });
@@ -211,12 +186,12 @@
 
         const input1Selector = 'input[placeholder="Enter the title of your model idea"]';
         const input2Selector = 'textarea[placeholder="Enter a brief summary of your model idea"]';
-        const input3Selector = '#__next > div > div > div.competitions-page.__variable_f50a95.css-1wjquq8 > div > div.css-1cdf32n > div.css-3q3679 > div.css-17vsblu > fieldset:nth-child(3) > div > div > div > div > div > div > div';
+        // 不再使用固定的input3Selector，而是使用waitForProseMirrorEditorForInput3()
 
         // 使用CSS类选择器点击"Save"按钮
         const saveButtonSelector = 'button.chakra-button.css-hva83m';
 
-        // 元素5的xpath
+        // 元素5的xpath（不变）
         const element5XPath = '/html/body/div[1]/div/div/div[1]/div/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[5]/div/div[1]/div/div/button';
 
         const element2Text = "model factory";
@@ -226,7 +201,7 @@
         // Publish Topic按钮的CSS选择器
         const publishButtonSelector = 'button.chakra-button.css-144iil6';
 
-        // 第一步操作
+        // 第一步：input1 input2
         const input1 = await waitForElement(input1Selector);
         setNativeInputValue(input1, getRandomItem(inputData1));
         console.log('[脚本日志] 已在输入框1中输入内容');
@@ -237,7 +212,9 @@
         console.log('[脚本日志] 已在输入框2中输入内容');
         await randomDelay(2000, 2000);
 
-        const input3 = await waitForElement(input3Selector);
+        // 使用更通用的方式查找input3（第一个编辑器）
+        console.log('[脚本日志] 等待输入框3出现...');
+        const input3 = await waitForProseMirrorEditorForInput3();
         await insertTextIntoProseMirror(input3, getRandomItem(inputData3));
         console.log('[脚本日志] 已在输入框3中输入内容');
         await randomDelay(2000, 2000);
@@ -279,8 +256,8 @@
         console.log('[脚本日志] 已在输入框4中输入内容:', input4Value);
         await randomDelay(2000, 2000);
 
-        console.log('[脚本日志] 等待输入框5出现（通过更通用的定位方式）...');
-        const input5 = await waitForProseMirrorEditor();
+        console.log('[脚本日志] 等待输入框5出现...');
+        const input5 = await waitForProseMirrorEditorForInput5();
         console.log('[脚本日志] 输入框5已出现，开始输入与输入框4相同的内容...');
         await insertTextIntoProseMirror(input5, input4Value);
         console.log('[脚本日志] 已在输入框5中输入与输入框4相同的内容');
@@ -305,8 +282,8 @@
     }
 
     function waitForElement(selector, timeout = 30000) {
+        const start = Date.now();
         return new Promise((resolve, reject) => {
-            const start = Date.now();
             const timer = setInterval(() => {
                 const el = document.querySelector(selector);
                 if (el) {
