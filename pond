@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         CryptoPond Ideas 自动化脚本 (优化输入框3定位)
+// @name         CryptoPond Ideas 自动化脚本 (通用定位 New Topic 按钮)
 // @namespace    http://tampermonkey.net/
-// @version      1.7修订6
-// @description  在cryptopond.xyz/ideas/create页面自动填写并提交表单，使用更通用的方式定位输入框3和输入框5并点击“Publish Topic”按钮。
+// @version      1.7修订7
+// @description  在cryptopond.xyz/ideas/create页面自动填写并提交表单，使用文本匹配方式定位"New Topic"按钮（元素5）。
 // @match        https://cryptopond.xyz/ideas/create
 // @grant        none
 // @run-at       document-end
@@ -77,8 +77,7 @@
         "An AI-based system that monitors and ensures manufacturing quality by detecting defects, predicting maintenance needs, and optimizing production parameters.",
         "An AI-powered tool that generates immersive virtual reality content based on user preferences and context.",
         "An interactive AI tutor that enhances language learning through personalized lessons, real-time feedback, and conversational practice.",
-        "An AI system that predicts crop yields by analyzing environmental data, soil conditions, weather patterns, and farming practices.",
-        // ...其余内容保持不变
+        "An AI system that predicts crop yields by analyzing environmental data, soil conditions, weather patterns, and farming practices."
     ];
 
     const inputData3 = [
@@ -139,8 +138,7 @@
 
     const inputData5 = inputData4; // 与inputData4相同的数据
 
-    // 通用方式等待ProseMirror编辑器出现的函数
-    // 用于输入框3：返回第一个找到的编辑器作为输入框3
+    // 等待输入框3的函数：返回第一个ProseMirror编辑器
     async function waitForProseMirrorEditorForInput3(timeout = 30000) {
         const start = Date.now();
         return new Promise((resolve, reject) => {
@@ -158,7 +156,7 @@
         });
     }
 
-    // 用于输入框5：返回最后一个找到的编辑器作为输入框5
+    // 等待输入框5的函数：返回最后一个ProseMirror编辑器
     async function waitForProseMirrorEditorForInput5(timeout = 30000) {
         const start = Date.now();
         return new Promise((resolve, reject) => {
@@ -176,6 +174,28 @@
         });
     }
 
+    // 等待“New Topic”按钮的函数
+    async function waitForNewTopicButton(timeout = 30000) {
+        const start = Date.now();
+        return new Promise((resolve, reject) => {
+            const timer = setInterval(() => {
+                const buttons = document.querySelectorAll('button.chakra-button');
+                for (const btn of buttons) {
+                    const textContent = (btn.textContent || '').trim().toLowerCase();
+                    if (textContent.includes('new topic')) {
+                        clearInterval(timer);
+                        resolve(btn);
+                        return;
+                    }
+                }
+                if (Date.now() - start >= timeout) {
+                    clearInterval(timer);
+                    reject(new Error("等待包含 'New Topic' 文本的按钮超时"));
+                }
+            }, 500);
+        });
+    }
+
     window.addEventListener('load', function() {
         console.log('[脚本日志] 页面已加载完成，开始执行startScript...');
         startScript();
@@ -186,22 +206,11 @@
 
         const input1Selector = 'input[placeholder="Enter the title of your model idea"]';
         const input2Selector = 'textarea[placeholder="Enter a brief summary of your model idea"]';
-        // 不再使用固定的input3Selector，而是使用waitForProseMirrorEditorForInput3()
 
-        // 使用CSS类选择器点击"Save"按钮
-        const saveButtonSelector = 'button.chakra-button.css-hva83m';
-
-        // 元素5的xpath（不变）
-        const element5XPath = '/html/body/div[1]/div/div/div[1]/div/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[5]/div/div[1]/div/div/button';
-
-        const element2Text = "model factory";
-        const element3Text = "ongoing";
-        const element4Text = "discussion";
-
-        // Publish Topic按钮的CSS选择器
+        // Publish Topic按钮的CSS选择器保持不变
         const publishButtonSelector = 'button.chakra-button.css-144iil6';
 
-        // 第一步：input1 input2
+        // 第一步输入框1和2
         const input1 = await waitForElement(input1Selector);
         setNativeInputValue(input1, getRandomItem(inputData1));
         console.log('[脚本日志] 已在输入框1中输入内容');
@@ -212,7 +221,7 @@
         console.log('[脚本日志] 已在输入框2中输入内容');
         await randomDelay(2000, 2000);
 
-        // 使用更通用的方式查找input3（第一个编辑器）
+        // 等待输入框3出现并输入内容
         console.log('[脚本日志] 等待输入框3出现...');
         const input3 = await waitForProseMirrorEditorForInput3();
         await insertTextIntoProseMirror(input3, getRandomItem(inputData3));
@@ -220,6 +229,7 @@
         await randomDelay(2000, 2000);
 
         console.log('[脚本日志] 正在等待 "Save" 按钮出现...');
+        const saveButtonSelector = 'button.chakra-button.css-hva83m';
         const saveButton = await waitForElement(saveButtonSelector);
         console.log('[脚本日志] "Save"按钮已出现，滚动到视图中...');
         saveButton.scrollIntoView({behavior: "smooth", block: "center"});
@@ -232,6 +242,10 @@
 
         console.log('[脚本日志] 开始执行步骤2...');
 
+        const element2Text = "model factory";
+        const element3Text = "ongoing";
+        const element4Text = "discussion";
+
         await clickTextElement(element2Text);
         await randomDelay(2000, 3000);
 
@@ -241,12 +255,12 @@
         await clickTextElement(element4Text);
         await randomDelay(2000, 3000);
 
-        console.log('[脚本日志] 等待并点击元素5(XPath) ...');
-        const element5 = await waitForElementXPath(element5XPath);
-        element5.scrollIntoView({behavior: "smooth", block: "center"});
+        console.log('[脚本日志] 等待并点击"New Topic"按钮(元素5) ...');
+        const newTopicButton = await waitForNewTopicButton();
+        newTopicButton.scrollIntoView({behavior: "smooth", block: "center"});
         await randomDelay(500, 1000);
-        element5.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, view:window}));
-        console.log('[脚本日志] 已点击元素5');
+        newTopicButton.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, view:window}));
+        console.log('[脚本日志] 已点击"New Topic"按钮');
         await randomDelay(2000, 3000);
 
         const input4Selector = 'input[placeholder="Enter title"]';
@@ -263,7 +277,7 @@
         console.log('[脚本日志] 已在输入框5中输入与输入框4相同的内容');
         await randomDelay(2000, 2000);
 
-        // 使用CSS选择器点击“Publish Topic”按钮
+        // 点击“Publish Topic”按钮
         console.log('[脚本日志] 正在等待 "Publish Topic" 按钮出现...');
         const publishButton = await waitForElement(publishButtonSelector);
         publishButton.scrollIntoView({behavior:"smooth", block:"center"});
@@ -297,20 +311,12 @@
         });
     }
 
-    function waitForElementXPath(xpath, timeout = 30000) {
-        const start = Date.now();
-        return new Promise((resolve, reject) => {
-            const timer = setInterval(() => {
-                const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (result) {
-                    clearInterval(timer);
-                    resolve(result);
-                } else if (Date.now() - start >= timeout) {
-                    clearInterval(timer);
-                    reject(new Error(`等待XPath元素超时: ${xpath}`));
-                }
-            }, 500);
-        });
+    async function clickTextElement(text) {
+        const el = await waitForTextElement(text);
+        el.scrollIntoView({behavior: "smooth", block: "center"});
+        await randomDelay(500, 1000);
+        el.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, view:window}));
+        console.log(`[脚本日志] 已点击文本为 "${text}" 的元素`);
     }
 
     function waitForTextElement(text, timeout = 30000) {
@@ -333,14 +339,6 @@
                 }
             }, 500);
         });
-    }
-
-    async function clickTextElement(text) {
-        const el = await waitForTextElement(text);
-        el.scrollIntoView({behavior: "smooth", block: "center"});
-        await randomDelay(500, 1000);
-        el.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, view:window}));
-        console.log(`[脚本日志] 已点击文本为 "${text}" 的元素`);
     }
 
     function setNativeInputValue(element, value) {
