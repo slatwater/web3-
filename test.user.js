@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      6.9
+// @version      7.1
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -13,10 +13,6 @@
 // @match        https://cess.network/merkle/*
 // @match        https://*.breadnbutter.fun/*
 // @match        https://www.communitygaming.io/quests
-// @match        https://pentagon.games/*
-// @match        https://pentagon.games/account
-// @match        https://pentagon.games/sign-in
-// @match        https://pentagon.games/airdrop/ascended
 // @match        https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd
 // @match        https://quest.redactedairways.com/*
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
@@ -167,9 +163,6 @@
             } else if (currentURL.includes('communitygaming.io/quests')) {
                 // 执行脚本9的功能
                 await executeScript9();
-             } else if (currentURL.includes('pentagon.games')) {
-                // 执行脚本10的功能
-                await executeScript10();
             } else if (currentURL.includes('https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd')) {
                 // 执行脚本11的功能
                 await executeScript11();   
@@ -1115,16 +1108,7 @@
             log('点击元素4');
             element4.click();
             log('已点击元素4');
-    
-            // 等待8秒钟
-            log('等待8秒钟后，点击元素5');
-            await new Promise(resolve => setTimeout(resolve, 10000));
-    
-            // 点击元素5
-            const element5 = await waitForSelector(selector5, 10000);
-            log('点击元素5，脚本执行完毕');
-            element5.click();
-            log('已点击元素5，脚本执行完毕');
+            await randomDelay(delay3, delay3 + 500);
     
             // 完成后重定向
             log("所有 BreadnButter 操作已完成，准备跳转至 CommunityGaming 页面。");
@@ -1351,140 +1335,8 @@
         log("CommunityGaming 脚本执行完毕，脚本结束。");
         log("CommunityGaming 脚本执行完毕，准备跳转至 Pentagon Games 页面。");
         await randomDelay(2000, 4000); // 延迟2-4秒
-        window.location.href = 'https://pentagon.games/account';
+        window.location.href = 'https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd';
     }
-
-    
-    // 脚本10：Pentagon Games 自动化操作
-    async function executeScript10() {
-        log("执行 Pentagon Games 自动化脚本。");
-    
-        // 定义全局变量
-        const url1 = 'https://pentagon.games/account';
-        const url2 = 'https://pentagon.games/sign-in';
-        const url3 = 'https://pentagon.games/airdrop/ascended';
-        const url4 = 'https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd';
-    
-        // 通过XPath获取元素
-        function getElementByXpath(xpath) {
-            return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-        }
-    
-        // 等待特定XPath元素出现
-        async function waitForXPath(xpath, timeout = 30000) {
-            return new Promise((resolve, reject) => {
-                const interval = 500;
-                let elapsed = 0;
-                const timer = setInterval(() => {
-                    const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                    if (result.singleNodeValue) {
-                        clearInterval(timer);
-                        resolve(result.singleNodeValue);
-                    } else {
-                        elapsed += interval;
-                        if (elapsed >= timeout) {
-                            clearInterval(timer);
-                            reject(new Error(`等待XPath ${xpath} 超时`));
-                        }
-                    }
-                }, interval);
-            });
-        }
-    
-        // 随机延迟函数
-        function randomDelay(min, max) {
-            const delay = Math.floor(Math.random() * (max - min + 1)) + min;
-            return new Promise(resolve => setTimeout(resolve, delay));
-        }
-    
-        // 第二步操作：元素1出现后，持续点击元素1直到元素2出现，然后持续点击元素2直到消失
-        async function stepTwo() {
-            try {
-                log('第二步：等待元素1出现');
-                const element1Xpath = '/html/body/main/div[2]/div/div[2]/div[2]/img';
-                const element2Xpath = '/html/body/div[2]/div/div/div/div[2]/div/div/div/div/div/div/canvas';
-    
-                const element1 = await waitForXPath(element1Xpath, 30000);
-    
-                if (element1) {
-                    log('元素1已出现，开始持续点击元素1直到元素2出现');
-    
-                    // 持续点击element1，直到element2出现为止
-                    while (true) {
-                        const element2 = getElementByXpath(element2Xpath);
-                        if (element2) {
-                            log('元素2已出现，停止点击元素1');
-                            break;
-                        } else {
-                            element1.click();
-                            log('已再次点击元素1');
-                            await randomDelay(1000, 1500);
-                        }
-                    }
-    
-                    // 元素2已出现，开始持续点击元素2，直到其消失
-                    log('开始持续点击元素2，直到其消失');
-                    while (true) {
-                        const currentElement2 = getElementByXpath(element2Xpath);
-                        if (currentElement2) {
-                            currentElement2.click();
-                            log('已点击元素2');
-                            await randomDelay(1000, 1500);
-                        } else {
-                            log('元素2已消失');
-                            break;
-                        }
-                    }
-    
-                    log('等待3-4秒后执行第三步');
-                    await randomDelay(3000, 4000);
-    
-                    // 执行第三步
-                    log('执行第三步：跳转至 url4');
-                    window.location.href = url4;
-                } else {
-                    log('元素1未出现，脚本结束');
-                }
-            } catch (error) {
-                log(`执行第二步时发生错误: ${error.message}`);
-            }
-        }
-    
-        // 主执行函数
-        async function mainPentagon() {
-            log('Pentagon Games 脚本开始执行');
-    
-            // 随机延迟初始等待时间（1-3秒）
-            await randomDelay(1000, 3000);
-    
-            const currentUrl = window.location.href;
-            log(`当前 URL: ${currentUrl}`);
-    
-            if (currentUrl.startsWith(url1)) {
-                log('检测到当前页面为 url1，等待 4 秒后跳转至 url3');
-                await randomDelay(4000, 4000);
-                window.location.href = url3;
-            } else if (currentUrl.startsWith(url2)) {
-                log('检测到当前页面为 url2，等待 7 秒后跳转至 url3');
-                await randomDelay(7000, 7000);
-                window.location.href = url3;
-            } else if (currentUrl.startsWith(url3)) {
-                log('检测到当前页面为 url3，开始执行第二步');
-                await stepTwo();
-            } else {
-                log('当前页面不在预期的 URL 列表中，脚本结束');
-            }
-        }
-    
-        // 执行主函数
-        await mainPentagon();
-    }
-    
-    // 以下为日志函数示例
-    function log(message) {
-        console.log(`[脚本日志] ${message}`);
-    }
-
 
 
 
