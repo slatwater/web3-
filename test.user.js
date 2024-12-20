@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      7.1
+// @version      7.2
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1092,23 +1092,6 @@
             log(`等待 ${delay2} 毫秒后，点击元素3`);
             await randomDelay(delay2, delay2 + 500);
     
-            // 点击元素3
-            const element3 = await waitForSelector(selector3, 10000);
-            log('点击元素3');
-            element3.click();
-            log('已点击元素3');
-    
-            // 随机延迟
-            const delay3 = Math.floor(Math.random() * 2000) + 1000;
-            log(`等待 ${delay3} 毫秒后，点击元素4`);
-            await randomDelay(delay3, delay3 + 500);
-    
-            // 点击元素4
-            const element4 = await waitForSelector(selector4, 10000);
-            log('点击元素4');
-            element4.click();
-            log('已点击元素4');
-            await randomDelay(delay3, delay3 + 500);
     
             // 完成后重定向
             log("所有 BreadnButter 操作已完成，准备跳转至 CommunityGaming 页面。");
