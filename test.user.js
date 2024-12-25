@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      7.2
+// @version      7.5
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
 // @match        https://sidequest.rcade.game/quests
-// @match        https://glob.shaga.xyz/quests*
 // @match        https://forge.gg/quests
 // @match        https://points.reddio.com/task
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
@@ -142,9 +141,6 @@
             } else if (currentURL.includes('sidequest.rcade.game/quests')) {
                 // 执行脚本2的功能
                 await executeScript2();
-            } else if (currentURL.includes('glob.shaga.xyz/quests')) {
-                // 执行脚本3的功能
-                await executeScript3();
             } else if (currentURL.includes('forge.gg/quests')) {
                 // 执行脚本4的功能
                 await executeScript4();
@@ -387,49 +383,7 @@
 
         log("SideQuest 自动化脚本执行完毕，跳转到 Glob Shaga Quests 页面。");
         await randomDelay(2000, 4000);
-        window.location.href = 'https://glob.shaga.xyz/quests';
-    }
-
-    // 脚本3：Glob Shaga Quests 自动化操作
-    async function executeScript3() {
-        log("执行 Glob Shaga Quests 自动化脚本。");
-
-        // 元素1：<img src="other/Group 1000004021.png">
-        const imgSelector = 'img[src="other/Group 1000004021.png"]';
-
-        // 元素2的XPath
-        const element2XPath = '//*[@id="root"]/div/div[1]/main/div[3]/div[2]/div[3]/div[6]/span[2]/span/span';
-
-        // 等待元素1出现
-        try {
-            const imgElement = await waitForSelector(imgSelector, 20000);
-            log(`找到元素1，src="${imgElement.getAttribute('src')}"，准备点击。`);
-
-            // 获取元素1的父级元素（假设是可点击的）
-            let clickableElement = imgElement.closest('button, a, div[onclick], span[onclick]');
-            if (!clickableElement) {
-                // 如果找不到可点击的父级，可以尝试点击img本身
-                clickableElement = imgElement;
-                log("未找到可点击的父级元素，将直接点击<img>元素。");
-            } else {
-                log(`找到可点击的父级元素：${clickableElement.tagName}`);
-            }
-
-            // 滚动到元素并点击
-            clickableElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); // 确保元素在视野内
-            await randomDelay(500, 1500); // 在点击前稍作延迟
-            clickableElement.click();
-            log("已点击元素1，开始监测元素2的出现。");
-
-            // 等待元素2出现
-            log(`等待元素2出现，XPath: ${element2XPath}`);
-            await waitForXPath(element2XPath, 30000);
-            log("Glob Shaga Quests 自动化脚本执行完毕，跳转到 Forge.gg Quests 页面。");
-            await randomDelay(2000, 4000);
-            window.location.href = 'https://forge.gg/quests';
-        } catch (error) {
-            log(`未找到元素1或点击失败：${error.message}`);
-        }
+        window.location.href = 'https://forge.gg/quests';
     }
 
     // 脚本4：Forge.gg Quests 自动化操作（修改版）
@@ -909,7 +863,7 @@
             await randomDelay(3000, 6000);
 
             // 点击元素1
-            const element1XPath = '//*[@id="root"]/div/div/div[3]/div[2]/div/div/div/div[3]/div[2]/button';
+            const element1XPath = '//*[@id="root"]/div/div/div[3]/div[2]/div/div/div/div[4]/div[2]/button';
             log('查找元素1并点击...');
             const element1 = await waitForXPath(element1XPath);
             element1.click();
@@ -919,14 +873,14 @@
             await randomDelay(1000, 2000);
 
             // 点击元素2
-            const element2XPath = '/html/body/div[2]/div/div[2]/div/div[2]/div[2]/div/div/div[2]/div[1]/button';
+            const element2XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/div[2]/div[1]/button';
             log('查找元素2并点击...');
             const element2 = await waitForXPath(element2XPath);
             element2.click();
             log('已点击元素2。');
 
             // 等待元素4出现并点击
-            const element4XPath = '/html/body/div[3]/div/div[2]/div/div[2]/div/div/div[2]/button[2]';
+            const element4XPath = '/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/div[2]/button[2]';
             log('等待元素4出现...');
             const element4 = await waitForXPath(element4XPath);
             await randomDelay(500, 1000);
@@ -937,7 +891,7 @@
             await randomDelay(1000, 2000);
 
             // 点击元素3
-            const element3XPath = '/html/body/div[2]/div/div[2]/div/div[2]/div[2]/div/div/div[2]/div[2]/button';
+            const element3XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/div[2]/div[2]/button';
             log('查找元素3并点击...');
             const element3 = await waitForXPath(element3XPath);
             element3.click();
@@ -954,7 +908,7 @@
             await randomDelay(1000, 2000);
 
             // 点击元素5
-            const element5XPath = '/html/body/div[2]/div/div[2]/div/div[2]/div[2]/div/div/button';
+            const element5XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/button';
             log('查找元素5并点击...');
             const element5 = await waitForXPath(element5XPath);
             element5.click();
@@ -964,7 +918,7 @@
             await randomDelay(1000, 2000);
 
             // 点击元素6 (canvas)
-            const element6XPath = '/html/body/div[2]/div/div[2]/div/div[2]/div[2]/div/div/div[2]/div/canvas';
+            const element6XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/div[2]/div/canvas';
             log('查找元素6（canvas）并点击...');
             const element6 = await waitForXPath(element6XPath);
 
@@ -992,7 +946,7 @@
             await randomDelay(1000, 2000);
 
             // 等待元素7出现并点击
-            const element7XPath = '/html/body/div[3]/div/div[2]/div/div[2]/div/div/div[2]/button';
+            const element7XPath = '/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/div[2]/button';
             log('等待元素7出现...');
             const element7 = await waitForXPath(element7XPath);
             await randomDelay(500, 1000);
