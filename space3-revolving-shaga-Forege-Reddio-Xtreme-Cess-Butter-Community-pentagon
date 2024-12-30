@@ -1,22 +1,17 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      6.2
+// @version      7.5
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
 // @match        https://sidequest.rcade.game/quests
-// @match        https://glob.shaga.xyz/quests*
 // @match        https://forge.gg/quests
 // @match        https://points.reddio.com/task
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://cess.network/merkle/*
 // @match        https://*.breadnbutter.fun/*
 // @match        https://www.communitygaming.io/quests
-// @match        https://pentagon.games/*
-// @match        https://pentagon.games/account
-// @match        https://pentagon.games/sign-in
-// @match        https://pentagon.games/airdrop/ascended
 // @match        https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd
 // @match        https://quest.redactedairways.com/*
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
@@ -41,6 +36,11 @@
         return new Promise(resolve => setTimeout(resolve, delay));
     }
 
+    // 固定延迟函数
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
     // 等待CSS选择器出现
     function waitForSelector(selector, timeout = 30000) {
         return new Promise((resolve, reject) => {
@@ -141,9 +141,6 @@
             } else if (currentURL.includes('sidequest.rcade.game/quests')) {
                 // 执行脚本2的功能
                 await executeScript2();
-            } else if (currentURL.includes('glob.shaga.xyz/quests')) {
-                // 执行脚本3的功能
-                await executeScript3();
             } else if (currentURL.includes('forge.gg/quests')) {
                 // 执行脚本4的功能
                 await executeScript4();
@@ -162,9 +159,6 @@
             } else if (currentURL.includes('communitygaming.io/quests')) {
                 // 执行脚本9的功能
                 await executeScript9();
-             } else if (currentURL.includes('pentagon.games')) {
-                // 执行脚本10的功能
-                await executeScript10();
             } else if (currentURL.includes('https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd')) {
                 // 执行脚本11的功能
                 await executeScript11();   
@@ -389,66 +383,25 @@
 
         log("SideQuest 自动化脚本执行完毕，跳转到 Glob Shaga Quests 页面。");
         await randomDelay(2000, 4000);
-        window.location.href = 'https://glob.shaga.xyz/quests';
+        window.location.href = 'https://forge.gg/quests';
     }
 
-    // 脚本3：Glob Shaga Quests 自动化操作
-    async function executeScript3() {
-        log("执行 Glob Shaga Quests 自动化脚本。");
-
-        // 元素1：<img src="other/Group 1000004021.png">
-        const imgSelector = 'img[src="other/Group 1000004021.png"]';
-
-        // 元素2的XPath
-        const element2XPath = '//*[@id="root"]/div/div[1]/main/div[3]/div[2]/div[3]/div[6]/span[2]/span/span';
-
-        // 等待元素1出现
-        try {
-            const imgElement = await waitForSelector(imgSelector, 20000);
-            log(`找到元素1，src="${imgElement.getAttribute('src')}"，准备点击。`);
-
-            // 获取元素1的父级元素（假设是可点击的）
-            let clickableElement = imgElement.closest('button, a, div[onclick], span[onclick]');
-            if (!clickableElement) {
-                // 如果找不到可点击的父级，可以尝试点击img本身
-                clickableElement = imgElement;
-                log("未找到可点击的父级元素，将直接点击<img>元素。");
-            } else {
-                log(`找到可点击的父级元素：${clickableElement.tagName}`);
-            }
-
-            // 滚动到元素并点击
-            clickableElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); // 确保元素在视野内
-            await randomDelay(500, 1500); // 在点击前稍作延迟
-            clickableElement.click();
-            log("已点击元素1，开始监测元素2的出现。");
-
-            // 等待元素2出现
-            log(`等待元素2出现，XPath: ${element2XPath}`);
-            await waitForXPath(element2XPath, 30000);
-            log("Glob Shaga Quests 自动化脚本执行完毕，跳转到 Forge.gg Quests 页面。");
-            await randomDelay(2000, 4000);
-            window.location.href = 'https://forge.gg/quests';
-        } catch (error) {
-            log(`未找到元素1或点击失败：${error.message}`);
-        }
-    }
-
-    // 脚本4：Forge.gg Quests 自动化操作
+    // 脚本4：Forge.gg Quests 自动化操作（修改版）
+    
     async function executeScript4() {
         log("执行 Forge.gg Quests 自动化脚本。");
-
+    
         // 定义元素选择器
         const element1Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > button';
         const element2Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > div.home-rewards__head > div > button';
         const spinnerSelector = '#root > div > div.user__wrapper.bg-quest.content-paused > main > div.home-topcontent > header > p > span.spinner';
         const element3Selector = 'div.xpbar.xpbar--badge.margin-bottom';
-
+    
         // 记录初始的barValue值
         let initialBarValue = null;
         let scriptStopped = false; // 脚本停止标志
         let clickElement2IntervalId = null; // 定时器ID
-
+    
         // 第一步：重复点击元素1，直到spinner出现
         log("开始点击元素1，直到加载开始（spinner出现）...");
         try {
@@ -458,16 +411,15 @@
                 await randomDelay(500, 1000);
                 element1.click();
                 log("已点击元素1。");
-
+    
                 // 检查spinner是否出现
-                try {
-                    await waitForSelector(spinnerSelector, 3000);
+                if (document.querySelector(spinnerSelector)) {
                     log("加载已开始（spinner已出现）。");
                     spinnerAppeared = true;
-                } catch (error) {
+                } else {
                     log("spinner未出现，继续点击元素1...");
                 }
-
+    
                 // 添加适当的随机延迟
                 await randomDelay(1000, 2000);
             }
@@ -475,24 +427,24 @@
             log("未找到元素1或点击失败。");
             return;
         }
-
-        // 第二步：等待加载完成（等待spinner消失）
-        log("等待加载完成（等待spinner消失）...");
+    
+        // 第二步：等待加载完成（持续等待spinner消失）
+        log("等待加载完成（持续等待spinner消失）...");
         try {
-            await waitForElementToDisappear(spinnerSelector, 60000);
+            await waitForSpinnerToDisappear(spinnerSelector);
             log("加载已完成。");
         } catch (error) {
-            log("等待spinner消失超时或发生错误。");
+            log("等待spinner消失时发生错误：" + error.message);
             return;
         }
-
+    
         // 第三步：开始监测元素3的barValue值变化
         log("等待元素3加载完毕...");
         try {
             const element3 = await waitForSelector(element3Selector, 20000);
             initialBarValue = getBarValue(element3);
             log(`初始的barValue值为：${initialBarValue}`);
-
+    
             // 开始监测barValue变化
             observeBarValueChange(element3, (newBarValue) => {
                 log(`检测到barValue值变化，新的值为：${newBarValue}`);
@@ -506,16 +458,16 @@
                 log("自动跳转至 Reddio Points Task 页面。");
                 window.location.href = 'https://points.reddio.com/task';
             });
-
+    
             // 第四步：点击元素2，并每隔50秒点击一次，直到barValue变化
             await clickElement2Periodically(element2Selector);
         } catch (error) {
             log(`未找到元素3或获取barValue失败：${error.message}`);
             return;
         }
-
+    
         // 定义辅助函数
-
+    
         // 获取元素3的barValue值
         function getBarValue(element) {
             const style = element.getAttribute('style');
@@ -525,7 +477,7 @@
             }
             return null;
         }
-
+    
         // 监测元素3的barValue值变化
         function observeBarValueChange(element, callback) {
             const observer = new MutationObserver((mutations) => {
@@ -544,20 +496,20 @@
                 attributeFilter: ['style']
             });
         }
-
-        // 点击元素2，并每隔20秒点击一次，直到barValue变化
+    
+        // 点击元素2，并每隔50秒点击一次，直到barValue变化
         async function clickElement2Periodically(element2Selector) {
             if (scriptStopped) {
                 log('barValue值已变化，停止脚本。');
                 return;
             }
-
+    
             try {
                 const element2 = await waitForSelector(element2Selector, 20000);
                 await randomDelay(500, 1000);
                 element2.click();
                 log('已点击元素2。');
-
+    
                 // 设置每隔50秒点击一次
                 clickElement2IntervalId = setInterval(async () => {
                     if (!scriptStopped) {
@@ -582,6 +534,35 @@
                 log(`未找到元素2或点击失败：${error.message}`);
             }
         }
+    
+        // 新增持续等待spinner消失的函数
+        async function waitForSpinnerToDisappear(selector) {
+            while (document.querySelector(selector)) {
+                log("spinner仍在，继续等待...");
+                await randomDelay(1000, 2000);
+            }
+        }
+    }
+    
+    // 以下为工具函数，假设在同一脚本文件内已定义
+    
+    async function waitForSelector(selector, timeout = 10000) {
+        const start = Date.now();
+        while (Date.now() - start < timeout) {
+            const element = document.querySelector(selector);
+            if (element) return element;
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        throw new Error(`超时：未能在${timeout}毫秒内找到元素：${selector}`);
+    }
+    
+    async function randomDelay(min, max) {
+        const delay = Math.floor(Math.random() * (max - min)) + min;
+        return new Promise(resolve => setTimeout(resolve, delay));
+    }
+    
+    function log(message) {
+        console.log(`[脚本日志] ${message}`);
     }
 
     // 脚本5：Reddio Points Task 自动化点击
@@ -882,7 +863,7 @@
             await randomDelay(3000, 6000);
 
             // 点击元素1
-            const element1XPath = '//*[@id="root"]/div/div/div[3]/div[2]/div/div/div/div[3]/div[2]/button';
+            const element1XPath = '//*[@id="root"]/div/div/div[3]/div[2]/div/div/div/div[4]/div[2]/button';
             log('查找元素1并点击...');
             const element1 = await waitForXPath(element1XPath);
             element1.click();
@@ -892,14 +873,14 @@
             await randomDelay(1000, 2000);
 
             // 点击元素2
-            const element2XPath = '/html/body/div[2]/div/div[2]/div/div[2]/div[2]/div/div/div[2]/div[1]/button';
+            const element2XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/div[2]/div[1]/button';
             log('查找元素2并点击...');
             const element2 = await waitForXPath(element2XPath);
             element2.click();
             log('已点击元素2。');
 
             // 等待元素4出现并点击
-            const element4XPath = '/html/body/div[3]/div/div[2]/div/div[2]/div/div/div[2]/button[2]';
+            const element4XPath = '/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/div[2]/button[2]';
             log('等待元素4出现...');
             const element4 = await waitForXPath(element4XPath);
             await randomDelay(500, 1000);
@@ -910,7 +891,7 @@
             await randomDelay(1000, 2000);
 
             // 点击元素3
-            const element3XPath = '/html/body/div[2]/div/div[2]/div/div[2]/div[2]/div/div/div[2]/div[2]/button';
+            const element3XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/div[2]/div[2]/button';
             log('查找元素3并点击...');
             const element3 = await waitForXPath(element3XPath);
             element3.click();
@@ -927,7 +908,7 @@
             await randomDelay(1000, 2000);
 
             // 点击元素5
-            const element5XPath = '/html/body/div[2]/div/div[2]/div/div[2]/div[2]/div/div/button';
+            const element5XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/button';
             log('查找元素5并点击...');
             const element5 = await waitForXPath(element5XPath);
             element5.click();
@@ -937,7 +918,7 @@
             await randomDelay(1000, 2000);
 
             // 点击元素6 (canvas)
-            const element6XPath = '/html/body/div[2]/div/div[2]/div/div[2]/div[2]/div/div/div[2]/div/canvas';
+            const element6XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/div[2]/div/canvas';
             log('查找元素6（canvas）并点击...');
             const element6 = await waitForXPath(element6XPath);
 
@@ -965,7 +946,7 @@
             await randomDelay(1000, 2000);
 
             // 等待元素7出现并点击
-            const element7XPath = '/html/body/div[3]/div/div[2]/div/div[2]/div/div/div[2]/button';
+            const element7XPath = '/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/div[2]/button';
             log('等待元素7出现...');
             const element7 = await waitForXPath(element7XPath);
             await randomDelay(500, 1000);
@@ -1036,11 +1017,11 @@
         log('开始执行第二步');
     
         // 定义新的元素的选择器，并修复方括号转义问题
-        const selector1 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(1) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
-        const selector2 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(2) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(1) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
-        const selector3 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(10) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
-        const selector4 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.flex.flex-col.w-full.justify-center > div.flex.flex-row.items-center.mt-0\\.5.h-\\[18px\\].cursor-pointer > span';
-        const selector5 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(5) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector1 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(2) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector2 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(3) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(1) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector3 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(6) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(10) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
+        const selector4 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(6) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.flex.flex-col.w-full.justify-center > div.flex.flex-row.items-center.mt-0\\.5.h-\\[18px\\].cursor-pointer > span';
+        const selector5 = '#root > div > div.w-full.h-fit.px-4 > div:nth-child(6) > div.flex.flex-col.w-full.h-fit.overflow-hidden > div:nth-child(9) > div > div > div > div.relative.border-2.border-solid.border-Content-Accent1.rounded-xl.flex.flex-col.justify-center.items-center.h-9.ml-2.min-w-\\[69px\\].px-4.cursor-pointer';
     
         try {
             // 点击元素1
@@ -1065,32 +1046,6 @@
             log(`等待 ${delay2} 毫秒后，点击元素3`);
             await randomDelay(delay2, delay2 + 500);
     
-            // 点击元素3
-            const element3 = await waitForSelector(selector3, 10000);
-            log('点击元素3');
-            element3.click();
-            log('已点击元素3');
-    
-            // 随机延迟
-            const delay3 = Math.floor(Math.random() * 2000) + 1000;
-            log(`等待 ${delay3} 毫秒后，点击元素4`);
-            await randomDelay(delay3, delay3 + 500);
-    
-            // 点击元素4
-            const element4 = await waitForSelector(selector4, 10000);
-            log('点击元素4');
-            element4.click();
-            log('已点击元素4');
-    
-            // 等待8秒钟
-            log('等待8秒钟后，点击元素5');
-            await new Promise(resolve => setTimeout(resolve, 10000));
-    
-            // 点击元素5
-            const element5 = await waitForSelector(selector5, 10000);
-            log('点击元素5，脚本执行完毕');
-            element5.click();
-            log('已点击元素5，脚本执行完毕');
     
             // 完成后重定向
             log("所有 BreadnButter 操作已完成，准备跳转至 CommunityGaming 页面。");
@@ -1317,135 +1272,8 @@
         log("CommunityGaming 脚本执行完毕，脚本结束。");
         log("CommunityGaming 脚本执行完毕，准备跳转至 Pentagon Games 页面。");
         await randomDelay(2000, 4000); // 延迟2-4秒
-        window.location.href = 'https://pentagon.games/account';
+        window.location.href = 'https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd';
     }
-
-    
-    // 脚本10：Pentagon Games 自动化操作
-    async function executeScript10() {
-        log("执行 Pentagon Games 自动化脚本。");
-    
-        // 定义全局变量
-        const url1 = 'https://pentagon.games/account';
-        const url2 = 'https://pentagon.games/sign-in';
-        const url3 = 'https://pentagon.games/airdrop/ascended';
-        const url4 = 'https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd';
-    
-        // 通过XPath获取元素
-        function getElementByXpath(xpath) {
-            return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-        }
-    
-        // 等待特定XPath元素出现
-        async function waitForXPath(xpath, timeout = 30000) {
-            return new Promise((resolve, reject) => {
-                const interval = 500;
-                let elapsed = 0;
-                const timer = setInterval(() => {
-                    const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                    if (result.singleNodeValue) {
-                        clearInterval(timer);
-                        resolve(result.singleNodeValue);
-                    } else {
-                        elapsed += interval;
-                        if (elapsed >= timeout) {
-                            clearInterval(timer);
-                            reject(new Error(`等待XPath ${xpath} 超时`));
-                        }
-                    }
-                }, interval);
-            });
-        }
-    
-        // 随机延迟函数
-        function randomDelay(min, max) {
-            const delay = Math.floor(Math.random() * (max - min + 1)) + min;
-            return new Promise(resolve => setTimeout(resolve, delay));
-        }
-    
-        // 第二步操作
-        async function stepTwo() {
-            try {
-                log('第二步：等待元素1出现并点击');
-    
-                const element1Xpath = '/html/body/main/div[2]/div/div[2]/div[2]/img';
-                const element1 = await waitForXPath(element1Xpath, 30000);
-    
-                if (element1) {
-                    log('元素1已出现，开始点击');
-                    element1.click();
-                    await randomDelay(500, 1500);
-    
-                    log('等待元素2出现');
-                    const element2Xpath = '/html/body/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/div/canvas';
-                    const element2 = await waitForXPath(element2Xpath, 20000);
-    
-                    if (element2) {
-                        log('元素2已出现，开始持续点击元素2，直到其消失');
-    
-                        while (true) {
-                            // 检查元素2是否存在
-                            const currentElement2 = getElementByXpath(element2Xpath);
-                            if (currentElement2) {
-                                currentElement2.click();
-                                log('已点击元素2');
-                                // 等待1-1.5秒
-                                await randomDelay(1000, 1500);
-                            } else {
-                                log('元素2已消失');
-                                break;
-                            }
-                        }
-    
-                        log('等待3-4秒后执行第三步');
-                        await randomDelay(3000, 4000);
-    
-                        // 执行第三步
-                        log('执行第三步：跳转至 url4');
-                        window.location.href = url4;
-                    } else {
-                        log('元素2未出现，脚本结束');
-                    }
-                } else {
-                    log('元素1未出现，脚本结束');
-                }
-            } catch (error) {
-                log(`执行第二步时发生错误: ${error.message}`);
-            }
-        }
-    
-        // 主执行函数
-        async function mainPentagon() {
-            log('Pentagon Games 脚本开始执行');
-    
-            // 随机延迟初始等待时间（1-3秒）
-            await randomDelay(1000, 3000);
-    
-            const currentUrl = window.location.href;
-            log(`当前 URL: ${currentUrl}`);
-    
-            if (currentUrl.startsWith(url1)) {
-                log('检测到当前页面为 url1，等待 4 秒后跳转至 url3');
-                await randomDelay(4000, 4000);
-                window.location.href = url3;
-            } else if (currentUrl.startsWith(url2)) {
-                log('检测到当前页面为 url2，等待 7 秒后跳转至 url3');
-                await randomDelay(7000, 7000);
-                window.location.href = url3;
-            } else if (currentUrl.startsWith(url3)) {
-                log('检测到当前页面为 url3，开始执行第二步');
-    
-                // 执行第二步
-                await stepTwo();
-            } else {
-                log('当前页面不在预期的 URL 列表中，脚本结束');
-            }
-        }
-    
-        // 执行主函数
-        await mainPentagon();
-    }
-
 
 
 
@@ -1681,7 +1509,7 @@
 
             try {
                 // 等待小窗口1出现
-                let popup = await waitForElementByXpath(popupXpath, 10000);
+                let popup = await waitForXPath(popupXpath, 10000);
                 log('小窗口1已出现');
 
                 // 持续监测并点击小窗口1中的元素1
