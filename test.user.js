@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      7.6
+// @version      7.7
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -11,7 +11,7 @@
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://cess.network/merkle/*
 // @match        https://*.breadnbutter.fun/*
-// @match        https://www.communitygaming.io/quests
+// @match        https://www.communitygaming.io/*
 // @match        https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd
 // @match        https://quest.redactedairways.com/*
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
@@ -156,7 +156,7 @@
             } else if (currentURL.includes('breadnbutter.fun')) {
                 // 执行脚本8的功能
                 await executeScript8();
-            } else if (currentURL.includes('communitygaming.io/quests')) {
+            } else if (currentURL.includes('communitygaming.io/')) {
                 // 执行脚本9的功能
                 await executeScript9();
             } else if (currentURL.includes('https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd')) {
@@ -1173,7 +1173,7 @@
         // 主逻辑
         try {
             logScript2('脚本开始执行，等待页面完全加载...');
-            await randomDelayScript2(2000, 4000); // 增加初始等待时间确保页面加载
+            await randomDelayScript2(4000, 5000); // 增加初始等待时间确保页面加载
 
             // 新增：在检查元素0 (Sign In链接) 之前，先检查是否存在 /html/body/div[3]/div/div
             const div3XPath = "/html/body/div[3]/div/div";
