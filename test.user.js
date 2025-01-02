@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      8.0
+// @version      8.1
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1170,14 +1170,24 @@
             });
         }
 
-        // ============ 【在此定义一个函数，用于脚本结束和跳转】 ============
-        async function finalizeScript2() {
-            // 等待2秒后结束脚本
-            logScript2('等待2秒后结束脚本');
-            await new Promise(r => setTimeout(r, 2000));
-            logScript2('脚本执行完毕，准备跳转至 Pentagon Games 页面');
+        // 真实鼠标事件点击函数
+        function dispatchRealClickScript2(element) {
+            // 发送一系列鼠标事件，让前端更有可能捕获到点击
+            const evtOptions = { bubbles: true, cancelable: true, view: window };
+            element.dispatchEvent(new MouseEvent('mouseover', evtOptions));
+            element.dispatchEvent(new MouseEvent('mousedown', evtOptions));
+            element.dispatchEvent(new MouseEvent('mouseup', evtOptions));
+            element.dispatchEvent(new MouseEvent('click', evtOptions));
+        }
 
-            // 脚本结束前延迟2-4秒再跳转
+        // 用于在脚本全部完成后结束并跳转
+        async function finalizeScript2() {
+            if (window.__script9_finished) return;  // 防止多次触发
+            window.__script9_finished = true;
+
+            logScript2('脚本执行完毕,等待2秒后跳转');
+            await new Promise(r => setTimeout(r, 2000));
+            logScript2('跳转至 Pentagon Games 页面');
             await randomDelayScript2(2000, 4000);
             window.location.href = 'https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd';
         }
@@ -1200,9 +1210,9 @@
                 }
 
                 // 再随机等待3-5秒
-                const rDelay = Math.floor(Math.random()*(5000-3000+1))+3000; // 3-5秒
+                const rDelay = Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000; // 3-5秒
                 logScript2(`已等待 /html/body/div[3]/div/div 消失 => 现在再随机等待 ${rDelay} ms`);
-                await new Promise(r=>setTimeout(r, rDelay));
+                await new Promise(r => setTimeout(r, rDelay));
                 logScript2("已完成额外的随机等待(3-5秒)");
             } else {
                 logScript2("未检测到 /html/body/div[3]/div/div，无需等待其消失");
@@ -1218,7 +1228,7 @@
                 const noElement0XPath = "/html/body/div[1]/main/div[2]/div[3]/div/div/div[2]/button";
                 const noElem0 = getElementByXPathScript2(noElement0XPath);
                 if (noElem0) {
-                    noElem0.click();
+                    dispatchRealClickScript2(noElem0);
                     logScript2("已点击 noElement0 => 准备进行步骤1");
                     await randomDelayScript2(1000, 2000);
                 } else {
@@ -1227,7 +1237,7 @@
             } else {
                 // 存在元素0 => 点击
                 logScript2("检测到元素0 => 自动点击元素0 (Sign In)");
-                element0.click();
+                dispatchRealClickScript2(element0);
                 await randomDelayScript2(1000, 2000);
 
                 // 然后点击 /html/body/div[1]/main/div[3]/div/div/div[2]/div/div/div/div[2]/div/div[3]/button[1]
@@ -1235,7 +1245,7 @@
                 const elem0SubXPath = "/html/body/div[1]/main/div[3]/div/div/div[2]/div/div/div/div[2]/div/div[3]/button[1]";
                 const elem0Sub = getElementByXPathScript2(elem0SubXPath);
                 if (elem0Sub) {
-                    elem0Sub.click();
+                    dispatchRealClickScript2(elem0Sub);
                     logScript2("已点击 elem0Sub");
                     await randomDelayScript2(1000, 2000);
                 } else {
@@ -1252,7 +1262,7 @@
                 const finalClickXPath = "/html/body/div[1]/main/div[2]/div[3]/div/div/div[2]/button";
                 const finalClickElem = getElementByXPathScript2(finalClickXPath);
                 if (finalClickElem) {
-                    finalClickElem.click();
+                    dispatchRealClickScript2(finalClickElem);
                     logScript2("已点击 finalClickElem => 准备进行步骤1");
                     await randomDelayScript2(1000, 2000);
                 } else {
@@ -1276,7 +1286,7 @@
                 for (let i = 0; i < element1Buttons.length; i++) {
                     const elem1Button = element1Buttons[i];
                     logScript2(`点击元素1 (${i + 1}/${element1Buttons.length})`);
-                    elem1Button.click();
+                    dispatchRealClickScript2(elem1Button);
                     await randomDelayScript2();
 
                     // 等待小窗口1出现
@@ -1292,7 +1302,7 @@
                         const elem2XPath = '/html/body/div[4]/div/div/div/div[4]/button[2]';
                         const elem2 = getElementByXPathScript2(elem2XPath);
                         if (elem2) {
-                            elem2.click();
+                            dispatchRealClickScript2(elem2);
                             logScript2('已点击小窗口1中的元素2');
                             await randomDelayScript2();
                         } else {
@@ -1317,7 +1327,7 @@
                         const closeBtnXPath = '//*[@id="ModalXPCompletedXpedition"]/div/div/div[1]/button';
                         const closeBtn = getElementByXPathScript2(closeBtnXPath);
                         if (closeBtn) {
-                            closeBtn.click();
+                            dispatchRealClickScript2(closeBtn);
                             logScript2('已关闭小窗口2');
                         } else {
                             logScript2('未找到小窗口2的关闭按钮');
@@ -1360,7 +1370,7 @@
                 const elem4Button = getElementByXPathScript2(elem4XPath);
                 if (elem4Button) {
                     logScript2('点击元素4');
-                    elem4Button.click();
+                    dispatchRealClickScript2(elem4Button);
                 } else {
                     logScript2('未找到元素4，停止点击');
                     break;
@@ -1373,40 +1383,38 @@
             finalizeScript2(); // 出错时也结束脚本
         }
 
-
-        // ===== 在小窗口3出现后执行的函数 =====
+        // ========== 当小窗口3出现后执行的函数 ==========
         async function handleSmallWindow3() {
             try {
                 logScript2("小窗口3出现后，开始持续监测 /html/body/div[4]/div/div/div/button");
 
-                // 1. 持续监测关闭元素 /html/body/div[4]/div/div/div/button
+                // 1. 轮询检查关闭元素 /html/body/div[4]/div/div/div/button
                 const closeElemXPath = "/html/body/div[4]/div/div/div/button";
                 const closeCheckTimer = setInterval(async () => {
                     const closeElem = getElementByXPathScript2(closeElemXPath);
                     if (closeElem) {
                         logScript2("检测到关闭元素 => 自动点击");
-                        closeElem.click();
+                        dispatchRealClickScript2(closeElem);
                         clearInterval(closeCheckTimer);
 
-                        // 2. 等待随机2-3秒后 => 对 /html/body/div[1]/main/.../div[2] 点击3次
+                        // 2. 等待随机2-3秒后 => 对 id="AppButton" 点击3次
                         const waitMs = Math.floor(Math.random()*(3000-2000+1))+2000; //2-3s
-                        logScript2(`等待 ${waitMs} ms 后,点击3次 /html/body/div[1]/main/div[3]/div/div[3]/div[2]/div[2]/div[2]/div[2]/div[2]`);
-                        await new Promise(r=>setTimeout(r, waitMs));
+                        logScript2(`等待 ${waitMs} ms 后，对#AppButton点击3次`);
+                        await new Promise(r => setTimeout(r, waitMs));
 
-                        const tripleClickXPath = "/html/body/div[1]/main/div[3]/div/div[3]/div[2]/div[2]/div[2]/div[2]/div[2]";
-                        const tripleClickElem = getElementByXPathScript2(tripleClickXPath);
+                        const tripleClickElem = getElementBySelectorScript2('#AppButton');
                         if (tripleClickElem) {
                             for (let i=0; i<3; i++){
-                                tripleClickElem.click();
-                                logScript2(`第${i+1}次点击 tripleClickElem`);
-                                await randomDelayScript2(500, 800); //每次点击稍作延迟
+                                dispatchRealClickScript2(tripleClickElem);
+                                logScript2(`第${i+1}次点击 #AppButton`);
+                                await randomDelayScript2(500, 800);
                             }
                         } else {
-                            logScript2("未找到 /html/body/div[1]/main/.../div[2],无法进行3次点击");
+                            logScript2("未找到 #AppButton => 无法进行3次点击");
                         }
 
-                        // 完成后再正式结束脚本
-                        logScript2("完成小窗口3后所有操作,开始结束脚本...");
+                        // 点击完三次后 => 正式结束脚本
+                        logScript2("已完成3次点击 => 结束脚本并跳转");
                         finalizeScript2();
                     }
                 }, 500);
@@ -1417,18 +1425,15 @@
             }
         }
 
-
-        // ========== 结束脚本 & 跳转的函数 =============
+        // ========== 结束脚本并跳转 ==========
         async function finalizeScript2() {
-            // 防止重复多次执行：可以给 yourself a guard
+            // 防止重复多次执行
             if (window.__script9_finished) return;
             window.__script9_finished = true;
 
-            logScript2('等待2秒后结束脚本');
+            logScript2('脚本执行完毕,等待2秒后跳转');
             await new Promise(r => setTimeout(r, 2000));
-            logScript2('脚本执行完毕，准备跳转至 Pentagon Games 页面');
-
-            // 脚本结束前延迟2-4秒再跳转
+            logScript2('跳转至 Pentagon Games 页面');
             await randomDelayScript2(2000, 4000);
             window.location.href = 'https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd';
         }
