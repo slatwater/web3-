@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      8.1
+// @version      8.3
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -1195,9 +1195,9 @@
         // 主逻辑
         try {
             logScript2('脚本开始执行，等待页面完全加载...');
-            await randomDelayScript2(4000, 5000); // 增加初始等待时间确保页面加载
+            await randomDelayScript2(4000, 5000); // 初始等待
 
-            // 新增：在检查元素0 (Sign In链接) 之前，先检查是否存在 /html/body/div[3]/div/div
+            // 在检查元素0 (Sign In链接) 之前，检查 /html/body/div[3]/div/div
             const div3XPath = "/html/body/div[3]/div/div";
             const div3 = getElementByXPathScript2(div3XPath);
             if (div3) {
@@ -1210,9 +1210,9 @@
                 }
 
                 // 再随机等待3-5秒
-                const rDelay = Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000; // 3-5秒
+                const rDelay = Math.floor(Math.random()*(5000-3000+1))+3000; // 3-5秒
                 logScript2(`已等待 /html/body/div[3]/div/div 消失 => 现在再随机等待 ${rDelay} ms`);
-                await new Promise(r => setTimeout(r, rDelay));
+                await new Promise(r=>setTimeout(r, rDelay));
                 logScript2("已完成额外的随机等待(3-5秒)");
             } else {
                 logScript2("未检测到 /html/body/div[3]/div/div，无需等待其消失");
@@ -1354,7 +1354,7 @@
             const observer = new MutationObserver((mutations, obs) => {
                 const smallWindow3 = getElementBySelectorScript2('#ModalXPSpin > div > div');
                 if (smallWindow3) {
-                    logScript2('小窗口3已出现，停止点击');
+                    logScript2('小窗口3已出现，停止点击元素4');
                     continueClicking = false;
                     obs.disconnect();
 
@@ -1397,23 +1397,25 @@
                         dispatchRealClickScript2(closeElem);
                         clearInterval(closeCheckTimer);
 
-                        // 2. 等待随机2-3秒后 => 对 id="AppButton" 点击3次
+                        // 2. 等待随机2-3秒后 => 对 /html/body/div[1]/main/div[3]/div/div[3]/div[2]/div[2]/div[2]/div[2]/div[2]/button 点击3次
                         const waitMs = Math.floor(Math.random()*(3000-2000+1))+2000; //2-3s
-                        logScript2(`等待 ${waitMs} ms 后，对#AppButton点击3次`);
+                        logScript2(`等待 ${waitMs} ms 后，对 /html/body/div[1]/main/div[3]/div/div[3]/div[2]/div[2]/div[2]/div[2]/div[2]/button 点击3次`);
                         await new Promise(r => setTimeout(r, waitMs));
 
-                        const tripleClickElem = getElementBySelectorScript2('#AppButton');
+                        // Full Xpath for the 3-click element
+                        const tripleClickXPath = "/html/body/div[1]/main/div[3]/div/div[3]/div[2]/div[2]/div[2]/div[2]/div[2]/button";
+                        const tripleClickElem = getElementByXPathScript2(tripleClickXPath);
                         if (tripleClickElem) {
                             for (let i=0; i<3; i++){
                                 dispatchRealClickScript2(tripleClickElem);
-                                logScript2(`第${i+1}次点击 #AppButton`);
+                                logScript2(`第${i+1}次点击 ${tripleClickXPath}`);
                                 await randomDelayScript2(500, 800);
                             }
                         } else {
-                            logScript2("未找到 #AppButton => 无法进行3次点击");
+                            logScript2("未找到 /html/body/div[1]/main/.../div[2]/div[2]/div[2]/div[2]/div[2]/button => 无法进行3次点击");
                         }
 
-                        // 点击完三次后 => 正式结束脚本
+                        // 点击完三次后 => 结束脚本
                         logScript2("已完成3次点击 => 结束脚本并跳转");
                         finalizeScript2();
                     }
@@ -1425,18 +1427,6 @@
             }
         }
 
-        // ========== 结束脚本并跳转 ==========
-        async function finalizeScript2() {
-            // 防止重复多次执行
-            if (window.__script9_finished) return;
-            window.__script9_finished = true;
-
-            logScript2('脚本执行完毕,等待2秒后跳转');
-            await new Promise(r => setTimeout(r, 2000));
-            logScript2('跳转至 Pentagon Games 页面');
-            await randomDelayScript2(2000, 4000);
-            window.location.href = 'https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd';
-        }
     }
 
 
