@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      8.5
+// @version      8.6
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -957,7 +957,7 @@
             // 自动跳转至 breadnbutter.fun 页面
             log("XtremeVerse 脚本执行完毕，准备跳转至 BreadnButter 页面。");
             await randomDelay(2000, 4000);
-            window.location.href = 'https://m.breadnbutter.fun/task';
+            window.location.href = 'https://www.communitygaming.io/quests';
 
         } catch (error) {
             log(`发生错误: ${error.message}`);
@@ -1189,7 +1189,7 @@
             await new Promise(r => setTimeout(r, 2000));
             logScript2('跳转至 Pentagon Games 页面');
             await randomDelayScript2(2000, 4000);
-            window.location.href = 'https://app.holoworld.com/chat/YbkygYZ9lsDhCz5VbiRd';
+            window.location.href = 'https://quest.redactedairways.com/home';
         }
 
         // 主逻辑
