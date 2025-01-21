@@ -1,13 +1,12 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      8.6
+// @version      8.7
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
 // @match        https://sidequest.rcade.game/quests
 // @match        https://forge.gg/quests
-// @match        https://points.reddio.com/task
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://cess.network/merkle/*
 // @match        https://*.breadnbutter.fun/*
@@ -456,7 +455,7 @@
                 }
                 // 自动跳转至Reddio Points Task页面
                 log("自动跳转至 Reddio Points Task 页面。");
-                window.location.href = 'https://points.reddio.com/task';
+                window.location.href = 'https://xnet.xtremeverse.xyz/earn?index=1';
             });
     
             // 第四步：点击元素2，并每隔50秒点击一次，直到barValue变化
