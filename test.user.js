@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      8.7
+// @version      9.0
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -273,7 +273,7 @@
             selectedButton.click();
 
             // 等待小窗口1出现
-            const smallWindow1Selector = 'body > div:nth-child(8) > div > div > div > div';
+            const smallWindow1Selector = 'body > div:nth-child(9) > div > div > div > div';
             log("等待小窗口1出现...");
             try {
                 await waitForSelector(smallWindow1Selector, 5000);
@@ -284,7 +284,7 @@
             }
 
             // 在小窗口1中点击元素1的button子元素
-            const element1Selector = 'body > div:nth-child(8) > div > div > div > div > div:nth-child(3) > div > div button';
+            const element1Selector = 'body > div:nth-child(9) > div > div > div > div > div:nth-child(3) > div > div > div.btn-container > button';
             log("查找并点击小窗口1中的元素1的button子元素。");
             try {
                 const element1Button = await waitForSelector(element1Selector, 10000);
@@ -302,7 +302,7 @@
             }
 
             // 点击小窗口1中的元素2
-            const element2Selector = 'body > div:nth-child(8) > div > div > div > div > button > img';
+            const element2Selector = 'body > div:nth-child(9) > div > div > div > div > button > img';
             log("查找并点击小窗口1中的元素2。");
             try {
                 const element2 = await waitForSelector(element2Selector, 10000);
