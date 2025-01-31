@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 自动化脚本 (去调试日志 + 等待页面 + 并行监测切换/提交, 文本判定Approve/Disapprove)
 // @namespace    http://tampermonkey.net/
-// @version      7.2
+// @version      7.5
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -56,6 +56,8 @@
         "Rainbows and Butterflies",
         "Flying kites",
         "abcdefg12345",
+        "Cars, Trucks, Buses",
+        "Totally irrelevant",
         "Invalid input"
         // ...可自行添加更多
     ];
