@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 自动化脚本 (去调试日志 + 等待页面 + 并行监测切换/提交, 文本判定Approve/Disapprove)
 // @namespace    http://tampermonkey.net/
-// @version      7.5
+// @version      7.7
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -49,6 +49,9 @@
         "Waterfalls and Oceans",
         "Cats, Dogs, Birds",
         "Guessing random words",
+        "Mars, Stars, Comets",
+        "Biking, Swimming, Flying",
+        "Shoes, Bags, Belts",
         "No idea at all",
         "Jumbled letters",
         "Riding bikes is fun",
@@ -56,8 +59,14 @@
         "Rainbows and Butterflies",
         "Flying kites",
         "abcdefg12345",
+        "abcd1234",
         "Cars, Trucks, Buses",
+        "Rainbow, Unicorn, Dragon",
+        "Flowers, Trees, Grass",
         "Totally irrelevant",
+        "Flyingballoons",
+        "Pizza tastes great",
+        "Just random words",
         "Invalid input"
         // ...可自行添加更多
     ];
