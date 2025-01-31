@@ -25,6 +25,7 @@
         "chocolate bar",
         "magic wand",
         "singing tree",
+        "singing bird",
         "talking book",
         "dancing shoes",
         "dancing unicorn",
