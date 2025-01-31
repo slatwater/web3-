@@ -39,9 +39,16 @@
         "Trains, Planes, Cars",
         "Sky is blue",
         "Random animals",
+        "Mars, Venus, Jupiter",
+        "Jumpingjack",
         "Mountains, Valleys, Hills",
         "Moonwalk, Flyme, Skyfall",
         "Dogs, Cats, Hamsters",
+        "Waterfalls and Oceans",
+        "Cats, Dogs, Birds",
+        "Guessing random words",
+        "No idea at all",
+        "Jumbled letters",
         "Invalid input"
         // ...可自行添加更多
     ];
