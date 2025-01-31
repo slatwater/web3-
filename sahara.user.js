@@ -17,6 +17,7 @@
     // 预设文本列表（若rawText在此列表中，则点击Disapprove，否则Approve）
     const presetTexts = [
         "cloudy rainbow",
+        "moonlight basket",
         "talking dog",
         "flying carpet",
         "invisible car",
