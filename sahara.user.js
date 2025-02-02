@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 自动化脚本 (去调试日志 + 等待页面 + 并行监测切换/提交, 文本判定Approve/Disapprove)
 // @namespace    http://tampermonkey.net/
-// @version      8.9
+// @version      9.0
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -75,7 +75,27 @@
         "Typing nonsense",
         "Trees, Mountains, Rivers",
         "Totally nonsense",
-        "Invalid input"
+        "Invalid input",
+        "Pineapple, Orange, Banana",
+        "Space, Rocket, Satellite",
+        "Sun, Moon, Stars",
+        "Music, Movies, Games",
+        "Jibberishagain",
+        "Flowers, Animals, Fish",
+        "Skyscrapers and Bridges",
+        "Sky, Stars, Moon",
+        "Birds, Insects, Mammals",
+        "Invalid text",
+        "Coffee, Tea, Water",
+        "letter123",
+        "Zebra stripes",
+        "Elephants, Tigers, Lions",
+        "A frying pan",
+        "A paper shredder",
+        "A dishwasher",
+        "A fishing net",
+        "A grocery shopping cart",
+        "A treadmill"
         // ...可自行添加更多
     ];
 
