@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 自动化脚本 (去调试日志 + 等待页面 + 并行监测切换/提交, 文本判定Approve/Disapprove)
 // @namespace    http://tampermonkey.net/
-// @version      9.0
+// @version      9.2
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -95,7 +95,52 @@
         "A dishwasher",
         "A fishing net",
         "A grocery shopping cart",
-        "A treadmill"
+        "A treadmill",
+        "A yoga mat",
+        "A picnic basket",
+        "A pillow",
+        "An elephant",
+        "A chef's hat",
+        "A music stand",
+        "A soccer ball",
+        "12345abcd",
+        "A bottle of shampoo",
+        "abcdefagain",
+        "Flowers, Trees, Shrubs",
+        "A bag of marbles",
+        "A box of tissues",
+        "Sunshine, Rain, Thunder",
+        "A soda can",
+        "Gibberish letters",
+        "Zebra, Leopard, Cheetah",
+        "A basketball",
+        "A box of crayons",
+        "A snow shovel",
+        "A grocery store checkout counter",
+        "A set of dumbbells",
+        "A doorbell",
+        "A kitchen sink",
+        "A paper shredder",
+        "A desktop computer",
+        "A full-length mirror",
+        "A flower vase",
+        "A wind turbine",
+        "A medieval suit of armor",
+        "A doghouse",
+        "A coin-operated telescope",
+        "A basketball hoop",
+        "A skateboard",
+        "A rocking chair",
+        "A box of crayons",
+        "A chair",
+        "A basketball",
+        "A birdhouse",
+        "An elephant",
+        "A crossword puzzle",
+        "A garden hose",
+        "A paper clip",
+        "A glass of water",
+        "A giant ice sculpture"
         // ...可自行添加更多
     ];
 
