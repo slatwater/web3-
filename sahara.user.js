@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 自动化脚本 (去调试日志 + 等待页面 + 并行监测切换/提交, 文本判定Approve/Disapprove)
 // @namespace    http://tampermonkey.net/
-// @version      9.5
+// @version      9.6
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -148,7 +148,38 @@
         "A swimming pool ladder",
         "A taxidermy moose head",
         "A full-sized fridge",
-        "A potted plant"
+        "A potted plant",
+        "A dartboard",
+        "A wool sweater",
+        "A cutting board",
+        "A potted plant",
+        "A pet collar",
+        "A fireplace",
+        "A chessboard",
+        "A skateboard ramp",
+        "A giant pumpkin",
+        "A hammer",
+        "A grandfather clock",
+        "A music sheet",
+        "A carnival game booth",
+        "A heavy steel anvil",
+        "A gas station fuel pump",
+        "A bag of concrete",
+        "A wall clock",
+        "A Christmas tree",
+        "A giant stuffed bear",
+        "A bag of frozen peas",
+        "A washing machine",
+        "A chandelier",
+        "A wooden ladder",
+        "A giant canvas painting",
+        "A backpack",
+        "A pack of playing cards",
+        "A leather wallet",
+        "A deck of cards",
+        "A turtle",
+        "A teapot",
+        "A pair of sunglasses"
         // ...可自行添加更多
     ];
 
