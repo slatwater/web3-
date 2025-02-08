@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 自动化脚本 (去调试日志 + 等待页面 + 并行监测切换/提交, 文本判定Approve/Disapprove)
 // @namespace    http://tampermonkey.net/
-// @version      10.5
+// @version      10.7
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -203,6 +203,19 @@
         "A snow globe",
         "A flower pot",
         "Rockets, Satellites, Planets",
+        "Clouds, Rain, Thunder",
+        "A blanket",
+        "A shopping cart",
+        "A painting",
+        "A fortune cookie",
+        "A violin",
+        "A car mirror",
+        "A stuffed animal",
+        "An external graphics card",
+        "A soap",
+        "A fruit basket",
+        "A napkin holder",
+        "A soap bar",
         "123wronginput"
         // ...可自行添加更多
     ];
