@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 自动化脚本 (去调试日志 + 等待页面 + 并行监测切换/提交, 文本判定Approve/Disapprove)
 // @namespace    http://tampermonkey.net/
-// @version      9.9
+// @version      10.1
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -189,6 +189,12 @@
         "Cooking, Dancing, Painting",
         "Totally random words",
         "Elephants in the park",
+        "randomtext",
+        "Typingletters",
+        "Skyfall, Moonlight, Sunshine",
+        "123xyz",
+        "ZYX987",
+        "Books, Pens, Papers",
         "123wronginput"
         // ...可自行添加更多
     ];
