@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 自动化脚本 (去调试日志 + 等待页面 + 并行监测切换/提交, 文本判定Approve/Disapprove)
 // @namespace    http://tampermonkey.net/
-// @version      11.3
+// @version      11.5
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -234,6 +234,9 @@
         "A teddy bear",
         "A soap bar",
         "A decorative vase",
+        "A kitchen",
+        "A Hospital",
+        "A car battery",
         "A washing detergent",
         "A bicycle",
         "A bowling ball",
@@ -245,6 +248,12 @@
         "A rock",
         "A telephone booth",
         "A windmill",
+        "A big heavy clock",
+        "A vending machine",
+        "A car tire",
+        "A firestation",
+        "A ladder",
+        "an engine",
         "abcdef",
         "No idea",
         "Clouds are fluffy",
