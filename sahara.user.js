@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Sahara Labs 自动化脚本 (去调试日志 + 等待页面 + 并行监测切换/提交, 文本判定Approve/Disapprove)
+// @name         Sahara Labs 宽松政策
 // @namespace    http://tampermonkey.net/
-// @version      11.9
+// @version      12.0
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -14,7 +14,10 @@
 (function() {
     'use strict';
 
-    // 预设文本列表（若rawText在此列表中，则点击Disapprove，否则Approve）
+    // -------------------------------
+    // 1) 预设文本列表
+    // -------------------------------
+    // 若(标准化后) rawText 在此列表(也标准化后)中 => Disapprove；否则 Approve
     const presetTexts = [
         "cloudy rainbow",
         "Axolotyl",
@@ -269,10 +272,11 @@
         "Typing nonsense",
         "asdfghjkl",
         "123wronginput"
-        // ...可自行添加更多
     ];
 
-    // 等待页面加载（document/窗口事件）
+    // -------------------------------
+    // 2) 页面载入后开始执行
+    // -------------------------------
     window.addEventListener('load', async function() {
         console.log("[脚本日志] 页面load事件已触发，等待额外5秒确保元素渲染...");
         await sleep(5000);
@@ -281,23 +285,20 @@
         mainFlow();
     });
 
-    // ========== 主流程 ==========
+    // -------------------------------
+    // 3) 主流程
+    // -------------------------------
     async function mainFlow() {
-        // 1) 先执行一次操作一
+        // (A) 先执行一次操作一
         await operationOne();
 
-        // 2) 无限循环 => 并行监测“切换元素” & “提交元素”
+        // (B) 循环监测 => 如果“切换元素”或“提交元素”可点击 => 做相应操作
         while(true) {
             let didAction = false;
-
-            // 同时等待二者可点击(或超时)
-            // 采取一个“定时轮询” + 超时方式
-            // 每轮 500ms 检查, 最长 100秒
             let startTime = Date.now();
-            const maxTime = 100000; // 100秒
+            const maxTime = 100000; // 100秒上限
 
             while(true) {
-                // 如果超时 => break
                 if (Date.now() - startTime >= maxTime) {
                     console.log("[脚本日志] 100秒内切换/提交都未可点击 => 结束脚本");
                     break;
@@ -306,7 +307,6 @@
                 // 先检查“切换元素”
                 const switchEl = document.querySelector(switchSelector);
                 if (switchEl && isElementClickable(switchEl)) {
-                    // 点击后 -> operationOne() -> 标记didAction
                     console.log("[脚本日志] 检测到【切换元素】可点击 => 点击...");
                     switchEl.scrollIntoView({behavior:"smooth", block:"center"});
                     await sleep(500);
@@ -326,7 +326,7 @@
                     submitEl.click();
                     console.log("[脚本日志] 已点击【提交元素】，等待确认元素...");
 
-                    // 等待确认元素(不判断可点击,只等出现)
+                    // 等待确认元素出现
                     const confirmEl = await waitForElement(confirmSelector, 5000);
                     if (confirmEl) {
                         console.log("[脚本日志] 确认元素已出现 => 点击...");
@@ -344,29 +344,24 @@
                     didAction = true;
                 }
 
-                // 如果此轮有动作 => 继续外层循环
                 if (didAction) break;
-
-                // 否则等 500ms 再检查
                 await sleep(500);
             }
 
-            // 如果都没动作 => break
             if (!didAction) {
-                // 说明超时 => 彻底结束
                 console.log("[脚本日志] 未找到可点击切换/提交元素 => 脚本结束");
                 break;
             }
 
-            // 若执行过动作 => 继续下轮
             console.log("[脚本日志] 本轮已执行动作 => 再次进入下轮循环...");
         }
 
         console.log("[脚本日志] mainFlow结束，脚本彻底完成");
     }
 
-    // ========== 操作一：遍历区域+Approve/Disapprove ==========
-
+    // -------------------------------
+    // 4) operationOne: 遍历区域 => Approve or Disapprove
+    // -------------------------------
     async function operationOne() {
         console.log("[操作一] 开始遍历区域...");
 
@@ -383,19 +378,19 @@
 
             const textBaseEls = region.querySelectorAll('.text-baseV2');
             if (textBaseEls.length < 3) {
-                console.log("[操作一] text-baseV2<3,跳过该区域");
+                console.log("[操作一] text-baseV2<3, 跳过该区域");
                 await sleep(800);
                 continue;
             }
 
-            // 第3个
+            // 取第3个
             const textEl = textBaseEls[2];
-            const rawText = (textEl.innerText||'').trim();
+            const rawText = (textEl.innerText || '').trim();
             console.log(`[操作一] 文本="${rawText}"`);
 
-            // 新逻辑：若 rawText 在 presetTexts 中 => Disapprove, 否则 Approve
+            // 宽松匹配: 若rawText与预设文本(经normalize)匹配 => Disapprove, 否则 Approve
             let buttonText;
-            if (presetTexts.includes(rawText)) {
+            if (isInPresetTextsFuzzy(rawText, presetTexts)) {
                 buttonText = 'Disapprove';
             } else {
                 buttonText = 'Approve';
@@ -403,7 +398,7 @@
 
             const btn = findButtonByText(region, buttonText);
             if (!btn) {
-                console.log(`[操作一] 未找到"${buttonText}"按钮,跳过`);
+                console.log(`[操作一] 未找到"${buttonText}"按钮, 跳过`);
                 await sleep(800);
                 continue;
             }
@@ -412,33 +407,31 @@
             await sleep(500);
             btn.click();
             console.log(`[操作一] 已点击"${buttonText}"按钮 (文本="${rawText}")`);
-
             await sleep(1000);
         }
 
         console.log("[操作一] 全部区域处理完毕");
     }
 
-    // ========== 判断元素可点击 ==========
-
+    // -------------------------------
+    // 5) 工具函数: 判断元素可点击
+    // -------------------------------
     function isElementClickable(el) {
         if (!el) return false;
         const cList = [...el.classList];
-        // 若含 cursor-not-allowed => 不可点击
         if (cList.some(cls => cls.includes('cursor-not-allowed'))) return false;
 
         const style = window.getComputedStyle(el);
-        // pointer-events none => 不可点击
         if (style.pointerEvents === 'none') return false;
 
-        // disabled 属性 => 不可点
         if (el.hasAttribute('disabled')) return false;
 
         return true;
     }
 
-    // ========== 等待元素出现 ==========
-
+    // -------------------------------
+    // 6) 工具函数: 等待元素出现
+    // -------------------------------
     async function waitForElement(selector, timeout=5000) {
         const start = Date.now();
         return new Promise(resolve => {
@@ -455,36 +448,49 @@
         });
     }
 
-    // ========== 在容器内通过文本找按钮(忽略大小写) ==========
-
+    // -------------------------------
+    // 7) 工具函数: 在容器内通过文本找按钮(忽略大小写)
+    // -------------------------------
     function findButtonByText(container, targetText) {
         targetText = targetText.toLowerCase();
         const btns = container.querySelectorAll('button');
         for (const b of btns) {
-            const bText = (b.textContent||'').trim().toLowerCase();
+            const bText = (b.textContent || '').trim().toLowerCase();
             if (bText === targetText) return b;
         }
         return null;
     }
 
-    // ========== sleep函数 ==========
-
-    function sleep(ms) {
-        return new Promise(r=>setTimeout(r,ms));
+    // -------------------------------
+    // 8) 对字符串做宽松/标准化处理后匹配
+    // -------------------------------
+    function normalizeStr(str) {
+        return str
+            .toLowerCase()
+            // 去除标点符号、特殊字符(仅保留字母数字空格)
+            .replace(/[^\p{L}\p{N}\s]+/gu, '')
+            .replace(/\s+/g, ' ')
+            .trim();
     }
 
-    // ========== 配置数据 & 选择器 ==========
+    function isInPresetTextsFuzzy(raw, arr) {
+        const normRaw = normalizeStr(raw);
+        return arr.some(txt => normalizeStr(txt) === normRaw);
+    }
 
-    // 区域选择器
+    // -------------------------------
+    // 9) sleep函数
+    // -------------------------------
+    function sleep(ms) {
+        return new Promise(r => setTimeout(r, ms));
+    }
+
+    // -------------------------------
+    // 10) 选择器
+    // -------------------------------
     const regionSelector = '#root > div > div > div > div > div > div > div.flex-1.overflow-auto > div > div > div.pt-5.h-full.px-4.pb-2.w-\\[45\\%\\].overflow-y-auto.\\!h-\\[calc\\(100vh-66px-46px\\)\\] > div > div:nth-child(n) > div';
-
-    // 切换元素
     const switchSelector = '#root > div > div > div > div > div > div > div.w-full.relative.bg-saBgContainerDeep.px-6.flex.justify-between.h-\\[66px\\].items-center.border-b.border-solid.border-saBorderOnContainerDeep > div.sa-v3-space.css-9ub2fh.sa-v3-space-horizontal.sa-v3-space-align-center > div:nth-child(2) > div > div:nth-child(3) > div > div';
-
-    // 提交元素(可点击状态下的selector)
     const submitSelector = '#labeling-submit-button-id > div.w-full.h-\\[40px\\].select-none.flex-shrink-0.flex.font-medium.justify-center.cursor-pointer.items-center.rounded-\\[8px\\].text-saPrimaryBg.bg-saPrimaryPrimary.text-base.border-solid.border.border-saPrimaryPrimary.hover\\:bg-saPrimaryHover.\\!w-\\[auto\\].\\!h-8.px-\\[15px\\].\\!py-\\[6\\.4px\\]';
-
-    // 确认元素(基于更稳定的类选择器)
     const confirmSelector = '.sa-v3-modal-wrap.sa-v3-modal-confirm-centered.sa-v3-modal-centered .sa-v3-modal-confirm-btns > div > div:nth-child(2) > div';
 
 })();
