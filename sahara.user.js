@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 自动化脚本 (宽松匹配 + 调试输出)
 // @namespace    http://tampermonkey.net/
-// @version      11.11
+// @version      12.3
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：若 rawText 与 presetTexts(宽松匹配) => Disapprove；否则 Approve
 // @match        https://app.saharalabs.ai/*
