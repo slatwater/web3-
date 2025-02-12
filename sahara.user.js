@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Sahara Labs 自动化脚本 (宽松匹配 + 调试输出)
+// @name         Sahara Labs 宽松政策
 // @namespace    http://tampermonkey.net/
-// @version      12.3
+// @version      12.1
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
-//               操作一：若 rawText 与 presetTexts(宽松匹配) => Disapprove；否则 Approve
+//               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/sahara.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/sahara.user.js
@@ -14,13 +14,10 @@
 (function() {
     'use strict';
 
-    /**
-     * --------------------------
-     *  1) 预设文本列表
-     * --------------------------
-     * 脚本以宽松方式检查：将 rawText 与数组内每个项目都做 normalizeStr，
-     * 只要有完全相等(忽略标点/大小写/多空格/特殊字符)就视为匹配 => Disapprove
-     */
+    // -------------------------------
+    // 1) 预设文本列表
+    // -------------------------------
+    // 若(标准化后) rawText 在此列表(也标准化后)中 => Disapprove；否则 Approve
     const presetTexts = [
         "cloudy rainbow",
         "Axolotyl",
@@ -289,35 +286,31 @@
         "Typing nonsense",
         "asdfghjkl",
         "123wronginput"
-        // ... 这里保留或添加更多您需要的文本
     ];
 
-    /**
-     * --------------------------
-     *  2) 在页面 load 后启动
-     * --------------------------
-     */
+    // -------------------------------
+    // 2) 页面载入后开始执行
+    // -------------------------------
     window.addEventListener('load', async function() {
-        console.log("[脚本日志] 页面load, 等待额外5秒...");
+        console.log("[脚本日志] 页面load事件已触发，等待额外5秒确保元素渲染...");
         await sleep(5000);
+
         console.log("[脚本日志] 开始主流程 mainFlow...");
         mainFlow();
     });
 
-    /**
-     * --------------------------
-     *  3) 主流程
-     * --------------------------
-     */
+    // -------------------------------
+    // 3) 主流程
+    // -------------------------------
     async function mainFlow() {
-        // (A) 先执行一次 operationOne
+        // (A) 先执行一次操作一
         await operationOne();
 
-        // (B) 循环监测 => 切换/提交 => operationOne
+        // (B) 循环监测 => 如果“切换元素”或“提交元素”可点击 => 做相应操作
         while(true) {
             let didAction = false;
             let startTime = Date.now();
-            const maxTime = 100000; // 100秒
+            const maxTime = 100000; // 100秒上限
 
             while(true) {
                 if (Date.now() - startTime >= maxTime) {
@@ -325,9 +318,10 @@
                     break;
                 }
 
-                // 检查“切换元素”
+                // 先检查“切换元素”
                 const switchEl = document.querySelector(switchSelector);
                 if (switchEl && isElementClickable(switchEl)) {
+                    console.log("[脚本日志] 检测到【切换元素】可点击 => 点击...");
                     switchEl.scrollIntoView({behavior:"smooth", block:"center"});
                     await sleep(500);
                     switchEl.click();
@@ -337,25 +331,28 @@
                     didAction = true;
                 }
 
-                // 检查“提交元素”
+                // 再检查“提交元素”
                 const submitEl = document.querySelector(submitSelector);
                 if (submitEl && isElementClickable(submitEl)) {
+                    console.log("[脚本日志] 检测到【提交元素】可点击 => 点击...");
                     submitEl.scrollIntoView({behavior:"smooth", block:"center"});
                     await sleep(500);
                     submitEl.click();
                     console.log("[脚本日志] 已点击【提交元素】，等待确认元素...");
 
+                    // 等待确认元素出现
                     const confirmEl = await waitForElement(confirmSelector, 5000);
                     if (confirmEl) {
+                        console.log("[脚本日志] 确认元素已出现 => 点击...");
                         confirmEl.scrollIntoView({behavior:"smooth", block:"center"});
                         await sleep(500);
                         confirmEl.click();
                         console.log("[脚本日志] 已点击确认元素");
                     } else {
-                        console.log("[脚本日志] 确认元素未出现(或超时)");
+                        console.log("[脚本日志] 等待确认元素超时或未出现");
                     }
 
-                    console.log("[脚本日志] 再次执行 operationOne...");
+                    console.log("[脚本日志] 再执行操作一...");
                     await sleep(1000);
                     await operationOne();
                     didAction = true;
@@ -366,38 +363,36 @@
             }
 
             if (!didAction) {
-                console.log("[脚本日志] 未找到可点击切换/提交 => 结束脚本");
+                console.log("[脚本日志] 未找到可点击切换/提交元素 => 脚本结束");
                 break;
             }
 
-            console.log("[脚本日志] 本轮已操作 => 进入下轮循环...");
+            console.log("[脚本日志] 本轮已执行动作 => 再次进入下轮循环...");
         }
 
-        console.log("[脚本日志] mainFlow结束，脚本结束");
+        console.log("[脚本日志] mainFlow结束，脚本彻底完成");
     }
 
-    /**
-     * --------------------------
-     *  4) operationOne => 遍历
-     * --------------------------
-     */
+    // -------------------------------
+    // 4) operationOne: 遍历区域 => Approve or Disapprove
+    // -------------------------------
     async function operationOne() {
         console.log("[操作一] 开始遍历区域...");
 
         const allRegions = document.querySelectorAll(regionSelector);
         if (!allRegions || !allRegions.length) {
-            console.log("[操作一] 未找到任何区域 => 结束");
+            console.log("[操作一] 未找到任何区域 => 结束操作一");
             return;
         }
         console.log(`[操作一] 找到 ${allRegions.length} 个区域`);
 
         for (let i = 0; i < allRegions.length; i++) {
             const region = allRegions[i];
-            console.log(`[操作一] 第 ${i+1} 个区域`);
+            console.log(`[操作一] 第${i+1}个区域`);
 
             const textBaseEls = region.querySelectorAll('.text-baseV2');
             if (textBaseEls.length < 3) {
-                console.log("[操作一] text-baseV2 < 3, 跳过");
+                console.log("[操作一] text-baseV2<3, 跳过该区域");
                 await sleep(800);
                 continue;
             }
@@ -405,25 +400,19 @@
             // 取第3个
             const textEl = textBaseEls[2];
             const rawText = (textEl.innerText || '').trim();
-            console.log(`[操作一] 文本原始= "${rawText}"`);
-            
-            // 调试: 打印其标准化结果
-            const normRaw = normalizeStr(rawText);
-            console.log(`[操作一] 文本标准化= "${normRaw}"`);
+            console.log(`[操作一] 文本="${rawText}"`);
 
-            // 判断 => Disapprove or Approve
+            // 宽松匹配: 若rawText与预设文本(经normalize)匹配 => Disapprove, 否则 Approve
             let buttonText;
             if (isInPresetTextsFuzzy(rawText, presetTexts)) {
                 buttonText = 'Disapprove';
-                console.log("[操作一] => 选 Disapprove");
             } else {
                 buttonText = 'Approve';
-                console.log("[操作一] => 选 Approve");
             }
 
             const btn = findButtonByText(region, buttonText);
             if (!btn) {
-                console.log(`[操作一] 未找到按钮 "${buttonText}", 跳过`);
+                console.log(`[操作一] 未找到"${buttonText}"按钮, 跳过`);
                 await sleep(800);
                 continue;
             }
@@ -431,18 +420,16 @@
             btn.scrollIntoView({behavior:"smooth", block:"center"});
             await sleep(500);
             btn.click();
-            console.log(`[操作一] 已点击"${buttonText}" (rawText="${rawText}")`);
+            console.log(`[操作一] 已点击"${buttonText}"按钮 (文本="${rawText}")`);
             await sleep(1000);
         }
 
         console.log("[操作一] 全部区域处理完毕");
     }
 
-    // ========== 工具区 ==========
-
-    /**
-     * 判断是否可点击
-     */
+    // -------------------------------
+    // 5) 工具函数: 判断元素可点击
+    // -------------------------------
     function isElementClickable(el) {
         if (!el) return false;
         const cList = [...el.classList];
@@ -456,9 +443,9 @@
         return true;
     }
 
-    /**
-     * 等待元素出现
-     */
+    // -------------------------------
+    // 6) 工具函数: 等待元素出现
+    // -------------------------------
     async function waitForElement(selector, timeout=5000) {
         const start = Date.now();
         return new Promise(resolve => {
@@ -467,75 +454,54 @@
                 if (found) {
                     clearInterval(timer);
                     resolve(found);
-                } else if (Date.now() - start >= timeout) {
+                } else if (Date.now()-start >= timeout) {
                     clearInterval(timer);
                     resolve(null);
                 }
-            }, 500);
+            },500);
         });
     }
 
-    /**
-     * 在容器内通过文本找按钮(忽略大小写)
-     */
+    // -------------------------------
+    // 7) 工具函数: 在容器内通过文本找按钮(忽略大小写)
+    // -------------------------------
     function findButtonByText(container, targetText) {
         targetText = targetText.toLowerCase();
         const btns = container.querySelectorAll('button');
         for (const b of btns) {
-            const bText = (b.textContent||'').trim().toLowerCase();
-            if (bText === targetText) {
-                return b;
-            }
+            const bText = (b.textContent || '').trim().toLowerCase();
+            if (bText === targetText) return b;
         }
         return null;
     }
 
-    /**
-     * sleep
-     */
-    function sleep(ms) {
-        return new Promise(r => setTimeout(r, ms));
-    }
-
-    /**
-     * 标准化字符串 => 宽松匹配
-     *  - 全转小写
-     *  - 去标点/特殊字符(仅保留字母数字空格)
-     *  - 合并多余空格
-     *  - trim()
-     */
+    // -------------------------------
+    // 8) 对字符串做宽松/标准化处理后匹配
+    // -------------------------------
     function normalizeStr(str) {
         return str
             .toLowerCase()
-            .replace(/[^\p{L}\p{N}\s]+/gu, '') 
+            // 去除标点符号、特殊字符(仅保留字母数字空格)
+            .replace(/[^\p{L}\p{N}\s]+/gu, '')
             .replace(/\s+/g, ' ')
             .trim();
     }
 
-    /**
-     * 检查 rawText 是否在 presetArr(宽松)中
-     */
     function isInPresetTextsFuzzy(raw, arr) {
         const normRaw = normalizeStr(raw);
-
-        // 调试：输出所有 presetText 标准化
-        console.log(`[调试] rawText标准化="${normRaw}"，开始比对预设...`);
-
-        for (const pt of arr) {
-            const normPt = normalizeStr(pt);
-            if (normRaw === normPt) {
-                console.log(`[调试] 匹配成功 => rawText("${normRaw}") == preset("${normPt}")`);
-                return true;
-            } else {
-                // 若想查看所有不匹配的原因，可在这里调试:
-                // console.log(`[调试] 不匹配 => rawText("${normRaw}") vs preset("${normPt}")`);
-            }
-        }
-        return false;
+        return arr.some(txt => normalizeStr(txt) === normRaw);
     }
 
-    // ========== 选择器 ==========
+    // -------------------------------
+    // 9) sleep函数
+    // -------------------------------
+    function sleep(ms) {
+        return new Promise(r => setTimeout(r, ms));
+    }
 
+    // -------------------------------
+    // 10) 选择器
+    // -------------------------------
     const regionSelector = '#root > div > div > div > div > div > div > div.flex-1.overflow-auto > div > div > div.pt-5.h-full.px-4.pb-2.w-\\[45\\%\\].overflow-y-auto.\\!h-\\[calc\\(100vh-66px-46px\\)\\] > div > div:nth-child(n) > div';
     const switchSelector = '#root > div > div > div > div > div > div > div.w-full.relative.bg-saBgContainerDeep.px-6.flex.justify-between.h-\\[66px\\].items-center.border-b.border-solid.border-saBorderOnContainerDeep > div.sa-v3-space.css-9ub2fh.sa-v3-space-horizontal.sa-v3-space-align-center > div:nth-child(2) > div > div:nth-child(3) > div > div';
     const submitSelector = '#labeling-submit-button-id > div.w-full.h-\\[40px\\].select-none.flex-shrink-0.flex.font-medium.justify-center.cursor-pointer.items-center.rounded-\\[8px\\].text-saPrimaryBg.bg-saPrimaryPrimary.text-base.border-solid.border.border-saPrimaryPrimary.hover\\:bg-saPrimaryHover.\\!w-\\[auto\\].\\!h-8.px-\\[15px\\].\\!py-\\[6\\.4px\\]';
