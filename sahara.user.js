@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 宽松政策
 // @namespace    http://tampermonkey.net/
-// @version      12.0
+// @version      12.1
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -56,6 +56,20 @@
         "Cats, Dogs, Birds",
         "Shoes, Hats, Coats",
         "Guessing random words",
+        "A globe",
+        "A shopping bag",
+        "A recipe book",
+        "A box of cereal",
+        "A dog leash",
+        "A vacuum cleaner",
+        "A lamp post",
+        "A gas station pump",
+        "A box of cereal",
+        "A roller coaster",
+        "A playground slide",
+        "A flagpole",
+        "A TV",
+        "A brick oven",
         "Mars, Stars, Comets",
         "Biking, Swimming, Flying",
         "Shoes, Bags, Belts",
