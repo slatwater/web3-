@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Sahara Labs 自动化脚本 (去调试日志 + 等待页面 + 并行监测切换/提交, 文本判定Approve/Disapprove, 宽松匹配)
+// @name         Sahara Labs 宽松政策
 // @namespace    http://tampermonkey.net/
-// @version      11.10
+// @version      12.1
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
-//               操作一：若 rawText 与 presetTexts(经normalize后)匹配 => Disapprove; 否则 Approve
+//               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/sahara.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/sahara.user.js
@@ -56,6 +56,20 @@
         "Cats, Dogs, Birds",
         "Shoes, Hats, Coats",
         "Guessing random words",
+        "A globe",
+        "A shopping bag",
+        "A recipe book",
+        "A box of cereal",
+        "A dog leash",
+        "A vacuum cleaner",
+        "A lamp post",
+        "A gas station pump",
+        "A box of cereal",
+        "A roller coaster",
+        "A playground slide",
+        "A flagpole",
+        "A TV",
+        "A brick oven",
         "Mars, Stars, Comets",
         "Biking, Swimming, Flying",
         "Shoes, Bags, Belts",
