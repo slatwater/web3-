@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 宽松政策
 // @namespace    http://tampermonkey.net/
-// @version      12.1
+// @version      12.2
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -58,6 +58,7 @@
         "Guessing random words",
         "A globe",
         "A shopping bag",
+        "A tea kettle",
         "A recipe book",
         "A box of cereal",
         "A dog leash",
@@ -152,6 +153,8 @@
         "A desk",
         "A coin-operated telescope",
         "A basketball hoop",
+        "A wind chime",
+        "A dining table",
         "A skateboard",
         "A rocking chair",
         "A box of crayons",
