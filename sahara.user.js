@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 宽松政策
 // @namespace    http://tampermonkey.net/
-// @version      13.3
+// @version      13.7
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -51,6 +51,8 @@
         "jumping beans",
         "jumping rainbow",
         "laughing clock",
+        "A large airconditioner",
+        "A brick",
         "cloud walker",
         "A basketball cleaner",
         "banana smoothie",
