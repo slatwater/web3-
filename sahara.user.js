@@ -308,7 +308,7 @@
     // -------------------------------
     window.addEventListener('load', async function() {
         console.log("[脚本日志] 页面load事件已触发，等待额外5秒确保元素渲染...");
-        await sleep(5000);
+        await sleep(8000);
 
         console.log("[脚本日志] 开始主流程 mainFlow...");
         mainFlow();
