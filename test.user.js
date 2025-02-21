@@ -258,7 +258,7 @@
             selectedButton.click();
 
             // 等待小窗口1出现
-            const smallWindow1Selector = 'body > div:nth-child(9) > div > div > div > div';
+            const smallWindow1Selector = 'body > div:nth-child(8) > div > div > div > div';
             log("等待小窗口1出现...");
             try {
                 await waitForSelector(smallWindow1Selector, 5000);
@@ -269,7 +269,7 @@
             }
 
             // 在小窗口1中点击元素1的button子元素
-            const element1Selector = 'body > div:nth-child(10) > div > div > div > div > div:nth-child(3) > div > div > div.btn-container > button';
+            const element1Selector = 'body > div:nth-child(8) > div > div > div > div > div:nth-child(3) > div > div > div.btn-container > button';
             log("查找并点击小窗口1中的元素1的button子元素。");
             try {
                 const element1Button = await waitForSelector(element1Selector, 10000);
