@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      9.7
+// @version      9.8
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -287,7 +287,7 @@
             }
 
             // 点击小窗口1中的元素2
-            const element2Selector = 'body > div:nth-child(9) > div > div > div > div > button > img';
+            const element2Selector = 'body > div:nth-child(8) > div > div > div > div > button > img';
             log("查找并点击小窗口1中的元素2。");
             try {
                 const element2 = await waitForSelector(element2Selector, 10000);
