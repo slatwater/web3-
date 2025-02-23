@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 宽松政策
 // @namespace    http://tampermonkey.net/
-// @version      13.7
+// @version      13.8
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -27,6 +27,10 @@
         "talking dog",
         "A super heavy printer",
         "Care engine",
+        "randomtext123",
+        "1place2wrong",
+        "sdljflj123",
+        "elephantparadise33",
         "flying carpet",
         "Laptop, Phone, Tablet",
         "Swimming is fun",
@@ -45,6 +49,8 @@
         "dancing shoes",
         "A steel suit of armor",
         "A tire swing",
+        "Cars, Bikes, Boats",
+        "noidea33"<
         "A remote-controlled car",
         "dancing unicorn",
         "A mirror that is larger than your body",
