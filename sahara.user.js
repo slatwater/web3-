@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 宽松政策
 // @namespace    http://tampermonkey.net/
-// @version      14.9
+// @version      15.0
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -34,6 +34,7 @@
         "Laptop, Phone, Tablet",
         "Swimming is fun",
         "invisible car",
+        "gibberishwording",
         "singing bird",
         "Invalidresponse",
         "an adorable cat",
