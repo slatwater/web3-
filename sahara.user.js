@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 宽松政策
 // @namespace    http://tampermonkey.net/
-// @version      14.6
+// @version      14.7
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -17,7 +17,6 @@
     // -------------------------------
     // 1) 预设文本列表
     // -------------------------------
-    // 若(标准化后) rawText 在此列表(也标准化后)中 => Disapprove；否则 Approve
     const presetTexts = [
         "cloudy rainbow",
         "Axolotyl",
@@ -346,10 +345,9 @@
     // 2) 页面载入后开始执行
     // -------------------------------
     window.addEventListener('load', async function() {
-        console.log("[脚本日志] 页面load事件已触发，等待额外12秒确保元素渲染...");
-        await sleep(12000);
-
-        console.log("[脚本日志] 开始主流程 mainFlow...");
+        console.log("[脚本日志] 页面load事件已触发，开始动态等待关键元素...");
+        await waitForPageReady(60000); // 最多等待60秒
+        console.log("[脚本日志] 页面已就绪，开始主流程 mainFlow...");
         mainFlow();
     });
 
@@ -357,14 +355,12 @@
     // 3) 主流程
     // -------------------------------
     async function mainFlow() {
-        // (A) 先执行一次操作一
         await operationOne();
 
-        // (B) 循环监测 => 如果“切换元素”或“提交元素”可点击 => 做相应操作
         while(true) {
             let didAction = false;
             let startTime = Date.now();
-            const maxTime = 100000; // 100秒上限
+            const maxTime = 100000;
 
             while(true) {
                 if (Date.now() - startTime >= maxTime) {
@@ -372,7 +368,6 @@
                     break;
                 }
 
-                // 先检查“切换元素”
                 const switchEl = document.querySelector(switchSelector);
                 if (switchEl && isElementClickable(switchEl)) {
                     console.log("[脚本日志] 检测到【切换元素】可点击 => 点击...");
@@ -385,7 +380,6 @@
                     didAction = true;
                 }
 
-                // 再检查“提交元素”
                 const submitEl = document.querySelector(submitSelector);
                 if (submitEl && isElementClickable(submitEl)) {
                     console.log("[脚本日志] 检测到【提交元素】可点击 => 点击...");
@@ -394,7 +388,6 @@
                     submitEl.click();
                     console.log("[脚本日志] 已点击【提交元素】，等待确认元素...");
 
-                    // 等待确认元素出现
                     const confirmEl = await waitForElement(confirmSelector, 5000);
                     if (confirmEl) {
                         console.log("[脚本日志] 确认元素已出现 => 点击...");
@@ -451,12 +444,10 @@
                 continue;
             }
 
-            // 取第3个
             const textEl = textBaseEls[2];
             const rawText = (textEl.innerText || '').trim();
             console.log(`[操作一] 文本="${rawText}"`);
 
-            // 宽松匹配: 若rawText与预设文本(经normalize)匹配 => Disapprove, 否则 Approve
             let buttonText;
             if (isInPresetTextsFuzzy(rawText, presetTexts)) {
                 buttonText = 'Disapprove';
@@ -535,7 +526,6 @@
     function normalizeStr(str) {
         return str
             .toLowerCase()
-            // 去除标点符号、特殊字符(仅保留字母数字空格)
             .replace(/[^\p{L}\p{N}\s]+/gu, '')
             .replace(/\s+/g, ' ')
             .trim();
@@ -560,5 +550,27 @@
     const switchSelector = '#root > div > div > div > div > div > div > div.w-full.relative.bg-saBgContainerDeep.px-6.flex.justify-between.h-\\[66px\\].items-center.border-b.border-solid.border-saBorderOnContainerDeep > div.sa-v3-space.css-9ub2fh.sa-v3-space-horizontal.sa-v3-space-align-center > div:nth-child(2) > div > div:nth-child(3) > div > div';
     const submitSelector = '#labeling-submit-button-id > div.w-full.h-\\[40px\\].select-none.flex-shrink-0.flex.font-medium.justify-center.cursor-pointer.items-center.rounded-\\[8px\\].text-saPrimaryBg.bg-saPrimaryPrimary.text-base.border-solid.border.border-saPrimaryPrimary.hover\\:bg-saPrimaryHover.\\!w-\\[auto\\].\\!h-8.px-\\[15px\\].\\!py-\\[6\\.4px\\]';
     const confirmSelector = '.sa-v3-modal-wrap.sa-v3-modal-confirm-centered.sa-v3-modal-centered .sa-v3-modal-confirm-btns > div > div:nth-child(2) > div';
+
+    // -------------------------------
+    // 11) 新增: 动态等待页面就绪
+    // -------------------------------
+    async function waitForPageReady(maxTimeout = 60000) {
+        const startTime = Date.now();
+        return new Promise(async (resolve) => {
+            while (Date.now() - startTime < maxTimeout) {
+                // 检查关键元素是否存在（这里使用regionSelector作为判断依据）
+                const regions = document.querySelectorAll(regionSelector);
+                if (regions && regions.length > 0) {
+                    console.log("[脚本日志] 检测到关键元素，已加载完成");
+                    await sleep(2000); // 额外等待2秒确保稳定
+                    resolve(true);
+                    return;
+                }
+                await sleep(1000); // 每秒检查一次
+            }
+            console.log("[脚本日志] 达到最大等待时间，强制继续执行");
+            resolve(false);
+        });
+    }
 
 })();
