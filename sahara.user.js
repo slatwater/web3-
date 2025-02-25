@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sahara Labs 宽松政策
 // @namespace    http://tampermonkey.net/
-// @version      14.5
+// @version      14.6
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
 //               操作一：根据rawText是否属于预设文本 => Disapprove / Otherwise => Approve
 // @match        https://app.saharalabs.ai/*
@@ -346,8 +346,8 @@
     // 2) 页面载入后开始执行
     // -------------------------------
     window.addEventListener('load', async function() {
-        console.log("[脚本日志] 页面load事件已触发，等待额外5秒确保元素渲染...");
-        await sleep(8000);
+        console.log("[脚本日志] 页面load事件已触发，等待额外12秒确保元素渲染...");
+        await sleep(12000);
 
         console.log("[脚本日志] 开始主流程 mainFlow...");
         mainFlow();
