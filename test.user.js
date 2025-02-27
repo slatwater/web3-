@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      10.3
+// @version      10.5
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -282,7 +282,7 @@
             log('[Shaga Spin] 未找到SPIN按钮或按钮不可点击，脚本结束');
         }
         log("自动化脚本执行完毕，跳转到 SideQuest 页面。");
-        await randomDelay(2000, 4000);
+        await randomDelay(3000, 5000);
         window.location.href = 'https://sidequest.rcade.game/quests'; 
     }
 
