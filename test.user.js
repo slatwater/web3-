@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      10.1
+// @version      10.3
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
+// @match        https://glob.shaga.xyz/main
 // @match        https://sidequest.rcade.game/quests
 // @match        https://forge.gg/quests
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
@@ -134,9 +135,12 @@
             if (currentURL.includes('space3.gg/missions')) {
                 // 执行脚本1的功能
                 await executeScript1();
-            } else if (currentURL.includes('sidequest.rcade.game/quests')) {
+            } else if (currentURL.includes('glob.shaga.xyz/main')) {
                 // 执行脚本2的功能
                 await executeScript2();
+            } else if (currentURL.includes('sidequest.rcade.game/quests')) {
+                // 执行脚本3的功能
+                await executeScript3();
             } else if (currentURL.includes('forge.gg/quests')) {
                 // 执行脚本4的功能
                 await executeScript4();
@@ -186,7 +190,7 @@
     
         log("Space3 Missions 自动化脚本执行完毕，已点击所有符合条件的元素，跳转到 SideQuest 任务页面。");
         await randomDelay(2000, 4000);
-        window.location.href = 'https://sidequest.rcade.game/quests';
+        window.location.href = 'https://glob.shaga.xyz/main';
     }
     
     // 遍历点击所有指定 class 的元素
@@ -224,10 +228,67 @@
             log('未找到目标区域。');
         }
     }
-
-
-    // 脚本2：SideQuest 自动化操作
+    
+    // 脚本2：Glob Shaga Quests 自动化操作（单次点击SPIN按钮）
     async function executeScript2() {
+        log("执行 Glob Shaga Quests 自动化脚本。");
+
+        const spinButtonSelector = 'button.rounded-md.shadow-sm:contains("SPIN")';
+
+        // 自定义:contains选择器
+        function containsSelector(selector, text) {
+            return Array.from(document.querySelectorAll(selector)).find(element => 
+                element.textContent.trim().toUpperCase() === text.toUpperCase()
+            );
+        }
+
+        // 判断元素是否可点击
+        function isElementClickable(element) {
+            if (!element) {
+                log('[Shaga Spin] [调试] 元素不存在');
+                return false;
+            }
+            const style = window.getComputedStyle(element);
+            if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0' || element.disabled) {
+                log('[Shaga Spin] [调试] 元素不可点击 - display:', style.display, 'visibility:', style.visibility, 'opacity:', style.opacity, 'disabled:', element.disabled);
+                return false;
+            }
+            log('[Shaga Spin] [调试] 元素可点击');
+            return true;
+        }
+
+        // 等待元素出现
+        async function waitForElement(selector, text, timeout = 30000) {
+            log(`[Shaga Spin] [调试] 等待元素: ${selector} 包含文本 "${text}"`);
+            const startTime = Date.now();
+            while (Date.now() - startTime < timeout) {
+                const element = containsSelector(selector, text);
+                log('[Shaga Spin] [调试] 当前查找结果:', element ? element.outerHTML : '未找到');
+                if (element && isElementClickable(element)) {
+                    return element;
+                }
+                await delay(500);
+            }
+            log('[Shaga Spin] [调试] 等待超时，未找到可点击元素');
+            return null;
+        }
+
+        // 等待SPIN按钮出现并点击一次
+        const spinButton = await waitForElement('button.rounded-md.shadow-sm', 'SPIN', 30000);
+        if (spinButton) {
+            spinButton.click();
+            log('[Shaga Spin] SPIN按钮已点击一次，脚本结束');
+        } else {
+            log('[Shaga Spin] 未找到SPIN按钮或按钮不可点击，脚本结束');
+        }
+        log("自动化脚本执行完毕，跳转到 SideQuest 页面。");
+        await randomDelay(2000, 4000);
+        window.location.href = 'https://sidequest.rcade.game/quests'; 
+    }
+
+
+    // 脚本3：SideQuest 自动化操作
+    async function executeScript3() {
         log("执行SideQuest 自动化脚本。");
 
         const missionListSelector = '#root > div > div > div.main > div.content.undefined > div > div.mission-list';
@@ -365,7 +426,7 @@
             log("未找到元素5或点击失败。");
         }
 
-        log("SideQuest 自动化脚本执行完毕，跳转到 Glob Shaga Quests 页面。");
+        log("SideQuest 自动化脚本执行完毕，跳转到 Forge.gg Quests 页面。");
         await randomDelay(2000, 4000);
         window.location.href = 'https://forge.gg/quests';
     }
