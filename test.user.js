@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      10.5
+// @version      10.7
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -9,7 +9,7 @@
 // @match        https://sidequest.rcade.game/quests
 // @match        https://forge.gg/quests
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
-// @match        https://cess.network/merkle/*
+// @match        https://cess.network/deshareairdrop/*
 // @match        https://quest.redactedairways.com/*
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
@@ -147,7 +147,7 @@
             } else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) {
                 // 执行脚本6的功能
                 await executeScript6();
-            } else if (currentURL.includes('cess.network/merkle')) {
+            } else if (currentURL.includes('cess.network/deshareairdrop')) {
                 // 执行脚本7的功能
                 await executeScript7();  
             } else if (currentURL.includes('quest.redactedairways.com')) {
@@ -779,7 +779,7 @@
                 // 在XtremeVerse脚本执行完毕后，自动跳转至CESS目标网址
                 log("XtremeVerse脚本执行完毕，准备跳转至 CESS Network Merkle 页面。");
                 await randomDelay(2000, 4000);
-                window.location.href = 'https://cess.network/merkle/?oauth_token=Vo-FrQAAAAABvy-VAAABkdpcgpc&oauth_verifier=UmMyKT2yJtnvZmgOX5rFIO2L6x9bSxAy';
+                window.location.href = 'https://cess.network/deshareairdrop/';
 
 
             } catch (error) {
@@ -791,137 +791,48 @@
         await mainXtremeVerse();
     }
 
-    // 脚本7：CESS Network Merkle 自动化操作
+    // 替换后的 executeScript7（基于脚本2）
     async function executeScript7() {
-        log("执行 CESS Network Merkle 自动化脚本。");
-
-        // 等待XPath选择器出现
-        function waitForXPath(xpath, timeout = 30000) {
-            return new Promise((resolve, reject) => {
-                const interval = 500;
-                let elapsed = 0;
-                const timer = setInterval(() => {
-                    const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                    if (result.singleNodeValue) {
-                        clearInterval(timer);
-                        resolve(result.singleNodeValue);
-                    } else {
-                        elapsed += interval;
-                        if (elapsed >= timeout) {
-                            clearInterval(timer);
-                            reject(new Error(`等待XPath ${xpath} 超时`));
-                        }
-                    }
-                }, interval);
-            });
-        }
-
         try {
-            // 设置随机延迟
-            await randomDelay(3000, 6000);
+            // 等待网页完全加载
+            log("等待网页完全加载...");
+            await new Promise(resolve => {
+                if (document.readyState === "complete") {
+                    resolve();
+                } else {
+                    window.addEventListener("load", resolve);
+                }
+            });
+            await randomDelay(2000, 5000); // 初始随机延迟 2-5 秒
 
-            // 点击元素1
-            const element1XPath = '//*[@id="root"]/div/div/div[3]/div[2]/div/div/div/div[4]/div[2]/button';
-            log('查找元素1并点击...');
-            const element1 = await waitForXPath(element1XPath);
-            element1.click();
-            log('已点击元素1。');
+            // 第一步：点击 Check-in 按钮
+            log("寻找 Check-in 按钮...");
+            const checkInButton = await waitForElement('button.bg-primary', 'Check-in');
+            log("点击 Check-in 按钮...");
+            checkInButton.click();
+            await randomDelay(1000, 3000); // 随机延迟 1-3 秒
 
-            // 设置随机延迟
-            await randomDelay(1000, 2000);
+            // 第二步：点击 Retweet 按钮
+            log("寻找 Retweet 按钮...");
+            const retweetButton = await waitForElement('button.bg-primary', 'Retweet');
+            log("点击 Retweet 按钮...");
+            retweetButton.click();
+            await randomDelay(3000, 3000); // 固定 3 秒延迟（按脚本2需求）
 
-            // 点击元素2
-            const element2XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/div[2]/div[1]/button';
-            log('查找元素2并点击...');
-            const element2 = await waitForXPath(element2XPath);
-            element2.click();
-            log('已点击元素2。');
+            // 第三步：点击 Forwarded & Get Points 按钮
+            log("寻找 Forwarded & Get Points 按钮...");
+            const forwardButton = await waitForElement('button.bg-primary', 'Forwarded & Get Points');
+            log("点击 Forwarded & Get Points 按钮...");
+            forwardButton.click();
 
-            // 等待元素4出现并点击
-            const element4XPath = '/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/div[2]/button[2]';
-            log('等待元素4出现...');
-            const element4 = await waitForXPath(element4XPath);
-            await randomDelay(500, 1000);
-            element4.click();
-            log('已点击元素4。');
-
-            // 设置随机延迟
-            await randomDelay(1000, 2000);
-
-            // 点击元素3
-            const element3XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/div[2]/div[2]/button';
-            log('查找元素3并点击...');
-            const element3 = await waitForXPath(element3XPath);
-            element3.click();
-            log('已点击元素3。');
-
-            // 等待元素4出现并点击
-            log('等待元素4再次出现...');
-            const element4_2 = await waitForXPath(element4XPath);
-            await randomDelay(500, 1000);
-            element4_2.click();
-            log('已再次点击元素4。');
-
-            // 设置随机延迟
-            await randomDelay(1000, 2000);
-
-            // 点击元素5
-            const element5XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/button';
-            log('查找元素5并点击...');
-            const element5 = await waitForXPath(element5XPath);
-            element5.click();
-            log('已点击元素5。');
-
-            // 设置随机延迟
-            await randomDelay(1000, 2000);
-
-            // 点击元素6 (canvas)
-            const element6XPath = '/html/body/div[2]/div/div[2]/div/div[1]/div/div[2]/div/div/div[2]/div/canvas';
-            log('查找元素6（canvas）并点击...');
-            const element6 = await waitForXPath(element6XPath);
-
-            // 获取canvas的中心坐标
-            const rect = element6.getBoundingClientRect();
-            const canvasX = rect.left + rect.width / 2;
-            const canvasY = rect.top + rect.height / 2;
-
-            // 创建并派发鼠标事件
-            function simulateClick(x, y) {
-                const evt = new MouseEvent('click', {
-                    view: window,
-                    bubbles: true,
-                    cancelable: true,
-                    clientX: x,
-                    clientY: y
-                });
-                element6.dispatchEvent(evt);
-            }
-
-            simulateClick(canvasX, canvasY);
-            log('已模拟点击元素6（canvas）。');
-
-            // 设置随机延迟
-            await randomDelay(1000, 2000);
-
-            // 等待元素7出现并点击
-            const element7XPath = '/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/div[2]/button';
-            log('等待元素7出现...');
-            const element7 = await waitForXPath(element7XPath);
-            await randomDelay(500, 1000);
-            element7.click();
-            log('已点击元素7。');
-
-            log('CESS Network Merkle 自动化脚本执行完毕，脚本结束。');
-            // 自动跳转至 breadnbutter.fun 页面
-            log("XtremeVerse 脚本执行完毕，准备跳转至 BreadnButter 页面。");
-            await randomDelay(2000, 4000);
-            window.location.href = 'https://quest.redactedairways.com/';
-
+            log("所有操作执行完毕！");
         } catch (error) {
-            log(`发生错误: ${error.message}`);
+            log(`发生错误：${error.message}`);
         }
+        log("CESS 自动化脚本执行完毕，跳转到 RED 页面。");
+        await randomDelay(2000, 4000);
+        window.location.href = 'https://quest.redactedairways.com/';
     }
-
 
 
     // 脚本12：Redacted Airways Quests 自动化操作
