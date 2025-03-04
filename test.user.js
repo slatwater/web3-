@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      10.7
+// @version      10.8
 // @description  自动化操作 Space3、SideQuest、Glob Shaga Quests、Forge.gg、Reddio Points Task 和 XtremeVerse 页面上的任务
 // @author
 // @match        https://space3.gg/missions?search=&sort=NEWEST&page=1
@@ -793,6 +793,40 @@
 
     // 替换后的 executeScript7（基于脚本2）
     async function executeScript7() {
+        // 内部定义 waitForElement 函数
+        async function waitForElement(selector, textContent, timeout = 10000) {
+            return new Promise((resolve, reject) => {
+                const interval = 500;
+                let elapsed = 0;
+                const timer = setInterval(() => {
+                    const elements = document.querySelectorAll(selector);
+                    let targetElement = null;
+
+                    if (textContent) {
+                        elements.forEach(el => {
+                            if (el.textContent.trim() === textContent) {
+                                targetElement = el;
+                            }
+                        });
+                    } else {
+                        targetElement = elements[0];
+                    }
+
+                    if (targetElement) {
+                        clearInterval(timer);
+                        resolve(targetElement);
+                        return;
+                    }
+
+                    elapsed += interval;
+                    if (elapsed >= timeout) {
+                        clearInterval(timer);
+                        reject(new Error(`元素 ${selector}${textContent ? ` with text "${textContent}"` : ''} 未在 ${timeout}ms 内找到`));
+                    }
+                }, interval);
+            });
+        }
+
         try {
             // 等待网页完全加载
             log("等待网页完全加载...");
@@ -833,7 +867,6 @@
         await randomDelay(2000, 4000);
         window.location.href = 'https://quest.redactedairways.com/';
     }
-
 
     // 脚本12：Redacted Airways Quests 自动化操作
     async function executeScript12() {
