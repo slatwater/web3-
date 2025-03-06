@@ -2,56 +2,23 @@
 
 数据部分：
 
-目标网址：https://app.union.build/*
+目标网址：https://app.testnet.initia.xyz/*
 
-元素1selector：body > div.max-w-screen.h-dvh.max-h-dvh.flex.flex-col > div.flex.flex-1.overflow-y-auto.bg-background > div > div > div > div > div > div > div.flex.flex-col.h-full.w-full.justify-between.p-4.overflow-y-scroll > div.flex.flex-col.gap-2 > div:nth-child(1) > button:nth-child(1)
-元素1-1selector：body > div.max-w-screen.h-dvh.max-h-dvh.flex.flex-col > div.flex.flex-1.overflow-y-auto.bg-background > div > div > div > div > div > div > div.flex.flex-col.h-full.overflow-y-scroll > div:nth-child(6) > button
-               
-元素2selector：body > div.max-w-screen.h-dvh.max-h-dvh.flex.flex-col > div.flex.flex-1.overflow-y-auto.bg-background > div > div > div > div > div > div > div.flex.flex-col.h-full.w-full.justify-between.p-4.overflow-y-scroll > div.flex.flex-col.gap-2 > div:nth-child(1) > button:nth-child(2)
-元素2-1selector：body > div.max-w-screen.h-dvh.max-h-dvh.flex.flex-col > div.flex.flex-1.overflow-y-auto.bg-background > div > div > div > div > div > div > div.flex.flex-col.h-full.overflow-y-scroll > div:nth-child(4) > button
-元素2-2selector：body > div.max-w-screen.h-dvh.max-h-dvh.flex.flex-col > div.flex.flex-1.overflow-y-auto.bg-background > div > div > div > div > div > div > div.flex.flex-col.h-full.overflow-y-scroll > div:nth-child(2) > button
+swap元素：<span class="_label_iv1o6_37 m_811560b9 mantine-Button-label">Swap</span>
+stake元素1：<span class="_label_iv1o6_37 m_811560b9 mantine-Button-label">Stake</span>
+stake元素2：<p class="mantine-focus-auto m_b6d8b162 mantine-Text-root css-oj3v5z" data-inherit="true" style="font-size: calc(0.75rem * var(--mantine-scale)); font-weight: 600; text-transform: uppercase;">Stake</p>
+输入框元素：<input class="_input-box_1056y_69 m_8fb7ebe7 mantine-Input-input mantine-TextInput-input" data-variant="filled" placeholder="0" name="quantity" token="[object Object]" select="[object Object]" maxcomponent="[object Object]" autocomplete="off" aria-invalid="false" id="mantine-uz63e4s7m">
+箭头元素：<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="css-atimj3" style="transform: rotate(180deg);"><path fill="currentColor" fill-rule="evenodd" d="m3.626 8.012 6.081 6.08-1.414 1.415L.798 8.012 8.293.516l1.414 1.415z" clip-rule="evenodd"></path></svg>
+进度条元素：<div class="mantine-focus-auto _thumb_1xnd5_14 m_c9a9a60a mantine-Slider-thumb" tabindex="0" role="slider" aria-label="" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" style="--slider-thumb-offset: 0%;"></div>
+4选1元素：//*[@id="root"]/div/main/div/div/div/div[2]/div[1]/div/div/a[1~4]/div/div
 
-元素3selector：body > div.max-w-screen.h-dvh.max-h-dvh.flex.flex-col > div.flex.flex-1.overflow-y-auto.bg-background > div > div > div > div > div > div > div.flex.flex-col.h-full.w-full.justify-between.p-4.overflow-y-scroll > div.flex.flex-col.gap-2 > div.flex.flex-col.w-full.gap-2 > button
-元素3-1selector：body > div.max-w-screen.h-dvh.max-h-dvh.flex.flex-col > div.flex.flex-1.overflow-y-auto.bg-background > div > div > div > div > div > div > div.flex-1.relative > div > button
+功能部分：
 
-输入框1element：<input class="flex h-10 w-full border bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 p-1 border-red-500" id="amount" type="text" name="amount" required="" autocorrect="off" placeholder="0.00" spellcheck="false" autocomplete="off" inputmode="decimal" data-field="amount" autocapitalize="none" pattern="^[0-9]*[.]?[0-9]*$">
-元素4xpath：/html/body/div[1]/div[2]/div/div/div/div/div/div/div[2]/div[1]/div[4]/button
+一.脚本定时3s对页面进行快照并执行以下内容：
+1.页面是否存在swap元素、stake元素1、箭头元素、4选1元素，如果存在，首先判断元素的点击状态是否为可点击状态，然后再判断页面是否同一种元素存在多个，如果存在多个则随机挑选一个进行点击，如果只有一个则直接进行点击。
+2.页面是否存在输入框元素，如果存在，则随即输入0.000111~0.0003区间内的一个数字
+3.页面是否存在进度条元素，如果存在则将其的值设置为1%~10%区间内
 
-元素5xpath：/html/body/div[1]/div[2]/div/div/div/div/div/div/div[2]/div[2]/button
-
-元素6xpath：/html/body/div[1]/div[2]/div/div/div/div/div/div/button
-
-元素7xpath：/html/body/div[1]/div[2]/div/main/div/div/section/div/div/div[3]/div[1]/div[1]/div[1]
-
-元素8xpath：/html/body/div[1]/header/nav/a[1]
-
-功能需求：
-循环1：
-（点击元素1，持续监测等待元素1-1的出现并点击，然后持续监测等待元素2的出现并点击，然后持续监测等待元素2-1的出现并点击。然后持续监测等待元素3的出现并点击，然后持续监测等待元素3-1的出现并点击。
-等待2-3s后在输入框1中随机输入0.000011-0.00003范围内的一个值。
-然后等待1-2s后点击元素4
-然后等待2-4s后点击元素5
-然后持续监测等待元素6的出现并点击
-然后持续检测并等待元素7出现之后，点击元素8）
-循环1执行随机15-25次之后，执行循环2
-循环2：
-（点击元素1，持续监测等待元素1-1的出现并点击，然后持续监测等待元素2的出现并点击，然后持续监测等待元素2-2的出现并点击。然后持续监测等待元素3的出现并点击，然后持续监测等待元素3-1的出现并点击。
-等待2-3s后在输入框1中随机输入0.000011-0.00003范围内的一个值。
-然后等待1-2s后点击元素4
-然后等待2-4s后点击元素5
-然后持续监测等待元素6的出现并点击
-然后持续检测并等待元素7出现之后，点击元素8）
-循环2执行随机15-25次之后，脚本结束
-
-注意事项：
-1.每一步骤之间设立随机延迟，脚本不要执行的过快
-2.每一次循环需要设置随机间隔
-3.仔细分析输入框属性，输入框输入的值必须真实有效，必须要触发输入事件，是后续步骤可以进行
-
-
-
-
-
-body > div.max-w-screen.h-dvh.max-h-dvh.flex.flex-col > div.flex.flex-1.overflow-y-auto.bg-background > div > div > div > div > div > div > div.flex.flex-col.h-full.w-full.justify-between.p-4.overflow-y-scroll > div.flex.flex-col.gap-2 > div:nth-child(1) > button:nth-child(1)
+二.脚本需要定时每隔5~10分钟点击一次stake元素2。
 
 
