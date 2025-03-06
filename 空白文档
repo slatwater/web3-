@@ -3,22 +3,51 @@
 数据部分：
 
 目标网址：https://app.testnet.initia.xyz/*
+操作一元素：
+A元素：//*[@id="mantine-yddfohk68-panel-all"]/div/div[1]/div[3]/div[1～4]/button
+操作二元素：
+B元素：//*[@id="mantine-ilvlu2evp-panel-all"]/div/div[2]/div[3]/div[3～5]/div[3]/div/button[1]
+操作三元素：
+标题元素：//*[@id="root"]/div/header/div/div/div/div[2]/div[1]/a[3]
+C元素：//*[@id="root"]/div/main/div/div/div/div[2]/div[1]/div/div/a[1～4]/div/div
+全程元素：
+输入框：<input class="_input-box_1056y_69 m_8fb7ebe7 mantine-Input-input mantine-TextInput-input" data-variant="filled" placeholder="0" name="quantity" token="[object Object]" maxcomponent="[object Object]" autocomplete="off" aria-invalid="false" id="mantine-qeidhjc4v" errormessage="">
+箭头：//*[@id="root"]/div/main/div/div/form/div[3]/div/div/button[2]/span/span[2]/svg
+进度条：
 
-swap元素：<span class="_label_iv1o6_37 m_811560b9 mantine-Button-label">Swap</span>
-stake元素1：<span class="_label_iv1o6_37 m_811560b9 mantine-Button-label">Stake</span>
-stake元素2：<p class="mantine-focus-auto m_b6d8b162 mantine-Text-root css-oj3v5z" data-inherit="true" style="font-size: calc(0.75rem * var(--mantine-scale)); font-weight: 600; text-transform: uppercase;">Stake</p>
-输入框元素：<input class="_input-box_1056y_69 m_8fb7ebe7 mantine-Input-input mantine-TextInput-input" data-variant="filled" placeholder="0" name="quantity" token="[object Object]" select="[object Object]" maxcomponent="[object Object]" autocomplete="off" aria-invalid="false" id="mantine-uz63e4s7m">
-箭头元素：<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="css-atimj3" style="transform: rotate(180deg);"><path fill="currentColor" fill-rule="evenodd" d="m3.626 8.012 6.081 6.08-1.414 1.415L.798 8.012 8.293.516l1.414 1.415z" clip-rule="evenodd"></path></svg>
-进度条元素：<div class="mantine-focus-auto _thumb_1xnd5_14 m_c9a9a60a mantine-Slider-thumb" tabindex="0" role="slider" aria-label="" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" style="--slider-thumb-offset: 0%;"></div>
-4选1元素：//*[@id="root"]/div/main/div/div/div/div[2]/div[1]/div/div/a[1~4]/div/div
+<div class="mantine-focus-auto _thumb_1xnd5_14 m_c9a9a60a mantine-Slider-thumb" tabindex="0" role="slider" aria-label="" aria-valuemax="100" aria-valuemin="0" aria-valuenow="100" style="--slider-thumb-offset: 100%;" data-dragging="true"><div class="_label_1xnd5_45 m_c9357328 mantine-Slider-label">100</div></div>
+<div class="_bar_1xnd5_9 m_38aeed47 mantine-Slider-bar" style="--slider-bar-width: calc(100% + var(--slider-size)); --slider-bar-offset: calc(0% - var(--slider-size));"></div>
 
-功能部分：
-
-一.脚本定时3s对页面进行快照并执行以下内容：
-1.页面是否存在swap元素、stake元素1、箭头元素、4选1元素，如果存在，首先判断元素的点击状态是否为可点击状态，然后再判断页面是否同一种元素存在多个，如果存在多个则随机挑选一个进行点击，如果只有一个则直接进行点击。
-2.页面是否存在输入框元素，如果存在，则随即输入0.000111~0.0003区间内的一个数字
-3.页面是否存在进度条元素，如果存在则将其的值设置为1%~10%区间内
-
-二.脚本需要定时每隔5~10分钟点击一次stake元素2。
+结束元素：<span class="_label_iv1o6_37 m_811560b9 mantine-Button-label">Go to My Page</span>
 
 
+功能需求：
+操作1:随机挑选元素A中的一个div[1～4]并进行点击
+操作2:随机挑选元素B中的一个div[3～5]并进行点击
+操作3:先点击标题元素，然后随机挑选元素B中的一个div[1～4]并进行点击
+脚本需要每次挑选操作1～3其中一个进行执行，每次操作结束的标志均为结束元素的出现。
+脚本需要全程定时每3s执行以下操作：
+1.检测是否存箭头元素，并判断箭头元素是否为可点击状态，如果可点击状态则进行点击
+2.检测是否存在输入框元素。如果存在，则对输入框输入0.000111～0.0003的随机数字
+3.检测是否存在进度条元素，如果存在，则将进度条的进度数值设置为10%～20%随机数值
+注意事项：
+仔细分析脚本需求，完成脚本
+
+
+//*[@id="root"]/div/main/div/div/form/div[3]/div/div/button/span/span[2]/svg
+//*[@id="root"]/div/main/div/div/div[2]/div/div/button/span/span[2]/svg
+//*[@id="root"]/div/main/div/div/form/div[3]/div/div/button[2]/span/span[2]/svg
+/html/body/div[1]/div/main/div/form/div[3]/div/div/button[2]/span/span[2]/svg
+
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="css-atimj3" style="transform: rotate(180deg);"><path fill="currentColor" fill-rule="evenodd" d="m3.626 8.012 6.081 6.08-1.414 1.415L.798 8.012 8.293.516l1.414 1.415z" clip-rule="evenodd"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="css-atimj3" style="transform: rotate(180deg);"><path fill="currentColor" fill-rule="evenodd" d="m3.626 8.012 6.081 6.08-1.414 1.415L.798 8.012 8.293.516l1.414 1.415z" clip-rule="evenodd"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="css-atimj3" style="transform: rotate(180deg);"><path fill="currentColor" fill-rule="evenodd" d="m3.626 8.012 6.081 6.08-1.414 1.415L.798 8.012 8.293.516l1.414 1.415z" clip-rule="evenodd"></path></svg>
+
+
+#root > div > main > div > div > form > div.css-2yab76 > div > div > button > span > span.m_a74036a.mantine-Button-section > svg
+#root > div > main > div > div > div.css-2yab76 > div > div > button > span > span.m_a74036a.mantine-Button-section > svg
+#root > div > main > div > div > form > div.css-2yab76 > div > div > button.mantine-focus-auto.mantine-active._root_iv1o6_1.css-yjlimx.m_77c9d27d.mantine-Button-root.m_87cf2631.mantine-UnstyledButton-root.css-ucqgpx > span > span.m_a74036a.mantine-Button-section > svg
+
+#root > div > main > div > div > div > div._scroll_1b5lc_41.m_d57069b5.mantine-ScrollArea-root > div.m_c0783ff9.mantine-ScrollArea-viewport > div > div > a:nth-child(3) > div > div
+#root > div > main > div > div > div > div._scroll_1b5lc_41.m_d57069b5.mantine-ScrollArea-root > div.m_c0783ff9.mantine-ScrollArea-viewport > div > div > a:nth-child(1) > div > div
+#root > div > main > div > div > div > div._scroll_1b5lc_41.m_d57069b5.mantine-ScrollArea-root > div.m_c0783ff9.mantine-ScrollArea-viewport > div > div > a:nth-child(1) > div > div
