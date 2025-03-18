@@ -15,20 +15,39 @@
 数据部分：
 
 目标网址：
+https://hub.beamable.network/modules/*
+元素1：//*[@id="sidebarScroll"]/div/div[1]/div[4]/div[2]/div[3]/div/a[1]/button
+元素1-1：a.h-full.flex.flex-col.justify-between.p-4
+元素1-2：#moduleGriddedContainer > div > div.flex.flex-col.gap-4 > div.lg\:h-full.flex.flex-col.xl\:flex-row.gap-2.sm\:gap-4.lg\:gap-8 > div.bg-content.flex.flex-col.py-4.px-6.gap-6.sm\:gap-8.h3.xl\:w-1\/2 > div.flex.flex-col.gap-6.sm\:gap-8.lg\:gap-6.false > button
+元素1-3：#headlessui-dialog-panel-\:r7\: > div.w-full > button
+元素1-4：#moduleGriddedContainer > div > div.xl\:col-span-2.flex.justify-between.items-center > a
+元素1-5：#moduleGriddedContainer > div > div.flex.flex-col.gap-4 > div.lg\:h-full.flex.flex-col.xl\:flex-row.gap-2.sm\:gap-4.lg\:gap-8 > div.bg-content.flex.flex-col.py-4.px-6.gap-6.sm\:gap-8.h3.xl\:w-1\/2 > div.flex.flex-col.gap-6.sm\:gap-8.lg\:gap-6.false > div > div > div:nth-child(2) > a
 
-区域1selector：
 
-元素1xpath：
+元素2：//*[@id="sidebarScroll"]/div/div[1]/div[4]/div[2]/div[3]/div/a[2]/button
+元素2-1：<div class="flex items-center whitespace-break-spaces transition-all duration-300 justify-center gap-2" style="font-family: Urbanist; font-size: 16px; font-weight: 400; letter-spacing: 0px; color: rgb(255, 255, 255);">Claim</div>
 
-小窗口1selector：
 
+
+元素3：//*[@id="sidebarScroll"]/div/div[2]/div/a/button/div
+元素3-1：<div class="flex items-center whitespace-break-spaces" style="font-family: &quot;DM Mono&quot;; font-size: 14px; font-weight: 400; letter-spacing: 0px; color: rgb(255, 255, 255);">RSVP Now</div>
+元素3-2：#actionMenu > div > div.button.text-center.m-4 > button > div
 
 功能部分：
 第一步：
+首先点击元素1，然后识别页面中存在多少个元素1-1，并遍历每个元素1-1的状态。并根据状态执行相应的操作：
+1.如果存在"Claimed"的状态，则跳过该元素，并继续下个元素的状态检查
+2.如果存在"Claimable"的状态，则进行点击该元素，然后等待元素1-2出现并进行点击，然后等待元素1-3出现并点击，然后点击元素4，然后继续下个元素的状态检查
+3.如果不存在任何状态信息，则进行点击该元素，然后等待元素1-5出现并进行点击，然后点击元素4，然后继续下个元素的状态检查
 
+所有的元素1-1状态遍历完毕后，进入第二步操作
 
 第二步：
+首先点击元素2，然后等待元素2-1出现并进行点击。执行完点击后进入第三步
 
-现在需要将脚本2合并至脚本1中，并添加communitygaming脚本结束时跳转至pentagon目标网址的功能。请仔细查看代码，并提供给我需要修改的代码部分以及嵌入的脚本2的完整代码部分，使我能够成功合并代码。无需提供合并后的完整代码
+第三步：
+首先点击元素3，然后判断页面中存在多少个元素3-1，并点击元素3-1，然后点击元素3-2.直至页面中不在存在元素3-1。脚本结束
+
+
 
 
