@@ -11,8 +11,8 @@
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://cess.network/deshareairdrop/*
 // @match        https://quest.redactedairways.com/*
-// @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
-// @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
+(// @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
+// @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js)
 // @grant        none
 // ==/UserScript==
 
