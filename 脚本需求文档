@@ -50,4 +50,20 @@ https://hub.beamable.network/modules/*
 
 
 
+制作一个新的tampermonkey脚本：
+目标网址：https://hub.talus.network/*
+元素1：//*[@id="modal-header-edit-profile"]/div/button/i
+元素2：#loyalty-quest-root-check_in > div > div.flex.items-center.gap-3.order-2.lg\:order-none > button
+元素3：#loyalty-quest-root-drip_x_new_tweet > div > div.flex.items-center.gap-3.order-2.lg\:order-none > a
 
+元素x-1：#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > header > div > div > div > div.css-175oi2r.r-1habvwh > div.css-175oi2r.r-e7q0ms.r-12kyg2d > a
+
+元素x-2：#layers > div:nth-child(2) > div > div > div > div > div > div.css-175oi2r.r-1ny4l3l.r-18u37iz.r-1pi2tsx.r-1777fci.r-1xcajam.r-ipm5af.r-g6jmlv.r-1habvwh > div.css-175oi2r.r-1wbh5a2.r-htvplk.r-1udh08x.r-1867qdf.r-rsyp9y.r-1pjcn9w.r-1potc6q > div > div > div > div:nth-child(3) > div.css-175oi2r.r-1h8ys4a.r-dq6lxq.r-hucgq0 > div:nth-child(1) > div > div > div > div.css-175oi2r.r-18u37iz.r-184en5c > div.css-175oi2r.r-1iusvr4.r-16y2uox.r-1777fci.r-1h8ys4a.r-1bylmt5.r-13tjlyg.r-7qyjyx.r-1ftll1t > div > div > div > div > div > div > div > div > div > div > div > div > div.css-175oi2r.r-1wbh5a2.r-16y2uox > div > div > div > div > div > div.DraftEditor-editorContainer > div
+
+元素x-3：#layers > div:nth-child(2) > div > div > div > div > div > div.css-175oi2r.r-1ny4l3l.r-18u37iz.r-1pi2tsx.r-1777fci.r-1xcajam.r-ipm5af.r-g6jmlv.r-1habvwh > div.css-175oi2r.r-1wbh5a2.r-htvplk.r-1udh08x.r-1867qdf.r-rsyp9y.r-1pjcn9w.r-1potc6q > div > div > div > div:nth-child(3) > div.css-175oi2r.r-1h8ys4a.r-dq6lxq.r-hucgq0 > div:nth-child(1) > div > div > div > div.css-175oi2r.r-kemksi.r-jumn1c.r-xd6kpl.r-gtdqiz.r-ipm5af.r-184en5c > div:nth-child(2) > div > div > div > button.css-175oi2r.r-sdzlij.r-1phboty.r-rs99b7.r-lrvibr.r-1cwvpvk.r-2yi16.r-1qi8awa.r-3pj75a.r-1loqt21.r-o7ynqc.r-6416eg.r-1ny4l3l
+
+功能需求：
+第一步：
+首先点击元素1，然后点击元素2，然后在点击元素3，然后进入第二步
+第二步：
+额外新打开一个网页：https://x.com/home。在该网页中先点击元素x-1，然后再输入框元素x-2中
