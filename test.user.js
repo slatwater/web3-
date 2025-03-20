@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg 和 XtremeVerse 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -142,7 +142,7 @@
             log(`点击任务按钮 ${randomIndex + 1}...`);
             selectedButton.click();
 
-            const smallWindow1Selector = 'body > div:nth-child(8) > div > div > div > div';
+            const smallWindow1Selector = 'body > div:nth-child(10) > div > div > div > div';
             try {
                 await waitForSelector(smallWindow1Selector, 5000);
                 log('小窗口1已出现。');
@@ -177,7 +177,7 @@
         element3.click();
         log('点击Spin按钮，等待小窗口2...');
 
-        const smallWindow2Selector = 'body > div.ReactModalPortal > div > div > div > div';
+        const smallWindow2Selector = 'body > div:nth-child(8) > div > div > div > div';
         try {
             await waitForSelector(smallWindow2Selector, 10000);
             const element4Selector = `${smallWindow2Selector} > button.spin-btn`;
