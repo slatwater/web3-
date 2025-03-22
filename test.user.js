@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.3
-// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg 和 XtremeVerse 页面上的任务，调整跳转间隔为5-10秒，优化SideQuest小窗口1处理
+// @version      1.4
+// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg 和 XtremeVerse 页面上的任务，修复URL匹配和小窗口1识别问题
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
@@ -19,7 +19,7 @@
 
     // 日志输出函数
     function log(message) {
-        console.log(`[自动化脚本 v1.3] ${message}`);
+        console.log(`[自动化脚本 v1.4] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -51,7 +51,7 @@
     async function main() {
         log('脚本启动，等待页面加载...');
         await waitForPageLoad();
-        await randomDelay(1000, 3000); // 初始随机延迟1-3秒
+        await randomDelay(1000, 3000);
 
         const currentURL = window.location.href;
         log(`当前页面URL: ${currentURL}`);
@@ -70,7 +70,7 @@
     // 脚本0：Avalon Quests 自动化操作
     async function executeScript0() {
         log('执行 Avalon Quests 自动化脚本...');
-        const maxWaitTime = 20000; // 20秒超时
+        const maxWaitTime = 20000;
         const startTime = Date.now();
         let buttonFound = false;
 
@@ -125,7 +125,7 @@
         window.location.href = 'https://sidequest.rcade.game/quests';
     }
 
-    // 脚本3：SideQuest 自动化操作（优化版）
+    // 脚本3：SideQuest 自动化操作
     async function executeScript3() {
         log('执行 SideQuest 自动化脚本...');
 
@@ -152,25 +152,28 @@
             log(`点击任务按钮 ${randomIndex + 1}...`);
             selectedButton.click();
 
-            // 优化小窗口1定位
-            async function findSmallWindow1(timeout = 10000) { // 延长超时到10秒
+            // 恢复并优化小窗口1定位
+            async function findSmallWindow1(timeout = 10000) {
                 const startTime = Date.now();
                 while (Date.now() - startTime < timeout) {
                     const potentialWindows = document.querySelectorAll('body > div');
-                    log(`扫描弹出窗口数量: ${potentialWindows.length}`);
                     for (const div of potentialWindows) {
-                        // 检查是否有按钮容器或类似模态窗口的结构
-                        const buttonContainer = div.querySelector('div > div > div.btn-container > button') ||
-                                               div.querySelector('button'); // 放宽条件
+                        const buttonContainer = div.querySelector('div > div > div.btn-container > button');
                         if (buttonContainer) {
-                            const modalContent = div.querySelector('div > div > div');
-                            if (modalContent) {
-                                log('动态定位到小窗口1');
-                                return modalContent;
-                            }
+                            log('动态定位到小窗口1');
+                            return div.querySelector('div > div > div');
                         }
                     }
                     await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                log('未找到小窗口1，尝试备用定位...');
+                // 备用定位：检查包含按钮的模态窗口
+                const modals = document.querySelectorAll('body > div');
+                for (const modal of modals) {
+                    if (modal.querySelector('button') && modal.style.display !== 'none') {
+                        log('使用备用定位找到小窗口1');
+                        return modal.querySelector('div > div > div') || modal;
+                    }
                 }
                 throw new Error('未找到小窗口1');
             }
@@ -181,18 +184,12 @@
                 await randomDelay(1000, 2000);
 
                 const element1Selector = 'div.btn-container > button';
-                let element1Button;
-                try {
-                    element1Button = await waitForSelector(element1Selector, 10000, smallWindow1);
-                } catch (e) {
-                    log(`未找到元素1按钮，使用备用选择器: ${e.message}`);
-                    element1Button = await waitForSelector('button', 10000, smallWindow1); // 备用选择器
-                }
+                const element1Button = await waitForSelector(element1Selector, 10000, smallWindow1);
                 element1Button.click();
                 log('点击小窗口1中的按钮，等待消失...');
                 await new Promise(resolve => {
                     const check = setInterval(() => {
-                        if (!smallWindow1.querySelector(element1Selector) && !smallWindow1.querySelector('button')) {
+                        if (!smallWindow1.querySelector(element1Selector)) {
                             clearInterval(check);
                             resolve();
                         }
@@ -206,7 +203,7 @@
                 log('点击小窗口1中的关闭按钮。');
             } catch (error) {
                 log(`小窗口1处理失败: ${error.message}，延迟后继续循环...`);
-                await randomDelay(2000, 4000); // 失败后延迟，避免卡顿
+                await randomDelay(2000, 4000); // 失败后延迟
             }
             await randomDelay(2000, 4000);
         }
@@ -344,7 +341,7 @@
         } else throw new Error('未找到元素2。');
 
         await randomDelay(1000, 3000);
-        const dialogSelector = 'div[id^="dialog-"]:not([aria-hidden="true"])';
+        const dialogSelector = 'div[id^="dialog-"]:not([aria(hidden="true"])';
         const dialog = await waitForSelector(dialogSelector, 10000);
         log('对话框已出现。');
 
