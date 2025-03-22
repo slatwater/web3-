@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.1
-// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg 和 XtremeVerse 页面上的任务
+// @version      1.2
+// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg 和 XtremeVerse 页面上的任务，调整跳转间隔为5-10秒
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
@@ -19,7 +19,7 @@
 
     // 日志输出函数
     function log(message) {
-        console.log(`[自动化脚本 v1.0] ${message}`);
+        console.log(`[自动化脚本 v1.2] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -37,10 +37,10 @@
     }
 
     // 等待元素出现
-    async function waitForSelector(selector, timeout = 20000) {
+    async function waitForSelector(selector, timeout = 20000, context = document) {
         const start = Date.now();
         while (Date.now() - start < timeout) {
-            const element = document.querySelector(selector);
+            const element = context.querySelector(selector);
             if (element) return element;
             await new Promise(resolve => setTimeout(resolve, 500));
         }
@@ -81,7 +81,7 @@
                 collectButton.click();
                 log('Collect按钮已点击，跳转至 Glob Shaga 页面。');
                 buttonFound = true;
-                await randomDelay(2000, 4000);
+                await randomDelay(5000, 10000); // 调整为5-10秒
                 window.location.href = 'https://glob.shaga.xyz/main';
             } else {
                 log('未找到Collect按钮，继续等待...');
@@ -90,9 +90,9 @@
         }
 
         if (!buttonFound) {
-            log('20秒超时，未找到Collect按钮，刷新页面...');
-            await randomDelay(1000, 2000);
-            window.location.href = 'https://glob.shaga.xyz/main'; // 超时也跳转
+            log('20秒超时，未找到Collect按钮，跳转至 Glob Shaga 页面...');
+            await randomDelay(5000, 10000); // 调整为5-10秒
+            window.location.href = 'https://glob.shaga.xyz/main';
         }
     }
 
@@ -120,15 +120,25 @@
         } else {
             log('未找到SPIN按钮或不可点击，跳转至 SideQuest 页面。');
         }
-        await randomDelay(2000, 4000);
+        await randomDelay(5000, 10000); // 调整为5-10秒
         window.location.href = 'https://sidequest.rcade.game/quests';
     }
 
-    // 脚本3：SideQuest 自动化操作
+    // 脚本3：SideQuest 自动化操作（替换为修复版本）
     async function executeScript3() {
         log('执行 SideQuest 自动化脚本...');
+
+        // 等待任务列表
         const missionListSelector = '#root > div > div > div.main > div.content.undefined > div > div.mission-list';
-        const missionList = await waitForSelector(missionListSelector);
+        let missionList;
+        try {
+            missionList = await waitForSelector(missionListSelector);
+        } catch (error) {
+            log(`任务列表未找到: ${error.message}，跳转至 Forge.gg 页面`);
+            await randomDelay(5000, 10000); // 调整为5-10秒
+            window.location.href = 'https://forge.gg/quests';
+            return;
+        }
 
         while (true) {
             const buttons = missionList.querySelectorAll('button');
@@ -142,19 +152,35 @@
             log(`点击任务按钮 ${randomIndex + 1}...`);
             selectedButton.click();
 
-            const smallWindow1Selector = 'body > div:nth-child(10) > div > div > div > div';
+            // 动态定位小窗口1
+            async function findSmallWindow1(timeout = 5000) {
+                const startTime = Date.now();
+                while (Date.now() - startTime < timeout) {
+                    const potentialWindows = document.querySelectorAll('body > div');
+                    for (const div of potentialWindows) {
+                        const buttonContainer = div.querySelector('div > div > div.btn-container > button');
+                        if (buttonContainer) {
+                            log('动态定位到小窗口1');
+                            return div.querySelector('div > div > div');
+                        }
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                throw new Error('未找到小窗口1');
+            }
+
             try {
-                await waitForSelector(smallWindow1Selector, 5000);
+                const smallWindow1 = await findSmallWindow1(5000);
                 log('小窗口1已出现。');
                 await randomDelay(1000, 2000);
 
-                const element1Selector = `${smallWindow1Selector} > div:nth-child(3) > div > div > div.btn-container > button`;
-                const element1Button = await waitForSelector(element1Selector, 10000);
+                const element1Selector = 'div.btn-container > button';
+                const element1Button = await waitForSelector(element1Selector, 10000, smallWindow1);
                 element1Button.click();
                 log('点击小窗口1中的按钮，等待消失...');
                 await new Promise(resolve => {
                     const check = setInterval(() => {
-                        if (!document.querySelector(element1Selector)) {
+                        if (!smallWindow1.querySelector(element1Selector)) {
                             clearInterval(check);
                             resolve();
                         }
@@ -162,23 +188,23 @@
                     setTimeout(() => { clearInterval(check); resolve(); }, 30000);
                 });
 
-                const element2Selector = `${smallWindow1Selector} > button > img`;
-                const element2 = await waitForSelector(element2Selector, 10000);
+                const element2Selector = 'button > img';
+                const element2 = await waitForSelector(element2Selector, 10000, smallWindow1);
                 element2.click();
                 log('点击小窗口1中的关闭按钮。');
             } catch (error) {
-                log('小窗口1处理失败，继续循环...');
+                log(`小窗口1处理失败: ${error.message}，继续循环...`);
             }
             await randomDelay(2000, 4000);
         }
 
         const element3Selector = '#root > div > div > div.main > div.content.undefined > div > div.spin-container > div > button';
-        const element3 = await waitForSelector(element3Selector, 10000);
-        element3.click();
-        log('点击Spin按钮，等待小窗口2...');
-
-        const smallWindow2Selector = 'body > div:nth-child(8) > div > div > div > div';
         try {
+            const element3 = await waitForSelector(element3Selector, 10000);
+            element3.click();
+            log('点击Spin按钮，等待小窗口2...');
+
+            const smallWindow2Selector = 'body > div:nth-child(8) > div > div > div > div';
             await waitForSelector(smallWindow2Selector, 10000);
             const element4Selector = `${smallWindow2Selector} > button.spin-btn`;
             const element4 = await waitForSelector(element4Selector, 10000);
@@ -199,11 +225,11 @@
             element5.click();
             log('关闭小窗口2。');
         } catch (error) {
-            log('小窗口2处理失败，继续执行...');
+            log(`小窗口2处理失败: ${error.message}，继续执行...`);
         }
 
         log('SideQuest 脚本执行完毕，跳转至 Forge.gg 页面。');
-        await randomDelay(2000, 4000);
+        await randomDelay(5000, 10000); // 调整为5-10秒
         window.location.href = 'https://forge.gg/quests';
     }
 
@@ -261,7 +287,7 @@
         });
 
         log('barValue已变化，跳转至 XtremeVerse 页面。');
-        await randomDelay(2000, 4000);
+        await randomDelay(5000, 10000); // 调整为5-10秒
         window.location.href = 'https://xnet.xtremeverse.xyz/earn?index=1';
     }
 
@@ -324,6 +350,7 @@
         }
 
         log('XtremeVerse 脚本执行完毕，脚本结束。');
+        // 无后续跳转，此脚本为最后一个
     }
 
     // 执行主函数
