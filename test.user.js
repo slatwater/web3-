@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg 和 XtremeVerse 页面上的任务，修复URL匹配和小窗口1识别问题
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -345,7 +345,7 @@
         const dialog = await waitForSelector(dialogSelector, 10000);
         log('对话框已出现。');
 
-        const element3XPath = '//*[@id="dialog-:r0:"]/div/div/div/div/div/div[3]/div[1]/div/button/span';
+        const element3XPath = '//*[@id="dialog-:r0:"]/div/div/div/div/div/div[3]/div[1]/svg/path';
         while (true) {
             const element3Span = document.evaluate(element3XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
             if (!element3Span || !document.querySelector(dialogSelector)) break;
