@@ -2,7 +2,7 @@
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse
 // @namespace    http://tampermonkey.net/
 // @version      1.6
-// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg 和 XtremeVerse 页面上的任务，修复URL匹配和小窗口1识别问题
+// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg 和 XtremeVerse 页面上的任务，修复XtremeVerse对话框选择器错误
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
@@ -19,7 +19,7 @@
 
     // 日志输出函数
     function log(message) {
-        console.log(`[自动化脚本 v1.4] ${message}`);
+        console.log(`[自动化脚本 v1.5] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -50,6 +50,7 @@
     // 主函数
     async function main() {
         log('脚本启动，等待页面加载...');
+        log('确认脚本版本：v1.5');
         await waitForPageLoad();
         await randomDelay(1000, 3000);
 
@@ -152,7 +153,6 @@
             log(`点击任务按钮 ${randomIndex + 1}...`);
             selectedButton.click();
 
-            // 恢复并优化小窗口1定位
             async function findSmallWindow1(timeout = 10000) {
                 const startTime = Date.now();
                 while (Date.now() - startTime < timeout) {
@@ -164,16 +164,14 @@
                             return div.querySelector('div > div > div');
                         }
                     }
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                }
-                log('未找到小窗口1，尝试备用定位...');
-                // 备用定位：检查包含按钮的模态窗口
-                const modals = document.querySelectorAll('body > div');
-                for (const modal of modals) {
-                    if (modal.querySelector('button') && modal.style.display !== 'none') {
-                        log('使用备用定位找到小窗口1');
-                        return modal.querySelector('div > div > div') || modal;
+                    for (const div of potentialWindows) {
+                        const anyButton = div.querySelector('button:not([disabled])');
+                        if (anyButton && div.style.display !== 'none') {
+                            log('使用备用定位找到小窗口1');
+                            return div.querySelector('div > div > div') || div;
+                        }
                     }
+                    await new Promise(resolve => setTimeout(resolve, 500));
                 }
                 throw new Error('未找到小窗口1');
             }
@@ -203,7 +201,7 @@
                 log('点击小窗口1中的关闭按钮。');
             } catch (error) {
                 log(`小窗口1处理失败: ${error.message}，延迟后继续循环...`);
-                await randomDelay(2000, 4000); // 失败后延迟
+                await randomDelay(2000, 4000);
             }
             await randomDelay(2000, 4000);
         }
@@ -301,7 +299,7 @@
         window.location.href = 'https://xnet.xtremeverse.xyz/earn?index=1';
     }
 
-    // 脚本6：XtremeVerse 自动化操作
+    // 脚本6：XtremeVerse 自动化操作（修复版）
     async function executeScript6() {
         log('执行 XtremeVerse 自动化脚本...');
         const element1XPath = '//*[@id="bodyNode"]/div[4]/div[1]/div/div[1]/div[2]/div[2]';
@@ -341,22 +339,31 @@
         } else throw new Error('未找到元素2。');
 
         await randomDelay(1000, 3000);
-        const dialogSelector = 'div[id^="dialog-"]:not([aria(hidden="true"])';
-        const dialog = await waitForSelector(dialogSelector, 10000);
-        log('对话框已出现。');
+        const dialogSelector = 'div[id^="dialog-"]:not([aria-hidden="true"])'; // 修复选择器
+        let dialog;
+        try {
+            dialog = await waitForSelector(dialogSelector, 10000);
+            log('对话框已出现。');
+        } catch (error) {
+            log(`对话框等待失败: ${error.message}，继续执行...`);
+        }
 
-        const element3XPath = '//*[@id="dialog-:r1:"]/div/div/div/div/div/div[3]/div[1]/svg/path';
-        while (true) {
-            const element3Span = document.evaluate(element3XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-            if (!element3Span || !document.querySelector(dialogSelector)) break;
-            const button = element3Span.closest('button');
-            if (button) {
-                button.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                await randomDelay(500, 1500);
-                button.click();
-                log('点击元素3。');
-                await randomDelay(1000, 2000);
+        if (dialog) {
+            const element3XPath = '//*[@id="dialog-:r0:"]/div/div/div/div/div/div[3]/div[1]/div/button/span';
+            while (true) {
+                const element3Span = document.evaluate(element3XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (!element3Span || !document.querySelector(dialogSelector)) break;
+                const button = element3Span.closest('button');
+                if (button) {
+                    button.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    await randomDelay(500, 1500);
+                    button.click();
+                    log('点击元素3。');
+                    await randomDelay(1000, 2000);
+                }
             }
+        } else {
+            log('未找到对话框，跳过元素3处理。');
         }
 
         log('XtremeVerse 脚本执行完毕，脚本结束。');
