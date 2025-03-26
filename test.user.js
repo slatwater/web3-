@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable
 // @namespace    http://tampermonkey.net/
-// @version      1.8
+// @version      2.0
 // @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp 和 Beamable 页面上的任务，新增KlokApp Automation
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -430,7 +430,7 @@
 
         try {
             // 循环10次
-            for (let i = 1; i <= 10; i++) {
+            for (let i = 1; i <= 12; i++) {
                 log(`开始第 ${i} 次循环...`);
 
                 // 每次循环重新获取按钮（使用XPath）
@@ -448,7 +448,7 @@
                 simulateClick(selectedButton);
 
                 // 等待5-8秒
-                await randomDelay(5000, 8000);
+                await randomDelay(8000, 10000);
 
                 // 点击元素2
                 try {
