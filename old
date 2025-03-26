@@ -1,23 +1,26 @@
 // ==UserScript==
-// @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse
+// @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、Beamable
 // @namespace    http://tampermonkey.net/
-// @version      1.6
-// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg 和 XtremeVerse 页面上的任务，修复XtremeVerse对话框选择器错误
+// @version      1.7
+// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse 和 Beamable 页面上的任务，新增Beamable Hub自动化
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
 // @match        https://sidequest.rcade.game/*
 // @match        https://forge.gg/quests
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
+// @match        https://hub.beamable.network/modules/*
+// @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
+// @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @grant        none
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-    // 日志输出函数
+    // 日志输出函数（统一日志格式）
     function log(message) {
-        console.log(`[自动化脚本 v1.5] ${message}`);
+        console.log(`[自动化脚本 v1.6] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -34,7 +37,7 @@
         });
     }
 
-    // 等待元素出现
+    // 等待元素出现（用于已有脚本）
     async function waitForSelector(selector, timeout = 20000, context = document) {
         const start = Date.now();
         while (Date.now() - start < timeout) {
@@ -48,7 +51,7 @@
     // 主函数
     async function main() {
         log('脚本启动，等待页面加载...');
-        log('确认脚本版本：v1.5');
+        log('确认脚本版本：v1.6');
         await waitForPageLoad();
         await randomDelay(1000, 3000);
 
@@ -60,6 +63,7 @@
             else if (currentURL.includes('sidequest.rcade.game')) await executeScript3();
             else if (currentURL.includes('forge.gg/quests')) await executeScript4();
             else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) await executeScript6();
+            else if (currentURL.includes('hub.beamable.network/modules')) await executeScript7();
             else log('当前页面不在脚本处理范围内。');
         } catch (error) {
             log(`脚本执行出错: ${error.message}`);
@@ -297,7 +301,7 @@
         window.location.href = 'https://xnet.xtremeverse.xyz/earn?index=1';
     }
 
-    // 脚本6：XtremeVerse 自动化操作（修复版）
+    // 脚本6：XtremeVerse 自动化操作
     async function executeScript6() {
         log('执行 XtremeVerse 自动化脚本...');
         const element1XPath = '//*[@id="bodyNode"]/div[4]/div[1]/div/div[1]/div[2]/div[2]';
@@ -337,7 +341,7 @@
         } else throw new Error('未找到元素2。');
 
         await randomDelay(1000, 3000);
-        const dialogSelector = 'div[id^="dialog-"]:not([aria-hidden="true"])'; // 修复选择器
+        const dialogSelector = 'div[id^="dialog-"]:not([aria-hidden="true"])';
         let dialog;
         try {
             dialog = await waitForSelector(dialogSelector, 10000);
@@ -364,7 +368,309 @@
             log('未找到对话框，跳过元素3处理。');
         }
 
-        log('XtremeVerse 脚本执行完毕，脚本结束。');
+        log('XtremeVerse 脚本执行完毕，跳转至 Beamable Hub 页面。');
+        await randomDelay(5000, 10000);
+        window.location.href = 'https://hub.beamable.network/modules/questsold';
+    }
+
+    // 脚本7：Beamable Hub 自动化操作
+    async function executeScript7() {
+        log('执行 Beamable Hub 自动化脚本...');
+
+        // Beamable专用的等待元素可见函数
+        const waitForVisibleElement = (selector, timeout = 60000, retries = 5) => {
+            return new Promise((resolve) => {
+                let attempt = 0;
+                const checkElement = () => {
+                    const element = document.querySelector(selector);
+                    if (element && element.isConnected && (element.offsetParent !== null || getComputedStyle(element).display !== 'none')) {
+                        observer.disconnect();
+                        log(`找到可见元素 ${selector}, 文本: ${element.textContent.trim()}`);
+                        resolve(element);
+                    } else if (attempt >= retries) {
+                        observer.disconnect();
+                        log(`元素 ${selector} 在 ${retries} 次重试后仍不可见`);
+                        resolve(null);
+                    } else {
+                        attempt++;
+                        log(`等待 ${selector}，第 ${attempt} 次重试`);
+                        setTimeout(checkElement, 2000);
+                    }
+                };
+
+                const observer = new MutationObserver(checkElement);
+                observer.observe(document.body, { childList: true, subtree: true });
+                checkElement();
+
+                setTimeout(() => {
+                    observer.disconnect();
+                    log(`元素 ${selector} 在 ${timeout}ms 内未找到或不可见`);
+                    resolve(null);
+                }, timeout);
+            });
+        };
+
+        // Beamable专用的安全点击函数
+        const safeClick = async (element, description, waitSelector = null, maxAttempts = 3) => {
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                if (!element || !element.isConnected) {
+                    log(`未找到或已断开 ${description} (尝试 ${attempt}/${maxAttempts})`);
+                    if (attempt === maxAttempts) {
+                        log(`重试次数超过 ${maxAttempts}，重新定向到 https://hub.beamable.network/modules/questsold`);
+                        window.location.href = 'https://hub.beamable.network/modules/questsold';
+                    }
+                    return false;
+                }
+
+                const isVisible = element.offsetParent !== null && getComputedStyle(element).display !== 'none';
+                log(`${description} 可见性检查: display=${getComputedStyle(element).display}, offsetParent=${element.offsetParent !== null}, isConnected=${element.isConnected}`);
+
+                if (isVisible || element.isConnected) {
+                    log(`点击 ${description} (尝试 ${attempt}/${maxAttempts})`);
+                    element.dispatchEvent(new Event('click', { bubbles: true, cancelable: true }));
+                    await randomDelay(3000, 5000);
+
+                    if (waitSelector) {
+                        const nextElement = await waitForVisibleElement(waitSelector);
+                        if (nextElement) {
+                            log(`${description} 点击成功，${waitSelector} 已加载`);
+                            return nextElement;
+                        } else {
+                            log(`${description} 点击后未加载 ${waitSelector} (尝试 ${attempt}/${maxAttempts})`);
+                            if (attempt === maxAttempts) {
+                                log(`重试次数超过 ${maxAttempts}，重新定向到 https://hub.beamable.network/modules/questsold`);
+                                window.location.href = 'https://hub.beamable.network/modules/questsold';
+                                return null;
+                            }
+                            await randomDelay(5000, 7000);
+                            continue;
+                        }
+                    }
+                    return true;
+                } else {
+                    log(`不可见 ${description}，尝试等待 (尝试 ${attempt}/${maxAttempts})`);
+                    const visibleElement = await waitForVisibleElement('a.h-full.flex.flex-col.justify-between.p-4');
+                    if (visibleElement && visibleElement.innerText.includes(element.innerText)) {
+                        log(`重新找到并点击 ${description}`);
+                        visibleElement.dispatchEvent(new Event('click', { bubbles: true, cancelable: true }));
+                        await randomDelay(3000, 5000);
+                        if (waitSelector) {
+                            const nextElement = await waitForVisibleElement(waitSelector);
+                            if (nextElement) {
+                                log(`${description} 点击成功，${waitSelector} 已加载`);
+                                return nextElement;
+                            }
+                        }
+                        return true;
+                    }
+                    if (attempt === maxAttempts) {
+                        log(`重试次数超过 ${maxAttempts}，重新定向到 https://hub.beamable.network/modules/questsold`);
+                        window.location.href = 'https://hub.beamable.network/modules/questsold';
+                        return false;
+                    }
+                    await randomDelay(5000, 7000);
+                }
+            }
+            return false;
+        };
+
+        // Beamable专用的等待元素列表函数
+        const waitForElementList = async (maxWait = 60000) => {
+            const startTime = Date.now();
+            while (Date.now() - startTime < maxWait) {
+                const elements = document.querySelectorAll('a.h-full.flex.flex-col.justify-between.p-4');
+                if (elements.length > 0) {
+                    log(`元素列表已恢复，找到 ${elements.length} 个元素`);
+                    return elements;
+                }
+                log('元素列表为空，等待恢复...');
+                await randomDelay(2000, 4000);
+            }
+            log(`元素列表在 ${maxWait}ms 内未恢复，退出脚本`);
+            return [];
+        };
+
+        // 前置步骤：点击元素0
+        try {
+            const element0Selector = '.transition-all.duration-300.w-full.cursor-pointer.flex.items-center.h-10.min-h-10';
+            const potentialElements0 = document.querySelectorAll(element0Selector);
+            log(`找到 ${potentialElements0.length} 个潜在元素0`);
+            let element0 = Array.from(potentialElements0).find(el => el.textContent.trim().includes('Earn Points'));
+
+            if (!element0) {
+                log('未找到包含 "Earn Points" 的元素0，尝试等待');
+                element0 = await waitForVisibleElement(element0Selector);
+                if (element0 && !element0.textContent.trim().includes('Earn Points')) {
+                    log('找到元素0，但文本不包含 "Earn Points"');
+                    element0 = null;
+                }
+            }
+
+            if (element0) {
+                await safeClick(element0, '元素0');
+                await randomDelay(1500, 3000);
+            } else {
+                log('最终未找到包含 "Earn Points" 的元素0，继续执行后续步骤');
+                await randomDelay(1500, 3000);
+            }
+        } catch (e) {
+            log(`点击元素0出错: ${e.message}`);
+            await randomDelay(1500, 3000);
+        }
+
+        // 第一步：处理元素1和元素1-1
+        try {
+            const element1Selector = '.transition-all.duration-300.w-full.cursor-pointer.flex.items-center.h-10.min-h-10';
+            const potentialElements1 = document.querySelectorAll(element1Selector);
+            log(`找到 ${potentialElements1.length} 个潜在元素1`);
+            let element1 = null;
+            for (const el of potentialElements1) {
+                const text = el.textContent.trim();
+                log(`检查元素1候选: ${text}`);
+                if (text === 'Quests') {
+                    element1 = el;
+                    break;
+                }
+            }
+
+            if (!element1) {
+                log('未找到文本为 "Quests" 的元素1，尝试等待');
+                element1 = await waitForVisibleElement(element1Selector);
+                if (element1 && element1.textContent.trim() !== 'Quests') {
+                    log('找到元素1，但文本不是 "Quests"');
+                    element1 = null;
+                }
+            }
+
+            if (!element1) throw new Error('元素1 未找到');
+            await safeClick(element1, '元素1');
+            await randomDelay(5000, 7000);
+
+            let elementList = await waitForElementList();
+            log(`找到 ${elementList.length} 个元素1-1`);
+
+            for (let i = 0; i < elementList.length; i++) {
+                elementList = await waitForElementList();
+                if (i >= elementList.length) {
+                    log('元素列表已耗尽，退出循环');
+                    break;
+                }
+
+                const element = elementList[i];
+                const innerText = element.innerText.trim();
+                log(`元素内容: ${innerText}`);
+
+                const claimedStatus = element.querySelector('span.p3')?.textContent.trim() === 'Claimed';
+                const claimableStatus = innerText.includes('Claimable') || element.querySelector('button')?.textContent.includes('Claimable') || element.querySelector('.claimable');
+                const taskDescription = element.querySelector('.h3.line-clamp-3')?.textContent.trim() || '未知任务';
+
+                if (claimedStatus) {
+                    log(`跳过已领取元素: ${taskDescription}`);
+                    continue;
+                }
+
+                if (claimableStatus) {
+                    log(`检测到Claimable状态: ${taskDescription}`);
+                    const clicked = await safeClick(element, `Claimable元素: ${taskDescription}`,
+                        '#moduleGriddedContainer > div > div.flex.flex-col.gap-4 > div.lg\\:h-full.flex.flex-col.xl\\:flex-row.gap-2.sm\\:gap-4.lg\\:gap-8 > div.bg-content.flex.flex-col.py-4.px-6.gap-6.sm\\:gap-8.h3.xl\\:w-1\\/2 > div.flex.flex-col.gap-6.sm\\:gap-8.lg\\:gap-6.false > button');
+                    if (!clicked) continue;
+
+                    const element1_2 = await waitForVisibleElement('#moduleGriddedContainer > div > div.flex.flex-col.gap-4 > div.lg\\:h-full.flex.flex-col.xl\\:flex-row.gap-2.sm\\:gap-4.lg\\:gap-8 > div.bg-content.flex.flex-col.py-4.px-6.gap-6.sm\\:gap-8.h3.xl\\:w-1\\/2 > div.flex.flex-col.gap-6.sm\\:gap-8.lg\\:gap-6.false > button');
+                    if (!element1_2) continue;
+                    const clicked1_2 = await safeClick(element1_2, '元素1-2',
+                        'div.w-full > button');
+                    if (!clicked1_2) continue;
+
+                    const element1_3 = await waitForVisibleElement('div.w-full > button');
+                    if (!element1_3) continue;
+                    const clicked1_3 = await safeClick(element1_3, '元素1-3');
+                    if (!clicked1_3) continue;
+
+                    const element1_4 = await waitForVisibleElement('#moduleGriddedContainer > div > div.xl\\:col-span-2.flex.justify-between.items-center > a');
+                    if (!element1_4) continue;
+                    await safeClick(element1_4, '元素1-4');
+                } else {
+                    log(`检测到无状态: ${taskDescription}`);
+                    const clicked = await safeClick(element, `无状态元素: ${taskDescription}`,
+                        '#moduleGriddedContainer > div > div.flex.flex-col.gap-4 > div.lg\\:h-full.flex.flex-col.xl\\:flex-row.gap-2.sm\\:gap-4.lg\\:gap-8 > div.bg-content.flex.flex-col.py-4.px-6.gap-6.sm\\:gap-8.h3.xl\\:w-1\\/2 > div.flex.flex-col.gap-6.sm\\:gap-8.lg\\:gap-6.false > div > div > div:nth-child(2) > a');
+                    if (!clicked) continue;
+
+                    const element1_5 = await waitForVisibleElement('#moduleGriddedContainer > div > div.flex.flex-col.gap-4 > div.lg\\:h-full.flex.flex-col.xl\\:flex-row.gap-2.sm\\:gap-4.lg\\:gap-8 > div.bg-content.flex.flex-col.py-4.px-6.gap-6.sm\\:gap-8.h3.xl\\:w-1\\/2 > div.flex.flex-col.gap-6.sm\\:gap-8.lg\\:gap-6.false > div > div > div:nth-child(2) > a');
+                    if (!element1_5) continue;
+                    const clicked1_5 = await safeClick(element1_5, '元素1-5');
+                    if (!clicked1_5) continue;
+
+                    const element1_4 = await waitForVisibleElement('#moduleGriddedContainer > div > div.xl\\:col-span-2.flex.justify-between.items-center > a');
+                    if (!element1_4) continue;
+                    await safeClick(element1_4, '元素1-4');
+                }
+                await randomDelay(5000, 7000);
+            }
+        } catch (e) {
+            log(`第一步出错: ${e.message}`);
+        }
+
+        // 第二步：处理元素2和元素2-1
+        try {
+            const element2Selector = '.transition-all.duration-300.w-full.cursor-pointer.flex.items-center.h-10.min-h-10';
+            const potentialElements2 = document.querySelectorAll(element2Selector);
+            log(`找到 ${potentialElements2.length} 个潜在元素2`);
+            let element2 = null;
+            for (const el of potentialElements2) {
+                const text = el.textContent.trim();
+                log(`检查元素2候选: ${text}`);
+                if (text === 'Dailies') {
+                    element2 = el;
+                    break;
+                }
+            }
+
+            if (!element2) {
+                log('未找到文本为 "Dailies" 的元素2，尝试等待');
+                element2 = await waitForVisibleElement(element2Selector);
+                if (element2 && element2.textContent.trim() !== 'Dailies') {
+                    log('找到元素2，但文本不是 "Dailies"');
+                    element2 = null;
+                }
+            }
+
+            if (!element2) throw new Error('元素2 未找到');
+            await safeClick(element2, '元素2');
+            await randomDelay(3000, 5000);
+
+            const element2_1Selector = '.flex.items-center.whitespace-break-spaces.transition-all.duration-300.justify-center.gap-2';
+            const potentialElements2_1 = document.querySelectorAll(element2_1Selector);
+            log(`找到 ${potentialElements2_1.length} 个潜在元素2-1`);
+            let element2_1 = null;
+            for (const el of potentialElements2_1) {
+                const text = el.textContent.trim();
+                log(`检查元素2-1候选: ${text}`);
+                if (text === 'Claim') {
+                    element2_1 = el;
+                    break;
+                }
+            }
+
+            if (!element2_1) {
+                log('未找到文本为 "Claim" 的元素2-1，尝试等待');
+                element2_1 = await waitForVisibleElement(element2_1Selector);
+                if (element2_1 && element2_1.textContent.trim() !== 'Claim') {
+                    log('找到元素2-1，但文本不是 "Claim"');
+                    element2_1 = null;
+                }
+            }
+
+            if (element2_1) {
+                await safeClick(element2_1, '元素2-1');
+            } else {
+                log('最终未找到文本为 "Claim" 的元素2-1');
+            }
+        } catch (e) {
+            log(`第二步出错: ${e.message}`);
+        }
+
+        log('Beamable Hub 脚本执行完毕，脚本结束。');
+        // 无后续跳转，作为最后一个脚本
     }
 
     // 执行主函数
