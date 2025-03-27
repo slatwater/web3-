@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Sahara Labs 宽松政策
+// @name         Sahara Labs 宽松政策2222222
 // @namespace    http://tampermonkey.net/
 // @version      16.3
 // @description  1) 无调试日志 2) 等待页面加载完成+额外等待 3) 并行监测切换元素/提交元素可点击, 点击后再次操作一
