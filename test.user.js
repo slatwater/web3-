@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable
 // @namespace    http://tampermonkey.net/
-// @version      2.0
+// @version      2.2
 // @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp 和 Beamable 页面上的任务，新增KlokApp Automation
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -130,7 +130,7 @@
         window.location.href = 'https://sidequest.rcade.game/quests';
     }
 
-    // 脚本3：SideQuest 自动化操作
+    // 脚本3：SideQuest 自动化操作（修复版）
     async function executeScript3() {
         log('执行 SideQuest 自动化脚本...');
 
@@ -155,7 +155,7 @@
             const randomIndex = Math.floor(Math.random() * buttons.length);
             const selectedButton = buttons[randomIndex];
             log(`点击任务按钮 ${randomIndex + 1}...`);
-            selectedButton.click();
+            simulateClick(selectedButton);
 
             async function findSmallWindow1(timeout = 10000) {
                 const startTime = Date.now();
@@ -165,14 +165,14 @@
                         const buttonContainer = div.querySelector('div > div > div.btn-container > button');
                         if (buttonContainer) {
                             log('动态定位到小窗口1');
-                            return div.querySelector('div > div > div');
+                            return div;
                         }
                     }
                     for (const div of potentialWindows) {
                         const anyButton = div.querySelector('button:not([disabled])');
                         if (anyButton && div.style.display !== 'none') {
                             log('使用备用定位找到小窗口1');
-                            return div.querySelector('div > div > div') || div;
+                            return div;
                         }
                     }
                     await new Promise(resolve => setTimeout(resolve, 500));
@@ -187,7 +187,8 @@
 
                 const element1Selector = 'div.btn-container > button';
                 const element1Button = await waitForSelector(element1Selector, 10000, smallWindow1);
-                element1Button.click();
+                log(`找到小窗口1中的按钮: ${element1Button.textContent.trim()}`);
+                simulateClick(element1Button);
                 log('点击小窗口1中的按钮，等待消失...');
                 await new Promise(resolve => {
                     const check = setInterval(() => {
@@ -199,10 +200,15 @@
                     setTimeout(() => { clearInterval(check); resolve(); }, 30000);
                 });
 
-                const element2Selector = 'button > img';
-                const element2 = await waitForSelector(element2Selector, 10000, smallWindow1);
-                element2.click();
+                // 优化关闭按钮定位
+                const closeButtonSelector = 'button.close-btn, button > img, button[aria-label="close"], button svg'; // 多条件选择器
+                const closeButton = await waitForSelector(closeButtonSelector, 10000, smallWindow1);
+                log(`找到小窗口1中的关闭按钮: ${closeButton.outerHTML}`);
+                simulateClick(closeButton);
                 log('点击小窗口1中的关闭按钮。');
+
+                // 等待关闭效果（可选）
+                await randomDelay(500, 1500);
             } catch (error) {
                 log(`小窗口1处理失败: ${error.message}，延迟后继续循环...`);
                 await randomDelay(2000, 4000);
@@ -213,14 +219,14 @@
         const element3Selector = '#root > div > div > div.main > div.content.undefined > div > div.spin-container > div > button';
         try {
             const element3 = await waitForSelector(element3Selector, 10000);
-            element3.click();
+            simulateClick(element3);
             log('点击Spin按钮，等待小窗口2...');
 
             const smallWindow2Selector = 'body > div:nth-child(8) > div > div > div > div';
             await waitForSelector(smallWindow2Selector, 10000);
             const element4Selector = `${smallWindow2Selector} > button.spin-btn`;
             const element4 = await waitForSelector(element4Selector, 10000);
-            element4.click();
+            simulateClick(element4);
             log('点击小窗口2中的Spin按钮，等待消失...');
             await new Promise(resolve => {
                 const check = setInterval(() => {
@@ -234,7 +240,7 @@
 
             const element5Selector = `${smallWindow2Selector} > button.close-btn > img`;
             const element5 = await waitForSelector(element5Selector, 10000);
-            element5.click();
+            simulateClick(element5);
             log('关闭小窗口2。');
         } catch (error) {
             log(`小窗口2处理失败: ${error.message}，继续执行...`);
@@ -244,6 +250,7 @@
         await randomDelay(5000, 10000);
         window.location.href = 'https://forge.gg/quests';
     }
+
 
     // 脚本4：Forge.gg Quests 自动化操作
     async function executeScript4() {
