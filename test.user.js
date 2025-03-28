@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable
 // @namespace    http://tampermonkey.net/
-// @version      2.2
+// @version      2.3
 // @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp 和 Beamable 页面上的任务，新增KlokApp Automation
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -16,12 +16,12 @@
 // @grant        none
 // ==/UserScript==
 
-(function() {
+(async function() {
     'use strict';
 
     // 日志输出函数（统一日志格式）
     function log(message) {
-        console.log(`[自动化脚本 v1.7] ${message}`);
+        console.log(`[自动化脚本 v1.8] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -38,21 +38,27 @@
         });
     }
 
-    // 等待元素出现（仅CSS选择器）
-    async function waitForSelector(selector, timeout = 20000) {
+    // 等待元素出现（支持上下文）
+    async function waitForSelector(selector, timeout = 20000, context = document) {
         const start = Date.now();
         while (Date.now() - start < timeout) {
-            const element = document.querySelector(selector);
+            const element = context.querySelector(selector);
             if (element) return element;
             await new Promise(resolve => setTimeout(resolve, 500));
         }
         throw new Error(`超时：未能在${timeout}ms内找到元素：${selector}`);
     }
 
+    // 模拟真实点击
+    function simulateClick(element) {
+        const clickEvent = new Event('click', { bubbles: true, cancelable: true });
+        element.dispatchEvent(clickEvent);
+    }
+
     // 主函数
     async function main() {
         log('脚本启动，等待页面加载...');
-        log('确认脚本版本：v1.7');
+        log('确认脚本版本：v1.8');
         await waitForPageLoad();
         await randomDelay(1000, 3000);
 
