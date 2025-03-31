@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable
 // @namespace    http://tampermonkey.net/
-// @version      2.5
+// @version      2.6
 // @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp 和 Beamable 页面上的任务，新增KlokApp Automation
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -93,7 +93,7 @@
                 collectButton.click();
                 log('Collect按钮已点击，跳转至 Glob Shaga 页面。');
                 buttonFound = true;
-                await randomDelay(5000, 10000);
+                await randomDelay(10000, 15000);
                 window.location.href = 'https://glob.shaga.xyz/main';
             } else {
                 log('未找到Collect按钮，继续等待...');
