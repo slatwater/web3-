@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable
 // @namespace    http://tampermonkey.net/
-// @version      2.6
-// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp 和 Beamable 页面上的任务，新增KlokApp Automation
+// @version      2.7
+// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp 和 Beamable 页面上的任务，修复 XtremeVerse Verify 按钮逻辑
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
@@ -21,7 +21,7 @@
 
     // 日志输出函数（统一日志格式）
     function log(message) {
-        console.log(`[自动化脚本 v1.8] ${message}`);
+        console.log(`[自动化脚本 v2.7] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -58,7 +58,7 @@
     // 主函数
     async function main() {
         log('脚本启动，等待页面加载...');
-        log('确认脚本版本：v1.8');
+        log('确认脚本版本：v2.7');
         await waitForPageLoad();
         await randomDelay(1000, 3000);
 
@@ -206,14 +206,12 @@
                     setTimeout(() => { clearInterval(check); resolve(); }, 30000);
                 });
 
-                // 优化关闭按钮定位
-                const closeButtonSelector = 'button.close-btn, button > img, button[aria-label="close"], button svg'; // 多条件选择器
+                const closeButtonSelector = 'button.close-btn, button > img, button[aria-label="close"], button svg';
                 const closeButton = await waitForSelector(closeButtonSelector, 10000, smallWindow1);
                 log(`找到小窗口1中的关闭按钮: ${closeButton.outerHTML}`);
                 simulateClick(closeButton);
                 log('点击小窗口1中的关闭按钮。');
 
-                // 等待关闭效果（可选）
                 await randomDelay(500, 1500);
             } catch (error) {
                 log(`小窗口1处理失败: ${error.message}，延迟后继续循环...`);
@@ -256,7 +254,6 @@
         await randomDelay(5000, 10000);
         window.location.href = 'https://forge.gg/quests';
     }
-
 
     // 脚本4：Forge.gg Quests 自动化操作
     async function executeScript4() {
@@ -316,46 +313,69 @@
         window.location.href = 'https://xnet.xtremeverse.xyz/earn?index=1';
     }
 
-    // 脚本6：XtremeVerse 自动化操作
+    // 脚本6：XtremeVerse 自动化操作（修复版）
     async function executeScript6() {
         log('执行 XtremeVerse 自动化脚本...');
+
+        // 点击元素1
         const element1XPath = '//*[@id="bodyNode"]/div[4]/div[1]/div/div[1]/div[2]/div[2]';
         const element1 = document.evaluate(element1XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         if (element1) {
             element1.click();
             log('点击元素1。');
-        } else throw new Error('未找到元素1。');
-
-        await randomDelay(3000, 5000);
-        const region1Selector = '#bodyNode > div.Box-sc-1rsndmr-0.styles__WrapT-sc-1gtzf12-4.lkoHY.fUbung > div.Box-sc-1rsndmr-0.styles__ZoomContentWrap-sc-1gtzf12-6.lkoHY.foLijU > div > div.airdrop__AirDropContentContainer-sc-4wk6us-0.jFBdMN > div > div > div:nth-child(2) > div:nth-child(2)';
-        const region1 = await waitForSelector(region1Selector);
-
-        while (true) {
-            const verifyButtons = Array.from(region1.querySelectorAll('div.SocialFarming__FarmButton-sc-neia86-8.kJBPou'))
-                .filter(div => div.textContent.trim() === 'Verify');
-            if (verifyButtons.length === 0) {
-                log('无更多Verify按钮。');
-                break;
-            }
-
-            for (const btn of verifyButtons) {
-                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                await randomDelay(500, 1500);
-                btn.click();
-                log('点击一个Verify按钮。');
-                await randomDelay(500, 1000);
-            }
-            await randomDelay(2000, 4000);
+        } else {
+            log('未找到元素1，跳过点击。');
         }
 
+        await randomDelay(3000, 5000);
+
+        // 定位区域1
+        const region1Selector = '#bodyNode > div.Box-sc-1rsndmr-0.styles__WrapT-sc-1gtzf12-4.lkoHY.fUbung > div.Box-sc-1rsndmr-0.styles__ZoomContentWrap-sc-1gtzf12-6.lkoHY.foLijU > div > div.airdrop__AirDropContentContainer-sc-4wk6us-0.jFBdMN > div > div > div:nth-child(2) > div:nth-child(2)';
+        let region1;
+        try {
+            region1 = await waitForSelector(region1Selector);
+            log('成功定位到区域1。');
+        } catch (error) {
+            log(`未找到区域1: ${error.message}，继续执行后续步骤。`);
+            region1 = null;
+        }
+
+        // 检查并处理 Verify 按钮
+        if (region1) {
+            const verifyButtons = Array.from(region1.querySelectorAll('div.SocialFarming__FarmButton-sc-neia86-8.kJBPou'))
+                .filter(div => div.textContent.trim() === 'Verify');
+            
+            if (verifyButtons.length > 0) {
+                log(`找到 ${verifyButtons.length} 个 Verify 按钮，开始遍历点击。`);
+                for (const btn of verifyButtons) {
+                    btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    await randomDelay(500, 1500);
+                    btn.click();
+                    log('点击一个 Verify 按钮。');
+                    await randomDelay(500, 1000);
+                }
+            } else {
+                log('未找到 Verify 按钮，跳过遍历，直接执行后续步骤。');
+            }
+        } else {
+            log('区域1不可用，跳过 Verify 按钮处理。');
+        }
+
+        await randomDelay(2000, 4000);
+
+        // 点击元素2
         const element2XPath = '//*[@id="bodyNode"]/div[4]/div[1]/div/div[2]/div/div/div[2]/div[2]/div[2]/div/div/div/div[3]/div';
         const element2 = document.evaluate(element2XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         if (element2) {
             element2.click();
             log('点击元素2。');
-        } else throw new Error('未找到元素2。');
+        } else {
+            log('未找到元素2，跳过点击。');
+        }
 
         await randomDelay(1000, 3000);
+
+        // 处理对话框中的元素3
         const dialogSelector = 'div[id^="dialog-"]:not([aria-hidden="true"])';
         let dialog;
         try {
@@ -369,7 +389,10 @@
             const element3XPath = '//*[@id="dialog-:r0:"]/div/div/div/div/div/div[3]/div[1]/div/button/span';
             while (true) {
                 const element3Span = document.evaluate(element3XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (!element3Span || !document.querySelector(dialogSelector)) break;
+                if (!element3Span || !document.querySelector(dialogSelector)) {
+                    log('对话框中元素3处理完毕或对话框已关闭。');
+                    break;
+                }
                 const button = element3Span.closest('button');
                 if (button) {
                     button.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -442,7 +465,7 @@
         const element2XPath = '/html/body/div[1]/div[2]/div[1]/div[1]/a';
 
         try {
-            // 循环10次
+            // 循环12次
             for (let i = 1; i <= 12; i++) {
                 log(`开始第 ${i} 次循环...`);
 
@@ -460,7 +483,7 @@
                 log(`随机选择按钮 ${randomIndex + 1}，准备点击...`);
                 simulateClick(selectedButton);
 
-                // 等待5-8秒
+                // 等待8-10秒
                 await randomDelay(8000, 10000);
 
                 // 点击元素2
@@ -473,7 +496,7 @@
                 }
 
                 // 循环间隔2-3秒
-                if (i < 10) {
+                if (i < 12) {
                     log(`第 ${i} 次循环完成，等待下一轮...`);
                     await randomDelay(2000, 3000);
                 }
