@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable、Bithub
+// @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable、Talus、Bithub
 // @namespace    http://tampermonkey.net/
-// @version      3.1
-// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable 和 Bithub 页面上的任务
+// @version      3.2
+// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable、Talus 和 Bithub 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
@@ -12,6 +12,7 @@
 // @match        https://klokapp.ai/app
 // @match        https://hub.beamable.network/modules/*
 // @match        https://bithub.77-bit.com/*
+// @match        https://hub.talus.network/loyalty
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @grant        none
@@ -22,7 +23,7 @@
 
     // 日志输出函数（统一日志格式）
     function log(message) {
-        console.log(`[自动化脚本 v3.1] ${message}`);
+        console.log(`[自动化脚本 v3.2] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -59,7 +60,7 @@
     // 主函数
     async function main() {
         log('脚本启动，等待页面加载...');
-        log('确认脚本版本：v3.1');
+        log('确认脚本版本：v3.2');
         await waitForPageLoad();
         await randomDelay(1000, 3000);
 
@@ -73,6 +74,7 @@
             else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) await executeScript6();
             else if (currentURL.includes('klokapp.ai/app')) await executeScript8();
             else if (currentURL.includes('hub.beamable.network/modules')) await executeScript7();
+            else if (currentURL.includes('hub.talus.network/loyalty')) await executeScript10();
             else if (currentURL.includes('bithub.77-bit.com')) await executeScript9();
             else log('当前页面不在脚本处理范围内。');
         } catch (error) {
@@ -802,9 +804,96 @@
             log(`第二步出错: ${e.message}`);
         }
 
-        log('Beamable Hub 脚本执行完毕，跳转至 Bithub 页面。');
+        log('Beamable Hub 脚本执行完毕，跳转至 Talus Loyalty 页面。');
         await randomDelay(5000, 10000);
-        window.location.href = 'https://bithub.77-bit.com/';
+        window.location.href = 'https://hub.talus.network/loyalty';
+    }
+
+    // 脚本10：Talus Loyalty 自动化操作
+    async function executeScript10() {
+        log('执行 Talus Loyalty 自动化脚本...');
+
+        // 等待元素出现（支持XPath和CSS选择器，返回null而不是抛出错误）
+        async function waitForElement(selector, isXPath = false, timeout = 20000) {
+            const start = Date.now();
+            while (Date.now() - start < timeout) {
+                let element;
+                if (isXPath) {
+                    element = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                } else {
+                    element = document.querySelector(selector);
+                }
+                if (element) return element;
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            log(`未能在${timeout}ms内找到元素：${selector}，继续执行后续步骤`);
+            return null;
+        }
+
+        // 优化元素3的识别函数
+        async function findElement3(timeout = 20000) {
+            const start = Date.now();
+            while (Date.now() - start < timeout) {
+                const candidates = document.querySelectorAll('[id^="radix-"] > div > div > div > button');
+                for (const candidate of candidates) {
+                    if (candidate.closest('[id^="radix-"]') && candidate.tagName.toLowerCase() === 'button') {
+                        log("找到符合条件的元素3候选");
+                        return candidate;
+                    }
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            log("未找到符合条件的元素3");
+            return null;
+        }
+
+        // 点击元素并验证成功的函数
+        async function clickElement(element, description) {
+            if (element) {
+                simulateClick(element);
+                log(`${description} 点击成功`);
+                await randomDelay(1000, 3000);
+            } else {
+                log(`${description} 未找到`);
+            }
+        }
+
+        try {
+            log("等待页面完全加载...");
+            await randomDelay(2000, 5000);
+
+            const element2Selector = '#loyalty-quest-root-check_in > div > div.flex.items-center.gap-3.order-2.lg\\:order-none > button';
+            const element4XPath = '//*[@id="loyalty-quest-root-drip_x_new_tweet"]/div/div[3]/a';
+
+            // 点击元素2
+            log("检查元素2...");
+            const element2 = await waitForElement(element2Selector);
+            await clickElement(element2, "元素2");
+
+            // 等待并点击元素3
+            log("等待元素3出现...");
+            const element3 = await findElement3();
+            await clickElement(element3, "元素3");
+
+            // 持续点击元素4直到消失
+            log("开始持续点击元素4...");
+            while (true) {
+                const element4 = document.evaluate(element4XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (!element4) {
+                    log("元素4已消失，跳转至 Bithub 页面");
+                    break;
+                }
+                await clickElement(element4, "元素4");
+                await randomDelay(3000, 6000); // 较长的点击间隔
+            }
+
+            await randomDelay(5000, 10000);
+            window.location.href = 'https://bithub.77-bit.com/';
+        } catch (error) {
+            log(`Talus Loyalty 脚本执行出错: ${error.message}，尝试跳转至 Bithub 页面`);
+            await randomDelay(5000, 10000);
+            window.location.href = 'https://bithub.77-bit.com/';
+        }
     }
 
     // 脚本9：Bithub 自动化操作
