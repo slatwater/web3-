@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable
 // @namespace    http://tampermonkey.net/
-// @version      2.7
+// @version      3.0
 // @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp 和 Beamable 页面上的任务，修复 XtremeVerse Verify 按钮逻辑
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -664,17 +664,17 @@
             for (const el of potentialElements1) {
                 const text = el.textContent.trim();
                 log(`检查元素1候选: ${text}`);
-                if (text === 'Quests') {
+                if (text === 'Board') {
                     element1 = el;
                     break;
                 }
             }
 
             if (!element1) {
-                log('未找到文本为 "Quests" 的元素1，尝试等待');
+                log('未找到文本为 "Board" 的元素1，尝试等待');
                 element1 = await waitForVisibleElement(element1Selector);
-                if (element1 && element1.textContent.trim() !== 'Quests') {
-                    log('找到元素1，但文本不是 "Quests"');
+                if (element1 && element1.textContent.trim() !== 'Board') {
+                    log('找到元素1，但文本不是 "Board"');
                     element1 = null;
                 }
             }
@@ -756,17 +756,17 @@
             for (const el of potentialElements2) {
                 const text = el.textContent.trim();
                 log(`检查元素2候选: ${text}`);
-                if (text === 'Dailies') {
+                if (text === 'Daily Checkin') {
                     element2 = el;
                     break;
                 }
             }
 
             if (!element2) {
-                log('未找到文本为 "Dailies" 的元素2，尝试等待');
+                log('未找到文本为 "Daily Checkin" 的元素2，尝试等待');
                 element2 = await waitForVisibleElement(element2Selector);
-                if (element2 && element2.textContent.trim() !== 'Dailies') {
-                    log('找到元素2，但文本不是 "Dailies"');
+                if (element2 && element2.textContent.trim() !== 'Daily Checkin') {
+                    log('找到元素2，但文本不是 "Daily Checkin"');
                     element2 = null;
                 }
             }
