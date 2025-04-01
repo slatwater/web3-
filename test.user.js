@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable
+// @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable、Bithub
 // @namespace    http://tampermonkey.net/
-// @version      3.0
-// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp 和 Beamable 页面上的任务，修复 XtremeVerse Verify 按钮逻辑
+// @version      3.1
+// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable 和 Bithub 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
@@ -11,6 +11,7 @@
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://klokapp.ai/app
 // @match        https://hub.beamable.network/modules/*
+// @match        https://bithub.77-bit.com/*
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @grant        none
@@ -21,7 +22,7 @@
 
     // 日志输出函数（统一日志格式）
     function log(message) {
-        console.log(`[自动化脚本 v2.7] ${message}`);
+        console.log(`[自动化脚本 v3.1] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -58,7 +59,7 @@
     // 主函数
     async function main() {
         log('脚本启动，等待页面加载...');
-        log('确认脚本版本：v2.7');
+        log('确认脚本版本：v3.1');
         await waitForPageLoad();
         await randomDelay(1000, 3000);
 
@@ -72,6 +73,7 @@
             else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) await executeScript6();
             else if (currentURL.includes('klokapp.ai/app')) await executeScript8();
             else if (currentURL.includes('hub.beamable.network/modules')) await executeScript7();
+            else if (currentURL.includes('bithub.77-bit.com')) await executeScript9();
             else log('当前页面不在脚本处理范围内。');
         } catch (error) {
             log(`脚本执行出错: ${error.message}`);
@@ -454,12 +456,6 @@
             throw new Error('未能在超时时间内找到任何按钮');
         }
 
-        // 模拟真实点击
-        function simulateClick(element) {
-            const clickEvent = new Event('click', { bubbles: true, cancelable: true });
-            element.dispatchEvent(clickEvent);
-        }
-
         // 定义元素2选择器
         const element2Selector = 'body > div.page_container__FA90Q.page_empty__aDXOo > div.flex.justify-between.gap-10 > div.style_sidebar__efxYk > div.flex.flex-col.xs\\:sticky.md\\:fixed.md\\:top-\\[32px\\].xs\\:top-0.bg-\\[\\#14171b\\].z-10.xs\\:pt-8.xs\\:pb-4.lg\\:py-0 > a';
         const element2XPath = '/html/body/div[1]/div[2]/div[1]/div[1]/a';
@@ -806,7 +802,75 @@
             log(`第二步出错: ${e.message}`);
         }
 
-        log('Beamable Hub 脚本执行完毕，脚本结束。');
+        log('Beamable Hub 脚本执行完毕，跳转至 Bithub 页面。');
+        await randomDelay(5000, 10000);
+        window.location.href = 'https://bithub.77-bit.com/';
+    }
+
+    // 脚本9：Bithub 自动化操作
+    async function executeScript9() {
+        log('执行 Bithub 自动化脚本...');
+
+        // 等待元素出现（支持XPath）
+        async function waitForXPath(xpath, timeout = 20000) {
+            const start = Date.now();
+            while (Date.now() - start < timeout) {
+                const element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element) return element;
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            throw new Error(`超时：未能在${timeout}ms内找到XPath元素：${xpath}`);
+        }
+
+        // 点击元素并验证成功的函数
+        async function clickElement(element, description) {
+            if (element) {
+                simulateClick(element);
+                log(`${description} 点击成功`);
+                await randomDelay(1000, 3000);
+            } else {
+                log(`${description} 未找到`);
+            }
+        }
+
+        try {
+            log("等待页面完全加载...");
+            await randomDelay(2000, 5000);
+
+            const claimXPath = '//*[@id="__nuxt"]/div[2]/div[4]/div[3]/div/div[4]/div/div[1]';
+            const element2Selector = '#__nuxt > div.root > div.achievements > div.footer.achievements__footer > div.button-frame.section.section--primary.mission-section.footer__daily';
+            const element3Selector = '#__nuxt > div.root > div.daily > div.info.daily__info > div.info__description.description > div.clip-container.common-button.button.description__button > div > div.common-button__content';
+            const element4Selector = '#__nuxt > div.root > div.root__header > div > div.info.header__info > div.info__currencies > div.button-frame.info__group.bits > h1';
+            const element5Selector = '#__nuxt > div.root > div.purchase-popup > div > div.items.items--large.items--secondary > div.button-frame.card.card--daily > div.card__inner > div.clip-container.button.button--daily.card__buy-btn.card__buy-btn--primary > div > div';
+
+            log("开始监控元素1...");
+            const claimElement = await waitForXPath(claimXPath);
+
+            // 点击元素1五次
+            for (let i = 1; i <= 5; i++) {
+                await clickElement(claimElement, `元素1 (第${i}次)`);
+                if (i < 5) {
+                    await randomDelay(3000, 6000); // 较长的点击间隔
+                }
+            }
+
+            // 点击后续元素
+            const element2 = document.querySelector(element2Selector);
+            await clickElement(element2, "元素2");
+
+            const element3 = document.querySelector(element3Selector);
+            await clickElement(element3, "元素3");
+
+            const element4 = document.querySelector(element4Selector);
+            await clickElement(element4, "元素4");
+
+            const element5 = document.querySelector(element5Selector);
+            await clickElement(element5, "元素5");
+
+            log("Bithub 脚本执行完成，脚本结束。");
+        } catch (error) {
+            log(`Bithub 脚本执行出错: ${error.message}`);
+        }
     }
 
     // 执行主函数
