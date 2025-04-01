@@ -1,26 +1,25 @@
 // ==UserScript==
-// @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、Beamable
+// @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable
 // @namespace    http://tampermonkey.net/
-// @version      1.7
-// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse 和 Beamable 页面上的任务，新增Beamable Hub自动化
+// @version      3.0
+// @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp 和 Beamable 页面上的任务，修复 XtremeVerse Verify 按钮逻辑
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
 // @match        https://sidequest.rcade.game/*
 // @match        https://forge.gg/quests
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
+// @match        https://klokapp.ai/app
 // @match        https://hub.beamable.network/modules/*
-// @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
-// @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @grant        none
 // ==/UserScript==
 
-(function() {
+(async function() {
     'use strict';
 
     // 日志输出函数（统一日志格式）
     function log(message) {
-        console.log(`[自动化脚本 v1.6] ${message}`);
+        console.log(`[自动化脚本 v2.7] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -37,7 +36,7 @@
         });
     }
 
-    // 等待元素出现（用于已有脚本）
+    // 等待元素出现（支持上下文）
     async function waitForSelector(selector, timeout = 20000, context = document) {
         const start = Date.now();
         while (Date.now() - start < timeout) {
@@ -48,10 +47,16 @@
         throw new Error(`超时：未能在${timeout}ms内找到元素：${selector}`);
     }
 
+    // 模拟真实点击
+    function simulateClick(element) {
+        const clickEvent = new Event('click', { bubbles: true, cancelable: true });
+        element.dispatchEvent(clickEvent);
+    }
+
     // 主函数
     async function main() {
         log('脚本启动，等待页面加载...');
-        log('确认脚本版本：v1.6');
+        log('确认脚本版本：v2.7');
         await waitForPageLoad();
         await randomDelay(1000, 3000);
 
@@ -63,6 +68,7 @@
             else if (currentURL.includes('sidequest.rcade.game')) await executeScript3();
             else if (currentURL.includes('forge.gg/quests')) await executeScript4();
             else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) await executeScript6();
+            else if (currentURL.includes('klokapp.ai/app')) await executeScript8();
             else if (currentURL.includes('hub.beamable.network/modules')) await executeScript7();
             else log('当前页面不在脚本处理范围内。');
         } catch (error) {
@@ -85,7 +91,7 @@
                 collectButton.click();
                 log('Collect按钮已点击，跳转至 Glob Shaga 页面。');
                 buttonFound = true;
-                await randomDelay(5000, 10000);
+                await randomDelay(10000, 15000);
                 window.location.href = 'https://glob.shaga.xyz/main';
             } else {
                 log('未找到Collect按钮，继续等待...');
@@ -128,7 +134,7 @@
         window.location.href = 'https://sidequest.rcade.game/quests';
     }
 
-    // 脚本3：SideQuest 自动化操作
+    // 脚本3：SideQuest 自动化操作（修复版）
     async function executeScript3() {
         log('执行 SideQuest 自动化脚本...');
 
@@ -153,7 +159,7 @@
             const randomIndex = Math.floor(Math.random() * buttons.length);
             const selectedButton = buttons[randomIndex];
             log(`点击任务按钮 ${randomIndex + 1}...`);
-            selectedButton.click();
+            simulateClick(selectedButton);
 
             async function findSmallWindow1(timeout = 10000) {
                 const startTime = Date.now();
@@ -163,14 +169,14 @@
                         const buttonContainer = div.querySelector('div > div > div.btn-container > button');
                         if (buttonContainer) {
                             log('动态定位到小窗口1');
-                            return div.querySelector('div > div > div');
+                            return div;
                         }
                     }
                     for (const div of potentialWindows) {
                         const anyButton = div.querySelector('button:not([disabled])');
                         if (anyButton && div.style.display !== 'none') {
                             log('使用备用定位找到小窗口1');
-                            return div.querySelector('div > div > div') || div;
+                            return div;
                         }
                     }
                     await new Promise(resolve => setTimeout(resolve, 500));
@@ -185,7 +191,8 @@
 
                 const element1Selector = 'div.btn-container > button';
                 const element1Button = await waitForSelector(element1Selector, 10000, smallWindow1);
-                element1Button.click();
+                log(`找到小窗口1中的按钮: ${element1Button.textContent.trim()}`);
+                simulateClick(element1Button);
                 log('点击小窗口1中的按钮，等待消失...');
                 await new Promise(resolve => {
                     const check = setInterval(() => {
@@ -197,10 +204,13 @@
                     setTimeout(() => { clearInterval(check); resolve(); }, 30000);
                 });
 
-                const element2Selector = 'button > img';
-                const element2 = await waitForSelector(element2Selector, 10000, smallWindow1);
-                element2.click();
+                const closeButtonSelector = 'button.close-btn, button > img, button[aria-label="close"], button svg';
+                const closeButton = await waitForSelector(closeButtonSelector, 10000, smallWindow1);
+                log(`找到小窗口1中的关闭按钮: ${closeButton.outerHTML}`);
+                simulateClick(closeButton);
                 log('点击小窗口1中的关闭按钮。');
+
+                await randomDelay(500, 1500);
             } catch (error) {
                 log(`小窗口1处理失败: ${error.message}，延迟后继续循环...`);
                 await randomDelay(2000, 4000);
@@ -211,14 +221,14 @@
         const element3Selector = '#root > div > div > div.main > div.content.undefined > div > div.spin-container > div > button';
         try {
             const element3 = await waitForSelector(element3Selector, 10000);
-            element3.click();
+            simulateClick(element3);
             log('点击Spin按钮，等待小窗口2...');
 
             const smallWindow2Selector = 'body > div:nth-child(8) > div > div > div > div';
             await waitForSelector(smallWindow2Selector, 10000);
             const element4Selector = `${smallWindow2Selector} > button.spin-btn`;
             const element4 = await waitForSelector(element4Selector, 10000);
-            element4.click();
+            simulateClick(element4);
             log('点击小窗口2中的Spin按钮，等待消失...');
             await new Promise(resolve => {
                 const check = setInterval(() => {
@@ -232,7 +242,7 @@
 
             const element5Selector = `${smallWindow2Selector} > button.close-btn > img`;
             const element5 = await waitForSelector(element5Selector, 10000);
-            element5.click();
+            simulateClick(element5);
             log('关闭小窗口2。');
         } catch (error) {
             log(`小窗口2处理失败: ${error.message}，继续执行...`);
@@ -301,46 +311,69 @@
         window.location.href = 'https://xnet.xtremeverse.xyz/earn?index=1';
     }
 
-    // 脚本6：XtremeVerse 自动化操作
+    // 脚本6：XtremeVerse 自动化操作（修复版）
     async function executeScript6() {
         log('执行 XtremeVerse 自动化脚本...');
+
+        // 点击元素1
         const element1XPath = '//*[@id="bodyNode"]/div[4]/div[1]/div/div[1]/div[2]/div[2]';
         const element1 = document.evaluate(element1XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         if (element1) {
             element1.click();
             log('点击元素1。');
-        } else throw new Error('未找到元素1。');
-
-        await randomDelay(3000, 5000);
-        const region1Selector = '#bodyNode > div.Box-sc-1rsndmr-0.styles__WrapT-sc-1gtzf12-4.lkoHY.fUbung > div.Box-sc-1rsndmr-0.styles__ZoomContentWrap-sc-1gtzf12-6.lkoHY.foLijU > div > div.airdrop__AirDropContentContainer-sc-4wk6us-0.jFBdMN > div > div > div:nth-child(2) > div:nth-child(2)';
-        const region1 = await waitForSelector(region1Selector);
-
-        while (true) {
-            const verifyButtons = Array.from(region1.querySelectorAll('div.SocialFarming__FarmButton-sc-neia86-8.kJBPou'))
-                .filter(div => div.textContent.trim() === 'Verify');
-            if (verifyButtons.length === 0) {
-                log('无更多Verify按钮。');
-                break;
-            }
-
-            for (const btn of verifyButtons) {
-                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                await randomDelay(500, 1500);
-                btn.click();
-                log('点击一个Verify按钮。');
-                await randomDelay(500, 1000);
-            }
-            await randomDelay(2000, 4000);
+        } else {
+            log('未找到元素1，跳过点击。');
         }
 
+        await randomDelay(3000, 5000);
+
+        // 定位区域1
+        const region1Selector = '#bodyNode > div.Box-sc-1rsndmr-0.styles__WrapT-sc-1gtzf12-4.lkoHY.fUbung > div.Box-sc-1rsndmr-0.styles__ZoomContentWrap-sc-1gtzf12-6.lkoHY.foLijU > div > div.airdrop__AirDropContentContainer-sc-4wk6us-0.jFBdMN > div > div > div:nth-child(2) > div:nth-child(2)';
+        let region1;
+        try {
+            region1 = await waitForSelector(region1Selector);
+            log('成功定位到区域1。');
+        } catch (error) {
+            log(`未找到区域1: ${error.message}，继续执行后续步骤。`);
+            region1 = null;
+        }
+
+        // 检查并处理 Verify 按钮
+        if (region1) {
+            const verifyButtons = Array.from(region1.querySelectorAll('div.SocialFarming__FarmButton-sc-neia86-8.kJBPou'))
+                .filter(div => div.textContent.trim() === 'Verify');
+            
+            if (verifyButtons.length > 0) {
+                log(`找到 ${verifyButtons.length} 个 Verify 按钮，开始遍历点击。`);
+                for (const btn of verifyButtons) {
+                    btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    await randomDelay(500, 1500);
+                    btn.click();
+                    log('点击一个 Verify 按钮。');
+                    await randomDelay(500, 1000);
+                }
+            } else {
+                log('未找到 Verify 按钮，跳过遍历，直接执行后续步骤。');
+            }
+        } else {
+            log('区域1不可用，跳过 Verify 按钮处理。');
+        }
+
+        await randomDelay(2000, 4000);
+
+        // 点击元素2
         const element2XPath = '//*[@id="bodyNode"]/div[4]/div[1]/div/div[2]/div/div/div[2]/div[2]/div[2]/div/div/div/div[3]/div';
         const element2 = document.evaluate(element2XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         if (element2) {
             element2.click();
             log('点击元素2。');
-        } else throw new Error('未找到元素2。');
+        } else {
+            log('未找到元素2，跳过点击。');
+        }
 
         await randomDelay(1000, 3000);
+
+        // 处理对话框中的元素3
         const dialogSelector = 'div[id^="dialog-"]:not([aria-hidden="true"])';
         let dialog;
         try {
@@ -354,7 +387,10 @@
             const element3XPath = '//*[@id="dialog-:r0:"]/div/div/div/div/div/div[3]/div[1]/div/button/span';
             while (true) {
                 const element3Span = document.evaluate(element3XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (!element3Span || !document.querySelector(dialogSelector)) break;
+                if (!element3Span || !document.querySelector(dialogSelector)) {
+                    log('对话框中元素3处理完毕或对话框已关闭。');
+                    break;
+                }
                 const button = element3Span.closest('button');
                 if (button) {
                     button.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -368,9 +404,108 @@
             log('未找到对话框，跳过元素3处理。');
         }
 
-        log('XtremeVerse 脚本执行完毕，跳转至 Beamable Hub 页面。');
+        log('XtremeVerse 脚本执行完毕，跳转至 KlokApp 页面。');
         await randomDelay(5000, 10000);
-        window.location.href = 'https://hub.beamable.network/modules/questsold';
+        window.location.href = 'https://klokapp.ai/app';
+    }
+
+    // 脚本8：KlokApp Automation
+    async function executeScript8() {
+        log('执行 KlokApp 自动化脚本...');
+
+        // 等待元素出现（支持CSS选择器和XPath）
+        async function waitForElement(cssSelector, xpath, timeout = 30000) {
+            const start = Date.now();
+            while (Date.now() - start < timeout) {
+                const elementByCss = document.querySelector(cssSelector);
+                if (elementByCss) {
+                    log(`通过CSS选择器找到元素: ${cssSelector}`);
+                    return elementByCss;
+                }
+
+                const elementByXPath = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (elementByXPath) {
+                    log(`通过XPath找到元素: ${xpath}`);
+                    return elementByXPath;
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            throw new Error(`超时：未能在${timeout}ms内找到元素 - CSS: ${cssSelector}, XPath: ${xpath}`);
+        }
+
+        // 获取按钮集合（使用XPath）
+        async function getButtons(timeout = 30000) {
+            const buttons = [];
+            const baseXPath = '/html/body/div[1]/div[2]/div[2]/div[2]/div[2]/button';
+            const start = Date.now();
+
+            while (Date.now() - start < timeout) {
+                for (let i = 1; i <= 4; i++) {
+                    const xpath = `${baseXPath}[${i}]`;
+                    const button = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (button) buttons.push(button);
+                }
+                if (buttons.length > 0) return buttons;
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            throw new Error('未能在超时时间内找到任何按钮');
+        }
+
+        // 模拟真实点击
+        function simulateClick(element) {
+            const clickEvent = new Event('click', { bubbles: true, cancelable: true });
+            element.dispatchEvent(clickEvent);
+        }
+
+        // 定义元素2选择器
+        const element2Selector = 'body > div.page_container__FA90Q.page_empty__aDXOo > div.flex.justify-between.gap-10 > div.style_sidebar__efxYk > div.flex.flex-col.xs\\:sticky.md\\:fixed.md\\:top-\\[32px\\].xs\\:top-0.bg-\\[\\#14171b\\].z-10.xs\\:pt-8.xs\\:pb-4.lg\\:py-0 > a';
+        const element2XPath = '/html/body/div[1]/div[2]/div[1]/div[1]/a';
+
+        try {
+            // 循环12次
+            for (let i = 1; i <= 12; i++) {
+                log(`开始第 ${i} 次循环...`);
+
+                // 每次循环重新获取按钮（使用XPath）
+                const buttons = await getButtons();
+                if (buttons.length < 1) {
+                    log('未找到任何按钮，跳过本次循环...');
+                    continue;
+                }
+                log(`找到 ${buttons.length} 个按钮可供选择。`);
+
+                // 随机选择一个按钮并直接点击
+                const randomIndex = Math.floor(Math.random() * buttons.length);
+                const selectedButton = buttons[randomIndex];
+                log(`随机选择按钮 ${randomIndex + 1}，准备点击...`);
+                simulateClick(selectedButton);
+
+                // 等待8-10秒
+                await randomDelay(8000, 10000);
+
+                // 点击元素2
+                try {
+                    const element2 = await waitForElement(element2Selector, element2XPath);
+                    log('找到元素2，准备点击...');
+                    simulateClick(element2);
+                } catch (error) {
+                    log(`点击元素2失败: ${error.message}，继续下一循环...`);
+                }
+
+                // 循环间隔2-3秒
+                if (i < 12) {
+                    log(`第 ${i} 次循环完成，等待下一轮...`);
+                    await randomDelay(2000, 3000);
+                }
+            }
+
+            log('KlokApp 脚本执行完毕，跳转至 Beamable Hub 页面。');
+            await randomDelay(5000, 10000);
+            window.location.href = 'https://hub.beamable.network/modules/questsold';
+        } catch (error) {
+            log(`脚本执行出错: ${error.message}`);
+        }
     }
 
     // 脚本7：Beamable Hub 自动化操作
@@ -527,17 +662,17 @@
             for (const el of potentialElements1) {
                 const text = el.textContent.trim();
                 log(`检查元素1候选: ${text}`);
-                if (text === 'Quests') {
+                if (text === 'Board') {
                     element1 = el;
                     break;
                 }
             }
 
             if (!element1) {
-                log('未找到文本为 "Quests" 的元素1，尝试等待');
+                log('未找到文本为 "Board" 的元素1，尝试等待');
                 element1 = await waitForVisibleElement(element1Selector);
-                if (element1 && element1.textContent.trim() !== 'Quests') {
-                    log('找到元素1，但文本不是 "Quests"');
+                if (element1 && element1.textContent.trim() !== 'Board') {
+                    log('找到元素1，但文本不是 "Board"');
                     element1 = null;
                 }
             }
@@ -619,17 +754,17 @@
             for (const el of potentialElements2) {
                 const text = el.textContent.trim();
                 log(`检查元素2候选: ${text}`);
-                if (text === 'Dailies') {
+                if (text === 'Daily Checkin') {
                     element2 = el;
                     break;
                 }
             }
 
             if (!element2) {
-                log('未找到文本为 "Dailies" 的元素2，尝试等待');
+                log('未找到文本为 "Daily Checkin" 的元素2，尝试等待');
                 element2 = await waitForVisibleElement(element2Selector);
-                if (element2 && element2.textContent.trim() !== 'Dailies') {
-                    log('找到元素2，但文本不是 "Dailies"');
+                if (element2 && element2.textContent.trim() !== 'Daily Checkin') {
+                    log('找到元素2，但文本不是 "Daily Checkin"');
                     element2 = null;
                 }
             }
@@ -670,7 +805,6 @@
         }
 
         log('Beamable Hub 脚本执行完毕，脚本结束。');
-        // 无后续跳转，作为最后一个脚本
     }
 
     // 执行主函数
