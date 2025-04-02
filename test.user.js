@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable、Talus、Bithub
 // @namespace    http://tampermonkey.net/
-// @version      3.2
+// @version      3.3
 // @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable、Talus 和 Bithub 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -322,7 +322,7 @@
         log('执行 XtremeVerse 自动化脚本...');
 
         // 点击元素1
-        const element1XPath = '//*[@id="bodyNode"]/div[4]/div[1]/div/div[1]/div[2]/div[2]';
+        const element1XPath = '//*[@id="bodyNode"]/div[3]/div[1]/div/div[1]/div[2]/div[2]';
         const element1 = document.evaluate(element1XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         if (element1) {
             element1.click();
@@ -334,7 +334,7 @@
         await randomDelay(3000, 5000);
 
         // 定位区域1
-        const region1Selector = '#bodyNode > div.Box-sc-1rsndmr-0.styles__WrapT-sc-1gtzf12-4.lkoHY.fUbung > div.Box-sc-1rsndmr-0.styles__ZoomContentWrap-sc-1gtzf12-6.lkoHY.foLijU > div > div.airdrop__AirDropContentContainer-sc-4wk6us-0.jFBdMN > div > div > div:nth-child(2) > div:nth-child(2)';
+        const region1Selector = '#bodyNode > div.Box-sc-1rsndmr-0.styles__WrapT-sc-1gtzf12-4.cOTPbW.fUbung > div.Box-sc-1rsndmr-0.styles__ZoomContentWrap-sc-1gtzf12-6.cOTPbW.foLijU > div > div.airdrop__AirDropContentContainer-sc-4wk6us-0.jFBdMN > div > div > div:nth-child(2) > div:nth-child(2)';
         let region1;
         try {
             region1 = await waitForSelector(region1Selector);
@@ -368,7 +368,7 @@
         await randomDelay(2000, 4000);
 
         // 点击元素2
-        const element2XPath = '//*[@id="bodyNode"]/div[4]/div[1]/div/div[2]/div/div/div[2]/div[2]/div[2]/div/div/div/div[3]/div';
+        const element2XPath = '//*[@id="bodyNode"]/div[3]/div[1]/div/div[2]/div/div/div[2]/div[2]/div[2]/div/div/div/div[3]/div';
         const element2 = document.evaluate(element2XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         if (element2) {
             element2.click();
@@ -380,7 +380,7 @@
         await randomDelay(1000, 3000);
 
         // 处理对话框中的元素3
-        const dialogSelector = 'div[id^="dialog-"]:not([aria-hidden="true"])';
+        const dialogSelector = '#dialog-\:r0\: > div > div > div > div > div';
         let dialog;
         try {
             dialog = await waitForSelector(dialogSelector, 10000);
@@ -390,7 +390,7 @@
         }
 
         if (dialog) {
-            const element3XPath = '//*[@id="dialog-:r0:"]/div/div/div/div/div/div[3]/div[1]/div/button/span';
+            const element3XPath = '//*[@id="dialog-:r0:"]/div/div/div/div/div/div[3]/div[1]/svg/path';
             while (true) {
                 const element3Span = document.evaluate(element3XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 if (!element3Span || !document.querySelector(dialogSelector)) {
@@ -412,7 +412,7 @@
 
         log('XtremeVerse 脚本执行完毕，跳转至 KlokApp 页面。');
         await randomDelay(5000, 10000);
-        window.location.href = 'https://klokapp.ai/app';
+        window.location.href = 'https://hub.beamable.network/modules/questsold';
     }
 
     // 脚本8：KlokApp Automation
@@ -500,9 +500,6 @@
                 }
             }
 
-            log('KlokApp 脚本执行完毕，跳转至 Beamable Hub 页面。');
-            await randomDelay(5000, 10000);
-            window.location.href = 'https://hub.beamable.network/modules/questsold';
         } catch (error) {
             log(`脚本执行出错: ${error.message}`);
         }
@@ -959,6 +956,8 @@
             log("Bithub 脚本执行完成，脚本结束。");
         } catch (error) {
             log(`Bithub 脚本执行出错: ${error.message}`);
+            await randomDelay(5000, 10000);
+            window.location.href = 'https://klokapp.ai/app';
         }
     }
 
