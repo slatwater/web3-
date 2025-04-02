@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable、Talus、Bithub
 // @namespace    http://tampermonkey.net/
-// @version      3.9
+// @version      5.0
 // @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable、Talus 和 Bithub 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -9,7 +9,7 @@
 // @match        https://sidequest.rcade.game/*
 // @match        https://forge.gg/quests
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
-// @match        https://klokapp.ai/app
+// @match        https://klokapp.ai/*
 // @match        https://hub.beamable.network/modules/*
 // @match        https://bithub.77-bit.com/*
 // @match        https://hub.talus.network/loyalty
@@ -72,7 +72,7 @@
             else if (currentURL.includes('sidequest.rcade.game')) await executeScript3();
             else if (currentURL.includes('forge.gg/quests')) await executeScript4();
             else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) await executeScript6();
-            else if (currentURL.includes('klokapp.ai/app')) await executeScript8();
+            else if (currentURL.includes('klokapp.ai')) await executeScript8();
             else if (currentURL.includes('hub.beamable.network/modules')) await executeScript7();
             else if (currentURL.includes('hub.talus.network/loyalty')) await executeScript10();
             else if (currentURL.includes('bithub.77-bit.com')) await executeScript9();
