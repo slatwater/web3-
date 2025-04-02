@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Forge、XtremeVerse、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      5.2
+// @version      5.3
 // @description  自动化操作 Avalon、Shaga、SideQuest、Forge、XtremeVerse、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -420,53 +420,66 @@
     // 脚本11：Magic Newton Rewards 自动化操作
     async function executeScript11() {
         log('执行 Magic Newton Rewards 自动化脚本...');
-
+    
         // 等待元素出现（支持CSS选择器）
         async function waitForElement(selector, timeout = 20000) {
             const start = Date.now();
             while (Date.now() - start < timeout) {
                 const element = document.querySelector(selector);
-                if (element) return element;
+                if (element && element.offsetParent !== null && getComputedStyle(element).display !== 'none') {
+                    log(`找到可见元素：${selector}`);
+                    return element;
+                }
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
-            log(`未能在${timeout}ms内找到元素：${selector}`);
+            log(`未能在${timeout}ms内找到可见元素：${selector}`);
             return null;
         }
-
+    
         // 点击元素并验证成功的函数
         async function clickElement(element, description) {
             if (element) {
-                simulateClick(element);
-                log(`${description} 点击成功`);
-                await randomDelay(1000, 3000);
+                // 使用原生 click() 方法
+                element.click();
+                log(`${description} 已触发点击`);
+                // 等待短暂时间以确保页面响应
+                await randomDelay(500, 1000);
+                // 验证元素是否仍可见（如果点击成功，可能触发页面变化）
+                const stillVisible = document.querySelector(element.tagName + '[class="' + element.className + '"]');
+                if (!stillVisible || stillVisible.offsetParent === null) {
+                    log(`${description} 点击后元素状态已变化，点击可能成功`);
+                } else {
+                    log(`${description} 点击后元素仍可见，可能未响应`);
+                }
             } else {
                 log(`${description} 未找到`);
             }
         }
-
+    
         try {
             log("等待页面完全加载...");
+            await waitForPageLoad(); // 使用全局定义的等待页面加载函数
             await randomDelay(2000, 5000);
-
+    
             const element1Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div:nth-child(2) > div > div.fPSBzf.hlUslA.jSqJiD.dMMuNs.oBvEG.dOouYe.fJVVlQ.dNTNvO.Axhdq.dnRKzu.frIWUH.dFrlbO.ksdoCR.jvYutH > div > div > button > div > p';
             const element2Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(1) > div.jsx-f1b6ce0373f41d79.info-tooltip-control > button > div > p';
             const element3Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.jsx-f1b6ce0373f41d79.info-tooltip-control > button > div > p';
-
+    
             // 点击元素1
             log("等待元素1出现...");
             const element1 = await waitForElement(element1Selector);
             await clickElement(element1, "元素1");
-
+    
             // 点击元素2
             log("等待元素2出现...");
             const element2 = await waitForElement(element2Selector);
             await clickElement(element2, "元素2");
-
+    
             // 点击元素3
             log("等待元素3出现...");
             const element3 = await waitForElement(element3Selector);
             await clickElement(element3, "元素3");
-
+    
             log('Magic Newton 脚本执行完毕，跳转至 Beamable Hub 页面。');
             await randomDelay(5000, 10000);
             window.location.href = 'https://hub.beamable.network/modules/questsold';
@@ -476,7 +489,6 @@
             window.location.href = 'https://hub.beamable.network/modules/questsold';
         }
     }
-
     // 脚本7：Beamable Hub 自动化操作
     async function executeScript7() {
         log('执行 Beamable Hub 自动化脚本...');
