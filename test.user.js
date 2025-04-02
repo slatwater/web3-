@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable、Talus、Bithub
 // @namespace    http://tampermonkey.net/
-// @version      3.3
+// @version      3.5
 // @description  自动化操作 Avalon、Glob Shaga、SideQuest、Forge.gg、XtremeVerse、KlokApp、Beamable、Talus 和 Bithub 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -380,7 +380,7 @@
         await randomDelay(1000, 3000);
 
         // 处理对话框中的元素3
-        const dialogSelector = '#dialog-\:r0\: > div > div > div > div > div';
+        const dialogSelector = '#dialog-\\:r0\\: > div > div > div > div > div';
         let dialog;
         try {
             dialog = await waitForSelector(dialogSelector, 10000);
