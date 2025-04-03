@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      5.5
+// @version      5.6
 // @description  自动化操作 Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -697,17 +697,17 @@
             for (const el of potentialElements1) {
                 const text = el.textContent.trim();
                 log(`检查元素1候选: ${text}`);
-                if (text === 'Board') {
+                if (text === 'Quest Board') {
                     element1 = el;
                     break;
                 }
             }
 
             if (!element1) {
-                log('未找到文本为 "Board" 的元素1，尝试等待');
+                log('未找到文本为 "Quest Board" 的元素1，尝试等待');
                 element1 = await waitForVisibleElement(element1Selector);
-                if (element1 && element1.textContent.trim() !== 'Board') {
-                    log('找到元素1，但文本不是 "Board"');
+                if (element1 && element1.textContent.trim() !== 'Quest Board') {
+                    log('找到元素1，但文本不是 "Quest Board"');
                     element1 = null;
                 }
             }
