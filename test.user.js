@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      5.7
+// @version      5.8
 // @description  自动化操作 Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -25,7 +25,7 @@
 
     // 日志输出函数（统一日志格式）
     function log(message) {
-        console.log(`[自动化脚本 v5.3] ${message}`);
+        console.log(`[自动化脚本 v5.8] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -62,7 +62,7 @@
     // 主函数
     async function main() {
         log('脚本启动，等待页面加载...');
-        log('确认脚本版本：v5.3');
+        log('确认脚本版本：v5.8');
         await waitForPageLoad();
         await randomDelay(1000, 3000);
 
@@ -476,7 +476,7 @@
         }
     }
 
-    // 脚本11：Magic Newton Rewards 自动化操作
+    // 脚本11：Magic Newton Rewards 自动化操作（替换为优化后的版本）
     async function executeScript11() {
         log('执行 Magic Newton Rewards 自动化脚本...');
 
@@ -498,9 +498,9 @@
         // 点击元素并验证成功的函数
         async function clickElement(element, description) {
             if (element) {
-                element.click();
+                element.click(); // 使用原生 click() 方法
                 log(`${description} 已触发点击`);
-                await randomDelay(500, 1000);
+                await randomDelay(500, 1000); // 短暂延迟以确保页面响应
                 const stillVisible = document.querySelector(element.tagName + '[class="' + element.className + '"]');
                 if (!stillVisible || stillVisible.offsetParent === null) {
                     log(`${description} 点击后元素状态已变化，点击可能成功`);
@@ -512,26 +512,157 @@
             }
         }
 
+        // 过滤元素7的函数，排除特定状态
+        function filterElement7List(elements) {
+            return Array.from(elements).filter(element => {
+                const style = getComputedStyle(element);
+                const classList = element.className;
+                const textContent = element.textContent.trim();
+
+                // 排除条件1: background-color: transparent; border: none; box-shadow: none; color: white
+                const isTransparentStyle = style.backgroundColor === 'rgba(0, 0, 0, 0)' && 
+                                           style.border === 'none' && 
+                                           style.boxShadow === 'none' && 
+                                           style.color === 'rgb(255, 255, 255)';
+                if (isTransparentStyle) {
+                    log(`排除元素7: 透明样式 - ${element.outerHTML}`);
+                    return false;
+                }
+
+                // 排除条件2: class包含"tile-changed"且color为rgb(167, 153, 255)，文本为"1"
+                const isChangedTile1 = classList.includes('tile-changed') && 
+                                       style.color === 'rgb(167, 153, 255)' && 
+                                       textContent === '1';
+                if (isChangedTile1) {
+                    log(`排除元素7: 已变更样式 (紫色, "1") - ${element.outerHTML}`);
+                    return false;
+                }
+
+                // 排除条件3: class包含"tile-changed"且color为rgb(0, 204, 143)，文本为"2"
+                const isChangedTile2 = classList.includes('tile-changed') && 
+                                       style.color === 'rgb(0, 204, 143)' && 
+                                       textContent === '2';
+                if (isChangedTile2) {
+                    log(`排除元素7: 已变更样式 (绿色, "2") - ${element.outerHTML}`);
+                    return false;
+                }
+
+                // 排除条件4: class包含"tile-changed"且color为rgb(255, 213, 148)，文本为"3"
+                const isChangedTile3 = classList.includes('tile-changed') && 
+                                       style.color === 'rgb(255, 213, 148)' && 
+                                       textContent === '3';
+                if (isChangedTile3) {
+                    log(`排除元素7: 已变更样式 (黄色, "3") - ${element.outerHTML}`);
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        // 检查元素2-1的专用函数
+        async function checkElement2_1(timeout = 10000) {
+            const selector = 'p.gGRRlH.WrOCw.AEdnq.gTXAMX.gsjAMe';
+            const start = Date.now();
+            while (Date.now() - start < timeout) {
+                const elements = document.querySelectorAll(selector);
+                for (const element of elements) {
+                    const style = getComputedStyle(element);
+                    const text = element.textContent.trim();
+                    if (style.color === 'rgb(0, 0, 0)' && text === 'Return Home') {
+                        log(`找到元素2-1：class="${element.className}", style="${element.getAttribute('style')}", text="${text}"`);
+                        return element;
+                    }
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            log(`未能在${timeout}ms内找到元素2-1（class包含"gGRRlH WrOCw AEdnq gTXAMX gsjAMe"，color: black，text: "Return Home"）`);
+            return null;
+        }
+
         try {
             log("等待页面完全加载...");
             await waitForPageLoad();
-            await randomDelay(2000, 5000);
+            await randomDelay(2000, 5000); // 等待2-5秒确保页面稳定
 
-            const element1Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div:nth-child(2) > div > div.fPSBzf.hlUslA.jSqJiD.dMMuNs.oBvEG.dOouYe.fJVVlQ.dNTNvO.Axhdq.dnRKzu.frIWUH.dFrlbO.ksdoCR.jvYutH > div > div > button > div > p';
+            // 定义元素选择器
+            const element1Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(2) > div:nth-child(2) > div > div > div > div > div > button > div > p';
             const element2Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(1) > div.jsx-f1b6ce0373f41d79.info-tooltip-control > button > div > p';
             const element3Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.jsx-f1b6ce0373f41d79.info-tooltip-control > button > div > p';
+            const element4Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(1) > div:nth-child(2) > button > div > p';
+            const element5Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(2) > div:nth-child(1) > div > div > div > div > div > button > div > p';
+            const element6Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.fPSBzf.bYPztT.bYPznK.hdAwi.fzoLlu.qbeer.kiKDyH.dnFyWD.kcKISj.VrCRh.icmKIQ > div:nth-child(2) > div.fPSBzf.cMGtQw.gEYBVn.hYZFkb.jweaqt.jTWvec.hlUslA.fOVJNr.jNyvxD > div > div > div.fPSBzf.bYPztT.bYPznK.pezuA.cMGtQw.pBppg.dMMuNs > button > div';
+            const element7Selector = 'div.tile.jetbrains';
+            const element8Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.fPSBzf.bYPztT.bYPznK.pezuA.cMGtQw.pBppg.dMMuNs > button:nth-child(1) > div';
 
+            // 点击元素1
             log("等待元素1出现...");
             const element1 = await waitForElement(element1Selector);
             await clickElement(element1, "元素1");
 
-            log("等待元素2出现...");
-            const element2 = await waitForElement(element2Selector);
-            await clickElement(element2, "元素2");
+            // 判断元素2-1和元素2
+            log("检查元素2-1和元素2...");
+            const element2_1 = await checkElement2_1(10000);
+            if (element2_1) {
+                await clickElement(element2_1, "元素2-1");
+                log("元素2-1存在，直接跳转至元素5...");
+            } else {
+                log("元素2-1不存在，检查元素2...");
+                const element2 = await waitForElement(element2Selector);
+                await clickElement(element2, "元素2");
 
-            log("等待元素3出现...");
-            const element3 = await waitForElement(element3Selector);
-            await clickElement(element3, "元素3");
+                log("等待元素3出现...");
+                const element3 = await waitForElement(element3Selector);
+                await clickElement(element3, "元素3");
+
+                log("等待元素4出现...");
+                const element4 = await waitForElement(element4Selector);
+                await clickElement(element4, "元素4");
+            }
+
+            // 点击元素5
+            log("等待元素5出现...");
+            const element5 = await waitForElement(element5Selector);
+            await clickElement(element5, "元素5");
+
+            // 点击元素6
+            log("等待元素6出现...");
+            const element6 = await waitForElement(element6Selector);
+            await clickElement(element6, "元素6");
+
+            // 循环点击元素7和元素8三次
+            for (let i = 1; i <= 3; i++) {
+                log(`开始第 ${i} 次元素7和元素8的循环...`);
+
+                while (true) {
+                    const allElement7List = document.querySelectorAll(element7Selector);
+                    const filteredElement7List = filterElement7List(allElement7List);
+
+                    if (filteredElement7List.length === 0) {
+                        log('未找到符合条件的元素7，跳过本次循环');
+                        break;
+                    }
+
+                    const randomIndex = Math.floor(Math.random() * filteredElement7List.length);
+                    const element7 = filteredElement7List[randomIndex];
+                    log(`随机选择过滤后的元素7（第 ${randomIndex + 1} 个），准备点击...`);
+                    await clickElement(element7, `元素7 (第 ${randomIndex + 1} 个)`);
+
+                    const element8 = await waitForElement(element8Selector, 1000);
+                    if (element8) {
+                        log("元素8已出现，准备点击...");
+                        await clickElement(element8, "元素8");
+                        break;
+                    }
+
+                    await randomDelay(1000, 2000);
+                }
+
+                if (i < 3) {
+                    log(`第 ${i} 次循环完成，等待下一轮...`);
+                    await randomDelay(2000, 3000);
+                }
+            }
 
             log('Magic Newton 脚本执行完毕，跳转至 Beamable Hub 页面。');
             await randomDelay(5000, 10000);
