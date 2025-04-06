@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      5.8
+// @version      6.0
 // @description  自动化操作 Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -476,10 +476,10 @@
         }
     }
 
-    // 脚本11：Magic Newton Rewards 自动化操作（替换为优化后的版本）
+    // 脚本11：Magic Newton Rewards 自动化操作（优化后的版本，含点击无效统计）
     async function executeScript11() {
         log('执行 Magic Newton Rewards 自动化脚本...');
-
+    
         // 等待元素出现（支持CSS选择器）
         async function waitForElement(selector, timeout = 20000) {
             const start = Date.now();
@@ -494,7 +494,7 @@
             log(`未能在${timeout}ms内找到可见元素：${selector}`);
             return null;
         }
-
+    
         // 点击元素并验证成功的函数
         async function clickElement(element, description) {
             if (element) {
@@ -504,21 +504,24 @@
                 const stillVisible = document.querySelector(element.tagName + '[class="' + element.className + '"]');
                 if (!stillVisible || stillVisible.offsetParent === null) {
                     log(`${description} 点击后元素状态已变化，点击可能成功`);
+                    return true; // 返回点击成功的标志
                 } else {
                     log(`${description} 点击后元素仍可见，可能未响应`);
+                    return false; // 返回点击失败的标志
                 }
             } else {
                 log(`${description} 未找到`);
+                return false; // 未找到元素视为点击失败
             }
         }
-
+    
         // 过滤元素7的函数，排除特定状态
         function filterElement7List(elements) {
             return Array.from(elements).filter(element => {
                 const style = getComputedStyle(element);
                 const classList = element.className;
                 const textContent = element.textContent.trim();
-
+    
                 // 排除条件1: background-color: transparent; border: none; box-shadow: none; color: white
                 const isTransparentStyle = style.backgroundColor === 'rgba(0, 0, 0, 0)' && 
                                            style.border === 'none' && 
@@ -528,7 +531,7 @@
                     log(`排除元素7: 透明样式 - ${element.outerHTML}`);
                     return false;
                 }
-
+    
                 // 排除条件2: class包含"tile-changed"且color为rgb(167, 153, 255)，文本为"1"
                 const isChangedTile1 = classList.includes('tile-changed') && 
                                        style.color === 'rgb(167, 153, 255)' && 
@@ -537,7 +540,7 @@
                     log(`排除元素7: 已变更样式 (紫色, "1") - ${element.outerHTML}`);
                     return false;
                 }
-
+    
                 // 排除条件3: class包含"tile-changed"且color为rgb(0, 204, 143)，文本为"2"
                 const isChangedTile2 = classList.includes('tile-changed') && 
                                        style.color === 'rgb(0, 204, 143)' && 
@@ -546,7 +549,7 @@
                     log(`排除元素7: 已变更样式 (绿色, "2") - ${element.outerHTML}`);
                     return false;
                 }
-
+    
                 // 排除条件4: class包含"tile-changed"且color为rgb(255, 213, 148)，文本为"3"
                 const isChangedTile3 = classList.includes('tile-changed') && 
                                        style.color === 'rgb(255, 213, 148)' && 
@@ -555,11 +558,11 @@
                     log(`排除元素7: 已变更样式 (黄色, "3") - ${element.outerHTML}`);
                     return false;
                 }
-
+    
                 return true;
             });
         }
-
+    
         // 检查元素2-1的专用函数
         async function checkElement2_1(timeout = 10000) {
             const selector = 'p.gGRRlH.WrOCw.AEdnq.gTXAMX.gsjAMe';
@@ -579,12 +582,12 @@
             log(`未能在${timeout}ms内找到元素2-1（class包含"gGRRlH WrOCw AEdnq gTXAMX gsjAMe"，color: black，text: "Return Home"）`);
             return null;
         }
-
+    
         try {
             log("等待页面完全加载...");
             await waitForPageLoad();
             await randomDelay(2000, 5000); // 等待2-5秒确保页面稳定
-
+    
             // 定义元素选择器
             const element1Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(2) > div:nth-child(2) > div > div > div > div > div > button > div > p';
             const element2Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(1) > div.jsx-f1b6ce0373f41d79.info-tooltip-control > button > div > p';
@@ -594,12 +597,12 @@
             const element6Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.fPSBzf.bYPztT.bYPznK.hdAwi.fzoLlu.qbeer.kiKDyH.dnFyWD.kcKISj.VrCRh.icmKIQ > div:nth-child(2) > div.fPSBzf.cMGtQw.gEYBVn.hYZFkb.jweaqt.jTWvec.hlUslA.fOVJNr.jNyvxD > div > div > div.fPSBzf.bYPztT.bYPznK.pezuA.cMGtQw.pBppg.dMMuNs > button > div';
             const element7Selector = 'div.tile.jetbrains';
             const element8Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.fPSBzf.bYPztT.bYPznK.pezuA.cMGtQw.pBppg.dMMuNs > button:nth-child(1) > div';
-
+    
             // 点击元素1
             log("等待元素1出现...");
             const element1 = await waitForElement(element1Selector);
             await clickElement(element1, "元素1");
-
+    
             // 判断元素2-1和元素2
             log("检查元素2-1和元素2...");
             const element2_1 = await checkElement2_1(10000);
@@ -610,60 +613,77 @@
                 log("元素2-1不存在，检查元素2...");
                 const element2 = await waitForElement(element2Selector);
                 await clickElement(element2, "元素2");
-
+    
                 log("等待元素3出现...");
                 const element3 = await waitForElement(element3Selector);
                 await clickElement(element3, "元素3");
-
+    
                 log("等待元素4出现...");
                 const element4 = await waitForElement(element4Selector);
                 await clickElement(element4, "元素4");
             }
-
+    
             // 点击元素5
             log("等待元素5出现...");
             const element5 = await waitForElement(element5Selector);
             await clickElement(element5, "元素5");
-
+    
             // 点击元素6
             log("等待元素6出现...");
             const element6 = await waitForElement(element6Selector);
             await clickElement(element6, "元素6");
-
-            // 循环点击元素7和元素8三次
+    
+            // 循环点击元素7和元素8三次，新增点击无效统计
+            let clickFailureCount = 0; // 统计元素7点击无效的次数
+            const maxFailures = 7; // 最大允许失败次数
+    
             for (let i = 1; i <= 3; i++) {
                 log(`开始第 ${i} 次元素7和元素8的循环...`);
-
+    
                 while (true) {
                     const allElement7List = document.querySelectorAll(element7Selector);
                     const filteredElement7List = filterElement7List(allElement7List);
-
+    
                     if (filteredElement7List.length === 0) {
                         log('未找到符合条件的元素7，跳过本次循环');
                         break;
                     }
-
+    
                     const randomIndex = Math.floor(Math.random() * filteredElement7List.length);
                     const element7 = filteredElement7List[randomIndex];
                     log(`随机选择过滤后的元素7（第 ${randomIndex + 1} 个），准备点击...`);
-                    await clickElement(element7, `元素7 (第 ${randomIndex + 1} 个)`);
-
+                    const clickSuccess = await clickElement(element7, `元素7 (第 ${randomIndex + 1} 个)`);
+    
+                    if (!clickSuccess) {
+                        clickFailureCount++;
+                        log(`元素7点击无效次数累计: ${clickFailureCount}/${maxFailures}`);
+                        if (clickFailureCount >= maxFailures) {
+                            log(`元素7点击无效次数超过${maxFailures}次，结束循环，跳转至Beamable Hub页面`);
+                            await randomDelay(5000, 10000);
+                            window.location.href = 'https://hub.beamable.network/modules/questsold';
+                            return; // 直接退出函数
+                        }
+                    } else {
+                        // 点击成功时重置计数器
+                        clickFailureCount = 0;
+                    }
+    
                     const element8 = await waitForElement(element8Selector, 1000);
                     if (element8) {
                         log("元素8已出现，准备点击...");
                         await clickElement(element8, "元素8");
                         break;
                     }
-
+    
                     await randomDelay(1000, 2000);
                 }
-
+    
                 if (i < 3) {
                     log(`第 ${i} 次循环完成，等待下一轮...`);
                     await randomDelay(2000, 3000);
                 }
             }
-
+    
             log('Magic Newton 脚本执行完毕，跳转至 Beamable Hub 页面。');
             await randomDelay(5000, 10000);
             window.location.href = 'https://hub.beamable.network/modules/questsold';
