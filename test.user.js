@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      6.0
+// @version      6.3
 // @description  自动化操作 Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -476,7 +476,7 @@
         }
     }
 
-    // 脚本11：Magic Newton Rewards 自动化操作（优化后的版本，含点击无效统计）
+    // 脚本11：Magic Newton Rewards 自动化操作（优化后的版本，含点击无效统计和状态变化检测）
     async function executeScript11() {
         log('执行 Magic Newton Rewards 自动化脚本...');
     
@@ -495,23 +495,61 @@
             return null;
         }
     
-        // 点击元素并验证成功的函数
-        async function clickElement(element, description) {
-            if (element) {
-                element.click(); // 使用原生 click() 方法
-                log(`${description} 已触发点击`);
-                await randomDelay(500, 1000); // 短暂延迟以确保页面响应
+        // 点击元素并检测状态变化的函数（针对元素7优化）
+        async function clickElement(element, description, isElement7 = false) {
+            if (!element) {
+                log(`${description} 未找到`);
+                return false;
+            }
+    
+            // 记录点击前的状态（仅对元素7）
+            let preClickState = null;
+            if (isElement7) {
+                preClickState = {
+                    className: element.className,
+                    color: getComputedStyle(element).color,
+                    textContent: element.textContent.trim(),
+                    backgroundColor: getComputedStyle(element).backgroundColor
+                };
+            }
+    
+            element.click(); // 使用原生 click() 方法
+            log(`${description} 已触发点击`);
+            await randomDelay(500, 1000); // 短暂延迟以确保页面响应
+    
+            if (isElement7) {
+                // 检查点击后的状态
+                const postClickState = {
+                    className: element.className,
+                    color: getComputedStyle(element).color,
+                    textContent: element.textContent.trim(),
+                    backgroundColor: getComputedStyle(element).backgroundColor
+                };
+    
+                // 判断状态是否变化
+                const stateChanged = (
+                    preClickState.className !== postClickState.className ||
+                    preClickState.color !== postClickState.color ||
+                    preClickState.textContent !== postClickState.textContent ||
+                    preClickState.backgroundColor !== postClickState.backgroundColor
+                );
+    
+                if (stateChanged) {
+                    log(`${description} 点击后状态已变化，点击有效`);
+                    return true; // 点击有效
+                } else {
+                    log(`${description} 点击后状态未变化，点击无效`);
+                    return false; // 点击无效
+                }
+            } else {
+                // 非元素7，仅记录可见性变化
                 const stillVisible = document.querySelector(element.tagName + '[class="' + element.className + '"]');
                 if (!stillVisible || stillVisible.offsetParent === null) {
                     log(`${description} 点击后元素状态已变化，点击可能成功`);
-                    return true; // 返回点击成功的标志
                 } else {
                     log(`${description} 点击后元素仍可见，可能未响应`);
-                    return false; // 返回点击失败的标志
                 }
-            } else {
-                log(`${description} 未找到`);
-                return false; // 未找到元素视为点击失败
+                return true; // 非元素7默认返回true，不影响逻辑
             }
         }
     
@@ -652,7 +690,7 @@
                     const randomIndex = Math.floor(Math.random() * filteredElement7List.length);
                     const element7 = filteredElement7List[randomIndex];
                     log(`随机选择过滤后的元素7（第 ${randomIndex + 1} 个），准备点击...`);
-                    const clickSuccess = await clickElement(element7, `元素7 (第 ${randomIndex + 1} 个)`);
+                    const clickSuccess = await clickElement(element7, `元素7 (第 ${randomIndex + 1} 个)`, true);
     
                     if (!clickSuccess) {
                         clickFailureCount++;
