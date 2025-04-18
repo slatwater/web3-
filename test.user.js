@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      6.5
+// @version      6.8
 // @description  自动化操作 Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -13,7 +13,6 @@
 // @match        https://www.magicnewton.com/portal/rewards
 // @match        https://hub.beamable.network/modules/*
 // @match        https://hub.talus.network/loyalty
-// @match        https://bithub.77-bit.com/*
 // @match        https://klokapp.ai/*
 // @updateURL    https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
 // @downloadURL  https://github.com/slatwater/web3-/raw/refs/heads/main/test.user.js
@@ -384,7 +383,7 @@
         await randomDelay(1000, 3000);
 
         // 处理对话框中的元素3
-        const dialogSelector = '#dialog-\\:r0\\: > div > div > div > div > div';
+        const dialogSelector = '#bodyNode .airdrop__AirDropContentContainer-sc-4wk6us-0 > div.styles__Container-sc-1gtzf12-17 > div > div > div > div';
         let dialog;
         try {
             dialog = await waitForSelector(dialogSelector, 10000);
@@ -394,20 +393,22 @@
         }
 
         if (dialog) {
-            const element3XPath = '//*[@id="dialog-:r0:"]/div/div/div/div/div/div[3]/div[1]/div/button/span';
+            const element3Selector = '#bodyNode .airdrop__AirDropContentContainer-sc-4wk6us-0 > div.styles__Container-sc-1gtzf12-17 > div > div > div > div > div:nth-child(3) > div.CounterClipped__Wrapper-sc-w6vnyi-2 button';
             while (true) {
-                const element3Span = document.evaluate(element3XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (!element3Span || !document.querySelector(dialogSelector)) {
+                const button = document.querySelector(element3Selector);
+                if (!button || !document.querySelector(dialogSelector)) {
                     log('对话框中元素3处理完毕或对话框已关闭。');
                     break;
                 }
-                const button = element3Span.closest('button');
-                if (button) {
+                try {
                     button.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     await randomDelay(500, 1500);
                     button.click();
                     log('点击元素3。');
                     await randomDelay(1000, 2000);
+                } catch (error) {
+                    log(`点击元素3失败: ${error.message}`);
+                    break;
                 }
             }
         } else {
@@ -1109,81 +1110,15 @@
             }
 
             await randomDelay(5000, 10000);
-            window.location.href = 'https://bithub.77-bit.com/';
+            window.location.href = 'https://klokapp.ai/';
         } catch (error) {
             log(`Talus Loyalty 脚本执行出错: ${error.message}，尝试跳转至 Bithub 页面`);
             await randomDelay(5000, 10000);
-            window.location.href = 'https://bithub.77-bit.com/';
+            window.location.href = 'https://klokapp.ai/';
         }
     }
 
-    // 脚本9：Bithub 自动化操作
-    async function executeScript9() {
-        log('执行 Bithub 自动化脚本...');
 
-        // 等待元素出现（支持XPath）
-        async function waitForXPath(xpath, timeout = 20000) {
-            const start = Date.now();
-            while (Date.now() - start < timeout) {
-                const element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (element) return element;
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-            throw new Error(`超时：未能在${timeout}ms内找到XPath元素：${xpath}`);
-        }
-
-        // 点击元素并验证成功的函数
-        async function clickElement(element, description) {
-            if (element) {
-                simulateClick(element);
-                log(`${description} 点击成功`);
-                await randomDelay(1000, 3000);
-            } else {
-                log(`${description} 未找到`);
-            }
-        }
-
-        try {
-            log("等待页面完全加载...");
-            await randomDelay(2000, 5000);
-
-            const claimXPath = '//*[@id="__nuxt"]/div[2]/div[4]/div[3]/div/div[4]/div/div[1]';
-            const element2Selector = '#__nuxt > div.root > div.achievements > div.footer.achievements__footer > div.button-frame.section.section--primary.mission-section.footer__daily';
-            const element3Selector = '#__nuxt > div.root > div.daily > div.info.daily__info > div.info__description.description > div.clip-container.common-button.button.description__button > div > div.common-button__content';
-            const element4Selector = '#__nuxt > div.root > div.root__header > div > div.info.header__info > div.info__currencies > div.button-frame.info__group.bits > h1';
-            const element5Selector = '#__nuxt > div.root > div.purchase-popup > div > div.items.items--large.items--secondary > div.button-frame.card.card--daily > div.card__inner > div.clip-container.button.button--daily.card__buy-btn.card__buy-btn--primary > div > div';
-
-            log("开始监控元素1...");
-            const claimElement = await waitForXPath(claimXPath);
-
-            for (let i = 1; i <= 5; i++) {
-                await clickElement(claimElement, `元素1 (第${i}次)`);
-                if (i < 5) {
-                    await randomDelay(3000, 6000);
-                }
-            }
-
-            const element2 = document.querySelector(element2Selector);
-            await clickElement(element2, "元素2");
-
-            const element3 = document.querySelector(element3Selector);
-            await clickElement(element3, "元素3");
-
-            const element4 = document.querySelector(element4Selector);
-            await clickElement(element4, "元素4");
-
-            const element5 = document.querySelector(element5Selector);
-            await clickElement(element5, "元素5");
-
-            log('Bithub 脚本执行完毕，跳转至 KlokApp 页面。');
-            await randomDelay(5000, 10000);
-            window.location.href = 'https://klokapp.ai/app';
-        } catch (error) {
-            log(`Bithub 脚本执行出错: ${error.message}，尝试跳转至 KlokApp 页面`);
-            await randomDelay(5000, 10000);
-            window.location.href = 'https://klokapp.ai/app';
-        }
-    }
 
     // 脚本8：KlokApp Automation
     async function executeScript8() {
