@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      6.8
+// @version      6.9
 // @description  自动化操作 Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -461,7 +461,7 @@
             await waitForPageLoad();
             await randomDelay(2000, 5000); // 等待2-5秒确保页面稳定
 
-            const element1Selector = 'body > div.flex.h-full.flex-col.items-stretch > div.flex.flex-row.items-stretch > div.relative.flex.grow.flex-col.items-center.justify-stretch.overflow-hidden > div.relative.flex.w-full.flex-1.grow.flex-col.justify-between.p-6 > div > div.flex.flex-col.items-stretch.md\\:on-mypage.md\\:relative.md\\:h-full.md\\:flex-1.md\\:overflow-y-auto > div > div > div > div.flex.w-full.flex-col.items-stretch.justify-stretch.gap-4.md\\:flex-row > div.flex.flex-col.items-stretch.shrink-0.grow-0.basis-\\[calc\\(50\\%-8px\\)\\].gap-2 > div:nth-child(2) > div.flex.flex-col.items-stretch.gap-4 > div:nth-child(1) > button';
+            const element1Selector = 'body > div.flex.h-full.flex-col.items-stretch > div.flex.flex-row.items-stretch > div.relative.flex.grow.flex-col.items-center.justify-stretch.overflow-hidden > div.relative.flex.w-full.flex-1.grow.flex-col.justify-between > div > div.flex.flex-col.items-stretch.md\:on-mypage.md\:relative.md\:h-full.md\:flex-1.md\:overflow-y-auto > div > div > div > div.flex.w-full.flex-col.items-stretch.justify-stretch.gap-4.md\:flex-row > div.flex.flex-col.items-stretch.shrink-0.grow-0.basis-\[calc\(50\%-8px\)\].gap-2 > div:nth-child(2) > div.flex.flex-col.items-stretch.gap-4 > div:nth-child(1) > button';
 
             log("等待元素1出现...");
             const element1 = await waitForElement(element1Selector);
