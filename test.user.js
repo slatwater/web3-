@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      6.9
+// @version      7.0
 // @description  自动化操作 Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -424,47 +424,27 @@
     async function executeScript12() {
         log('执行 Mahojin Point 自动化脚本...');
 
-        // 等待元素出现（支持CSS选择器）
-        async function waitForElement(selector, timeout = 20000) {
-            const start = Date.now();
-            while (Date.now() - start < timeout) {
-                const element = document.querySelector(selector);
-                if (element && element.offsetParent !== null && getComputedStyle(element).display !== 'none') {
-                    log(`找到可见元素：${selector}`);
-                    return element;
-                }
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-            log(`未能在${timeout}ms内找到可见元素：${selector}`);
-            return null;
-        }
-
-        // 点击元素并验证成功的函数
-        async function clickElement(element, description) {
-            if (element) {
-                element.click(); // 使用原生 click() 方法
-                log(`${description} 已触发点击`);
-                await randomDelay(500, 1000); // 短暂延迟以确保页面响应
-                const stillVisible = document.querySelector(element.tagName + '[class="' + element.className + '"]');
-                if (!stillVisible || stillVisible.offsetParent === null) {
-                    log(`${description} 点击后元素状态已变化，点击可能成功`);
-                } else {
-                    log(`${description} 点击后元素仍可见，可能未响应`);
-                }
-            } else {
-                log(`${description} 未找到`);
-            }
-        }
-
         try {
             log("等待页面完全加载...");
             await waitForPageLoad();
             await randomDelay(2000, 5000); // 等待2-5秒确保页面稳定
 
-            const element1Selector = 'body > div.flex.h-full.flex-col.items-stretch > div.flex.flex-row.items-stretch > div.relative.flex.grow.flex-col.items-center.justify-stretch.overflow-hidden > div.relative.flex.w-full.flex-1.grow.flex-col.justify-between > div > div.flex.flex-col.items-stretch.md\:on-mypage.md\:relative.md\:h-full.md\:flex-1.md\:overflow-y-auto > div > div > div > div.flex.w-full.flex-col.items-stretch.justify-stretch.gap-4.md\:flex-row > div.flex.flex-col.items-stretch.shrink-0.grow-0.basis-\[calc\(50\%-8px\)\].gap-2 > div:nth-child(2) > div.flex.flex-col.items-stretch.gap-4 > div:nth-child(1) > button';
+            // 优化后的选择器
+            const element1Selector = 'div[class*="md\\:on-mypage"] div.flex.w-full.flex-col.items-stretch.justify-stretch.gap-4.md\\:flex-row > div[class*="basis-\\[calc\\(50\\%-8px\\)\\]"] > div:nth-child(2) > div > div:nth-child(1) > button';
 
             log("等待元素1出现...");
-            const element1 = await waitForElement(element1Selector);
+            let element1 = await waitForElement(element1Selector);
+
+            // 备用选择器（如果主选择器失败）
+            if (!element1) {
+                log('主选择器未找到元素1，尝试备用选择器...');
+                const backupSelector = 'div[class*="md\\:on-mypage"] button';
+                element1 = await waitForElement(backupSelector);
+                if (element1) {
+                    log('备用选择器找到元素1');
+                }
+            }
+
             await clickElement(element1, "元素1");
 
             log('Mahojin Point 脚本执行完毕，跳转至 Magic Newton 页面。');
