@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      7.0
+// @version      7.1
 // @description  自动化操作 Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -423,38 +423,42 @@
     // 脚本12：Mahojin Point 自动化操作
     async function executeScript12() {
         log('执行 Mahojin Point 自动化脚本...');
-
+    
         try {
             log("等待页面完全加载...");
             await waitForPageLoad();
             await randomDelay(2000, 5000); // 等待2-5秒确保页面稳定
-
+    
             // 优化后的选择器
-            const element1Selector = 'div[class*="md\\:on-mypage"] div.flex.w-full.flex-col.items-stretch.justify-stretch.gap-4.md\\:flex-row > div[class*="basis-\\[calc\\(50\\%-8px\\)\\]"] > div:nth-child(2) > div > div:nth-child(1) > button';
-
+            const element1Selector = 'div[class*="md\\:on-mypage"] div[class*="gap-4 md\\:flex-row"] > div[class*="basis-\\[calc\\(50\\%-8px\\)\\]"] > div:nth-child(2) > div > div:nth-child(1) > button';
+    
             log("等待元素1出现...");
-            let element1 = await waitForElement(element1Selector);
-
-            // 备用选择器（如果主选择器失败）
+            let element1 = await waitForSelector(element1Selector, 20000);
             if (!element1) {
                 log('主选择器未找到元素1，尝试备用选择器...');
                 const backupSelector = 'div[class*="md\\:on-mypage"] button';
-                element1 = await waitForElement(backupSelector);
+                element1 = await waitForSelector(backupSelector, 10000);
                 if (element1) {
                     log('备用选择器找到元素1');
                 }
             }
-
-            await clickElement(element1, "元素1");
-
+    
+            if (element1) {
+                simulateClick(element1);
+                log('元素1 已触发点击');
+                await randomDelay(500, 1000);
+            } else {
+                log('元素1 未找到，跳过点击');
+            }
+    
             log('Mahojin Point 脚本执行完毕，跳转至 Magic Newton 页面。');
             await randomDelay(5000, 10000);
-            window.location.href = 'https://www.magicnewton.com/portal/rewards';
-        } catch (error) {
-            log(`Mahojin Point 脚本执行出错: ${error.message}，尝试跳转至 Magic Newton 页面`);
-            await randomDelay(5000, 10000);
-            window.location.href = 'https://www.magicnewton.com/portal/rewards';
-        }
+                window.location.href = 'https://www.magicnewton.com/portal/rewards';
+            } catch (error) {
+                log(`Mahojin Point 脚本执行出错: ${error.message}，尝试跳转至 Magic Newton 页面`);
+                await randomDelay(5000, 10000);
+                window.location.href = 'https://www.magicnewton.com/portal/rewards';
+            }
     }
 
     // 脚本11：Magic Newton Rewards 自动化操作（优化后的版本，含点击无效统计和状态变化检测）
