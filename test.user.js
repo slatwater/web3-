@@ -1,12 +1,13 @@
 // ==UserScript==
-// @name         自动化脚本：Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
+// @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      7.2
-// @description  自动化操作 Avalon、Shaga、SideQuest、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
+// @version      7.3
+// @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
 // @match        https://sidequest.rcade.game/*
+// @match        https://testnet.humanity.org/dashboard
 // @match        https://forge.gg/quests
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://app.mahojin.ai/my/point
@@ -23,7 +24,7 @@
 
     // 日志输出函数（统一日志格式）
     function log(message) {
-        console.log(`[自动化脚本 v5.8] ${message}`);
+        console.log(`[自动化脚本 v7.3] ${message}`);
     }
 
     // 随机延迟函数（ms）
@@ -60,7 +61,7 @@
     // 主函数
     async function main() {
         log('脚本启动，等待页面加载...');
-        log('确认脚本版本：v5.8');
+        log('确认脚本版本：v7.3');
         await waitForPageLoad();
         await randomDelay(1000, 3000);
 
@@ -70,13 +71,12 @@
             if (currentURL.includes('quests.avalon.online')) await executeScript0();
             else if (currentURL.includes('glob.shaga.xyz/main')) await executeScript2();
             else if (currentURL.includes('sidequest.rcade.game')) await executeScript3();
+            else if (currentURL.includes('testnet.humanity.org/dashboard')) await executeScript5();
             else if (currentURL.includes('forge.gg/quests')) await executeScript4();
             else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) await executeScript6();
             else if (currentURL.includes('app.mahojin.ai/my/point')) await executeScript12();
             else if (currentURL.includes('www.magicnewton.com/portal/rewards')) await executeScript11();
-            else if (currentURL.includes('hub.beamable.network/modules')) await executeScript7();
             else if (currentURL.includes('hub.talus.network/loyalty')) await executeScript10();
-            else if (currentURL.includes('bithub.77-bit.com')) await executeScript9();
             else if (currentURL.includes('klokapp.ai')) await executeScript8();
             else log('当前页面不在脚本处理范围内。');
         } catch (error) {
@@ -151,9 +151,9 @@
         try {
             missionList = await waitForSelector(missionListSelector);
         } catch (error) {
-            log(`任务列表未找到: ${error.message}，跳转至 Forge.gg 页面`);
+            log(`任务列表未找到: ${error.message}，跳转至 Humanity 页面`);
             await randomDelay(5000, 10000);
-            window.location.href = 'https://forge.gg/quests';
+            window.location.href = 'https://testnet.humanity.org/dashboard';
             return;
         }
 
@@ -256,9 +256,40 @@
             log(`小窗口2处理失败: ${error.message}，继续执行...`);
         }
 
-        log('SideQuest 脚本执行完毕，跳转至 Forge.gg 页面。');
+        log('SideQuest 脚本执行完毕，跳转至 Humanity 页面。');
         await randomDelay(5000, 10000);
-        window.location.href = 'https://forge.gg/quests';
+        window.location.href = 'https://testnet.humanity.org/dashboard';
+    }
+
+    // 脚本5：Humanity Dashboard 自动化操作
+    async function executeScript5() {
+        log('执行 Humanity Dashboard 自动化脚本...');
+
+        try {
+            log('等待页面完全加载...');
+            await waitForPageLoad();
+            await randomDelay(1000, 3000);
+
+            const buttonSelector = 'button.px-4.py-1\\.5.rounded-lg.text-sm.font-semibold.bg-\\[\\#6DFB3F\\]';
+            let claimButton;
+            try {
+                claimButton = await waitForSelector(buttonSelector, 10000);
+                log('找到 Claim 按钮，准备点击');
+                await randomDelay(500, 1500);
+                simulateClick(claimButton);
+                log('Claim 按钮已点击');
+            } catch (error) {
+                log(`未找到 Claim 按钮或点击失败: ${error.message}`);
+            }
+
+            log('Humanity 脚本执行完毕，跳转至 Forge.gg 页面。');
+            await randomDelay(5000, 10000);
+            window.location.href = 'https://forge.gg/quests';
+        } catch (error) {
+            log(`Humanity 脚本执行出错: ${error.message}，尝试跳转至 Forge.gg 页面`);
+            await randomDelay(5000, 10000);
+            window.location.href = 'https://forge.gg/quests';
+        }
     }
 
     // 脚本4：Forge.gg Quests 自动化操作
@@ -270,7 +301,7 @@
         while (!document.querySelector(spinnerSelector)) {
             const element1 = await waitForSelector(element1Selector, 10000);
             await randomDelay(500, 1000);
-            element1.click();
+            simulateClick(element1);
             log('点击元素1，等待加载...');
             await randomDelay(1000, 2000);
         }
@@ -292,12 +323,12 @@
 
         const element2Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > div.home-rewards__head > div > button';
         const element2 = await waitForSelector(element2Selector, 20000);
-        element2.click();
+        simulateClick(element2);
         log('首次点击元素2。');
 
         const intervalId = setInterval(async () => {
             if (document.querySelector(element2Selector)) {
-                document.querySelector(element2Selector).click();
+                simulateClick(document.querySelector(element2Selector));
                 log('定期点击元素2。');
             }
         }, 50000);
@@ -327,7 +358,7 @@
         const element1XPath = '//*[@id="bodyNode"]/div[4]/div[1]/div/div[1]/div[2]/div[2]';
         const element1 = document.evaluate(element1XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         if (element1) {
-            element1.click();
+            simulateClick(element1);
             log('点击元素1。');
         } else {
             log('未找到元素1，跳过点击。');
@@ -356,7 +387,7 @@
                 for (const btn of verifyButtons) {
                     btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     await randomDelay(500, 1500);
-                    btn.click();
+                    simulateClick(btn);
                     log('点击一个 Verify 按钮。');
                     await randomDelay(500, 1000);
                 }
@@ -373,7 +404,7 @@
         const element2XPath = '//*[@id="bodyNode"]/div[4]/div[1]/div/div[2]/div/div/div[2]/div[2]/div[2]/div/div/div/div[3]/div';
         const element2 = document.evaluate(element2XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         if (element2) {
-            element2.click();
+            simulateClick(element2);
             log('点击元素2。');
         } else {
             log('未找到元素2，跳过点击。');
@@ -402,7 +433,7 @@
                 try {
                     button.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     await randomDelay(500, 1500);
-                    button.click();
+                    simulateClick(button);
                     log('点击元素3。');
                     await randomDelay(1000, 2000);
                 } catch (error) {
@@ -426,9 +457,8 @@
         try {
             log("等待页面完全加载...");
             await waitForPageLoad();
-            await randomDelay(2000, 5000); // 等待2-5秒确保页面稳定
+            await randomDelay(2000, 5000);
     
-            // 优化后的选择器
             const element1Selector = 'div[class*="md\\:on-mypage"] div[class*="gap-4 md\\:flex-row"] > div[class*="basis-\\[calc\\(50\\%-8px\\)\\]"] > div:nth-child(2) > div > div:nth-child(1) > button';
     
             log("等待元素1出现...");
@@ -445,26 +475,25 @@
             if (element1) {
                 simulateClick(element1);
                 log('元素1 已触发点击');
-                await randomDelay(500, 1000);
+                await[randomDelay](500, 1000);
             } else {
                 log('元素1 未找到，跳过点击');
             }
     
             log('Mahojin Point 脚本执行完毕，跳转至 Magic Newton 页面。');
             await randomDelay(5000, 10000);
-                window.location.href = 'https://www.magicnewton.com/portal/rewards';
-            } catch (error) {
-                log(`Mahojin Point 脚本执行出错: ${error.message}，尝试跳转至 Magic Newton 页面`);
-                await randomDelay(5000, 10000);
-                window.location.href = 'https://www.magicnewton.com/portal/rewards';
-            }
+            window.location.href = 'https://www.magicnewton.com/portal/rewards';
+        } catch (error) {
+            log(`Mahojin Point 脚本执行出错: ${error.message}，尝试跳转至 Magic Newton 页面`);
+            await randomDelay(5000, 10000);
+            window.location.href = 'https://www.magicnewton.com/portal/rewards';
+        }
     }
 
-    // 脚本11：Magic Newton Rewards 自动化操作（优化后的版本，含点击无效统计和状态变化检测）
+    // 脚本11：Magic Newton Rewards 自动化操作
     async function executeScript11() {
         log('执行 Magic Newton Rewards 自动化脚本...');
     
-        // 等待元素出现（支持CSS选择器）
         async function waitForElement(selector, timeout = 20000) {
             const start = Date.now();
             while (Date.now() - start < timeout) {
@@ -479,14 +508,12 @@
             return null;
         }
     
-        // 点击元素并检测状态变化的函数（针对元素7优化）
         async function clickElement(element, description, isElement7 = false) {
             if (!element) {
                 log(`${description} 未找到`);
                 return false;
             }
     
-            // 记录点击前的状态（仅对元素7）
             let preClickState = null;
             if (isElement7) {
                 preClickState = {
@@ -497,12 +524,11 @@
                 };
             }
     
-            element.click(); // 使用原生 click() 方法
+            simulateClick(element);
             log(`${description} 已触发点击`);
-            await randomDelay(500, 1000); // 短暂延迟以确保页面响应
+            await randomDelay(500, 1000);
     
             if (isElement7) {
-                // 检查点击后的状态
                 const postClickState = {
                     className: element.className,
                     color: getComputedStyle(element).color,
@@ -510,7 +536,6 @@
                     backgroundColor: getComputedStyle(element).backgroundColor
                 };
     
-                // 判断状态是否变化
                 const stateChanged = (
                     preClickState.className !== postClickState.className ||
                     preClickState.color !== postClickState.color ||
@@ -520,31 +545,28 @@
     
                 if (stateChanged) {
                     log(`${description} 点击后状态已变化，点击有效`);
-                    return true; // 点击有效
+                    return true;
                 } else {
                     log(`${description} 点击后状态未变化，点击无效`);
-                    return false; // 点击无效
+                    return false;
                 }
             } else {
-                // 非元素7，仅记录可见性变化
                 const stillVisible = document.querySelector(element.tagName + '[class="' + element.className + '"]');
                 if (!stillVisible || stillVisible.offsetParent === null) {
                     log(`${description} 点击后元素状态已变化，点击可能成功`);
                 } else {
                     log(`${description} 点击后元素仍可见，可能未响应`);
                 }
-                return true; // 非元素7默认返回true，不影响逻辑
+                return true;
             }
         }
     
-        // 过滤元素7的函数，排除特定状态
         function filterElement7List(elements) {
             return Array.from(elements).filter(element => {
                 const style = getComputedStyle(element);
                 const classList = element.className;
                 const textContent = element.textContent.trim();
     
-                // 排除条件1: background-color: transparent; border: none; box-shadow: none; color: white
                 const isTransparentStyle = style.backgroundColor === 'rgba(0, 0, 0, 0)' && 
                                            style.border === 'none' && 
                                            style.boxShadow === 'none' && 
@@ -554,7 +576,6 @@
                     return false;
                 }
     
-                // 排除条件2: class包含"tile-changed"且color为rgb(167, 153, 255)，文本为"1"
                 const isChangedTile1 = classList.includes('tile-changed') && 
                                        style.color === 'rgb(167, 153, 255)' && 
                                        textContent === '1';
@@ -563,7 +584,6 @@
                     return false;
                 }
     
-                // 排除条件3: class包含"tile-changed"且color为rgb(0, 204, 143)，文本为"2"
                 const isChangedTile2 = classList.includes('tile-changed') && 
                                        style.color === 'rgb(0, 204, 143)' && 
                                        textContent === '2';
@@ -572,7 +592,6 @@
                     return false;
                 }
     
-                // 排除条件4: class包含"tile-changed"且color为rgb(255, 213, 148)，文本为"3"
                 const isChangedTile3 = classList.includes('tile-changed') && 
                                        style.color === 'rgb(255, 213, 148)' && 
                                        textContent === '3';
@@ -585,7 +604,6 @@
             });
         }
     
-        // 检查元素2-1的专用函数
         async function checkElement2_1(timeout = 10000) {
             const selector = 'p.gGRRlH.WrOCw.AEdnq.gTXAMX.gsjAMe';
             const start = Date.now();
@@ -608,9 +626,8 @@
         try {
             log("等待页面完全加载...");
             await waitForPageLoad();
-            await randomDelay(2000, 5000); // 等待2-5秒确保页面稳定
+            await randomDelay(2000, 5000);
     
-            // 定义元素选择器
             const element1Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(2) > div:nth-child(2) > div > div > div > div > div > button > div > p';
             const element2Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(1) > div.jsx-f1b6ce0373f41d79.info-tooltip-control > button > div > p';
             const element3Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.jsx-f1b6ce0373f41d79.info-tooltip-control > button > div > p';
@@ -620,12 +637,10 @@
             const element7Selector = 'div.tile.jetbrains';
             const element8Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.fPSBzf.bYPztT.bYPznK.pezuA.cMGtQw.pBppg.dMMuNs > button:nth-child(1) > div';
     
-            // 点击元素1
             log("等待元素1出现...");
             const element1 = await waitForElement(element1Selector);
             await clickElement(element1, "元素1");
     
-            // 判断元素2-1和元素2
             log("检查元素2-1和元素2...");
             const element2_1 = await checkElement2_1(10000);
             if (element2_1) {
@@ -645,19 +660,16 @@
                 await clickElement(element4, "元素4");
             }
     
-            // 点击元素5
             log("等待元素5出现...");
             const element5 = await waitForElement(element5Selector);
             await clickElement(element5, "元素5");
     
-            // 点击元素6
             log("等待元素6出现...");
             const element6 = await waitForElement(element6Selector);
             await clickElement(element6, "元素6");
     
-            // 循环点击元素7和元素8三次，新增点击无效统计
-            let clickFailureCount = 0; // 统计元素7点击无效的次数
-            const maxFailures = 7; // 最大允许失败次数
+            let clickFailureCount = 0;
+            const maxFailures = 7;
     
             for (let i = 1; i <= 3; i++) {
                 log(`开始第 ${i} 次元素7和元素8的循环...`);
@@ -680,13 +692,12 @@
                         clickFailureCount++;
                         log(`元素7点击无效次数累计: ${clickFailureCount}/${maxFailures}`);
                         if (clickFailureCount >= maxFailures) {
-                            log(`元素7点击无效次数超过${maxFailures}次，结束循环，跳转至Beamable Hub页面`);
+                            log(`元素7点击无效次数超过${maxFailures}次，结束循环，跳转至 Talus 页面`);
                             await randomDelay(5000, 10000);
-                            window.location.href = 'https://hub.beamable.network/modules/questsold';
-                            return; // 直接退出函数
+                            window.location.href = 'https://hub.talus.network/loyalty';
+                            return;
                         }
                     } else {
-                        // 点击成功时重置计数器
                         clickFailureCount = 0;
                     }
     
@@ -706,23 +717,20 @@
                 }
             }
     
-            log('Magic Newton 脚本执行完毕，跳转至 Beamable Hub 页面。');
+            log('Magic Newton 脚本执行完毕，跳转至 Talus 页面。');
             await randomDelay(5000, 10000);
-            window.location.href = 'https://hub.beamable.network/modules/questsold';
+            window.location.href = 'https://hub.talus.network/loyalty';
         } catch (error) {
-            log(`Magic Newton 脚本执行出错: ${error.message}，尝试跳转至 Beamable Hub 页面`);
+            log(`Magic Newton 脚本执行出错: ${error.message}，尝试跳转至 Talus 页面`);
             await randomDelay(5000, 10000);
             window.location.href = 'https://hub.talus.network/loyalty';
         }
     }
 
-
-
     // 脚本10：Talus Loyalty 自动化操作
     async function executeScript10() {
         log('执行 Talus Loyalty 自动化脚本...');
 
-        // 等待元素出现（支持XPath和CSS选择器，返回null而不是抛出错误）
         async function waitForElement(selector, isXPath = false, timeout = 20000) {
             const start = Date.now();
             while (Date.now() - start < timeout) {
@@ -739,7 +747,6 @@
             return null;
         }
 
-        // 优化元素3的识别函数
         async function findElement3(timeout = 20000) {
             const start = Date.now();
             while (Date.now() - start < timeout) {
@@ -756,7 +763,6 @@
             return null;
         }
 
-        // 点击元素并验证成功的函数
         async function clickElement(element, description) {
             if (element) {
                 simulateClick(element);
@@ -786,7 +792,7 @@
             while (true) {
                 const element4 = document.evaluate(element4XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 if (!element4) {
-                    log("元素4已消失，跳转至 Bithub 页面");
+                    log("元素4已消失，跳转至 KlokApp 页面");
                     break;
                 }
                 await clickElement(element4, "元素4");
@@ -796,13 +802,11 @@
             await randomDelay(5000, 10000);
             window.location.href = 'https://klokapp.ai/';
         } catch (error) {
-            log(`Talus Loyalty 脚本执行出错: ${error.message}，尝试跳转至 Bithub 页面`);
+            log(`Talus Loyalty 脚本执行出错: ${error.message}，尝试跳转至 KlokApp 页面`);
             await randomDelay(5000, 10000);
             window.location.href = 'https://klokapp.ai/';
         }
     }
-
-
 
     // 脚本8：KlokApp Automation
     async function executeScript8() {
@@ -857,74 +861,102 @@
 
         const loginButtonSelector = 'body > div.AuthContainer_container__lGPSt > div > div.style_loginBtns__HdAFX > button.style_button__pYQlj.style_primary__w2PcZ';
         const element2Selector = 'body > div.page_container__FA90Q.page_empty__aDXOo > div.flex.justify-between.gap-10 > div.style_sidebar__efxYk > div.flex.flex-col.xs\\:sticky.md\\:fixed.md\\:top-\\[32px\\].xs\\:top-0.bg-\\[\\#14171b\\].z-10.xs\\:pt-8.xs\\:pb-4.lg\\:py-0 > a';
-        const element2XPath = '/html/body/div[1]/div[2]/div[1]/div[1]/a';
-        const errorMessageSelector = 'h2[style="font-size: 14px; font-weight: 400; line-height: 28px; margin: 0px 8px;"]';
-
-        try {
-            const loginButton = await checkElementExists(loginButtonSelector);
-            if (loginButton) {
-                log('找到登录按钮，准备点击...');
-                simulateClick(loginButton);
-                log('登录按钮已点击，等待循环操作元素出现...');
-
-                const startWait = Date.now();
-                while (Date.now() - startWait < 30000) {
-                    const errorMessage = document.querySelector(errorMessageSelector);
-                    if (errorMessage && errorMessage.textContent.includes('Application error')) {
-                        log('检测到客户端错误，刷新页面...');
-                        window.location.reload();
-                        await new Promise(resolve => setTimeout(resolve, randomDelay(5000, 10000)));
-                        break;
-                    }
-
-                    const buttons = await getButtons(5000).catch(() => []);
-                    if (buttons.length > 0) {
-                        log('循环操作元素已就绪，开始执行循环...');
-                        break;
-                    }
-                    await randomDelay(500, 1000);
-                }
-            } else {
-                log('未找到登录按钮，直接执行循环操作...');
-            }
-
-            for (let i = 1; i <= 12; i++) {
-                log(`开始第 ${i} 次循环...`);
-
-                const buttons = await getButtons();
-                if (buttons.length < 1) {
-                    log('未找到任何按钮，跳过本次循环...');
-                    continue;
-                }
-                log(`找到 ${buttons.length} 个按钮可供选择。`);
-
-                const randomIndex = Math.floor(Math.random() * buttons.length);
-                const selectedButton = buttons[randomIndex];
-                log(`随机选择按钮 ${randomIndex + 1}，准备点击...`);
-                simulateClick(selectedButton);
-
-                await randomDelay(8000, 10000);
-
-                try {
-                    const element2 = await waitForElement(element2Selector, element2XPath);
-                    log('找到元素2，准备点击...');
-                    simulateClick(element2);
-                } catch (error) {
-                    log(`点击元素2失败: ${error.message}，继续下一循环...`);
-                }
-
-                if (i < 12) {
-                    log(`第 ${i} 次循环完成，等待下一轮...`);
-                    await randomDelay(2000, 3000);
-                }
-            }
-
-            log('KlokApp 脚本执行完毕，脚本结束。');
-        } catch (error) {
-            log(`KlokApp 脚本执行出错: ${error.message}`);
+        const element2XPath = '/html/body/div[1]/div[2]/div[1]/div[1  let element1 = document.querySelector(element1Selector); 
+        if (element1) {
+            log('元素1 已找到，准备点击');
+            simulateClick(element1);
+            log('元素1 已点击');
+        } else {
+            log('未找到元素1，跳过点击');
         }
+        await randomDelay(1000, 2000);
+        log('Mahojin Point 脚本执行完毕，跳转至 Magic Newton 页面。');
+        await randomDelay(5000, 10000);
+        window.location.href = 'https://www.magicnewton.com/portal/rewards';
+    } catch (error) {
+        log(`Mahojin Point 脚本执行出错: ${error.message}，尝试跳转至 Magic Newton 页面`);
+        await randomDelay(5000, 10000);
+        window.location.href = 'https://www.magicnewton.com/portal/rewards';
     }
+}
 
-    // 执行主函数
-    main().catch(error => log(`脚本执行出错: ${error}`));
+// 脚本11：Magic Newton Rewards 自动化操作
+async function executeScript11() {
+    log('执行 Magic Newton Rewards 自动化脚本...');
+    try {
+        log("等待页面完全加载...");
+        await waitForPageLoad();
+        await randomDelay(2000, 5000);
+        const element1Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(2) > div:nth-child(2) > div > div > div > div > div > button > div > p';
+        let element1 = document.querySelector(element1Selector);
+        if (element1) {
+            log('元素1 已找到，准备点击');
+            simulateClick(element1);
+            log('元素1 已点击');
+        } else {
+            log('未找到元素1，跳过点击');
+        }
+        await randomDelay(1000, 2000);
+        log('Magic Newton 脚本执行完毕，跳转至 Talus 页面。');
+        await randomDelay(5000, 10000);
+        window.location.href = 'https://hub.talus.network/loyalty';
+    } catch (error) {
+        log(`Magic Newton 脚本执行出错: ${error.message}，尝试跳转至 Talus 页面`);
+        await randomDelay(5000, 10000);
+        window.location.href = 'https://hub.talus.network/loyalty';
+    }
+}
+
+// 脚本10：Talus Loyalty 自动化操作
+async function executeScript10() {
+    log('执行 Talus Loyalty 自动化脚本...');
+    try {
+        log("等待页面完全加载...");
+        await waitForPageLoad();
+        await randomDelay(2000, 5000);
+        const element1Selector = '#loyalty-quest-root-check_in > div > div.flex.items-center.gap-3.order-2.lg\\:order-none > button';
+        let element1 = document.querySelector(element1Selector);
+        if (element1) {
+            log('元素1 已找到，准备点击');
+            simulateClick(element1);
+            log('元素1 已点击');
+        } else {
+            log('未找到元素1，跳过点击');
+        }
+        await randomDelay(1000, 2000);
+        log('Talus Loyalty 脚本执行完毕，跳转至 KlokApp 页面。');
+        await randomDelay(5000, 10000);
+        window.location.href = 'https://klokapp.ai/';
+    } catch (error) {
+        log(`Talus Loyalty 脚本执行出错: ${error.message}，尝试跳转至 KlokApp 页面`);
+        await randomDelay(5000, 10000);
+        window.location.href = 'https://klokapp.ai/';
+    }
+}
+
+// 脚本8：KlokApp Automation
+async function executeScript8() {
+    log('执行 KlokApp 自动化脚本...');
+    try {
+        log("等待页面完全加载...");
+        await waitForPageLoad();
+        await randomDelay(2000, 5000);
+        const element1Selector = 'body > div.page_container__FA90Q.page_empty__aDXOo > div.flex.justify-between.gap-10 > div.style_sidebar__efxYk > div.flex.flex-col.xs\\:sticky.md\\:fixed.md\\:top-\\[32px\\].xs\\:top-0.bg-\\[\\#14171b\\].z-10.xs\\:pt-8.xs\\:pb-4.lg\\:py-0 > a';
+        let element1 = document.querySelector(element1Selector);
+        if (element1) {
+            log('元素1 已找到，准备点击');
+            simulateClick(element1);
+            log('元素1 已点击');
+        } else {
+            log('未找到元素1，跳过点击');
+        }
+        await randomDelay(1000, 2000);
+        log('KlokApp 脚本执行完毕，脚本结束。');
+    } catch (error) {
+        log(`KlokApp 脚本执行出错: ${error.message}`);
+    }
+}
+
+// 执行主函数
+main().catch(error => log(`脚本执行出错: ${error}`));
 })();
