@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      7.5
+// @version      7.6
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -76,7 +76,6 @@
             else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) await executeScript6();
             else if (currentURL.includes('app.mahojin.ai/my/point')) await executeScript12();
             else if (currentURL.includes('www.magicnewton.com/portal/rewards')) await executeScript11();
-            else if (currentURL.includes('hub.beamable.network/modules')) await executeScript7();
             else if (currentURL.includes('hub.talus.network/loyalty')) await executeScript10();
             else if (currentURL.includes('bithub.77-bit.com')) await executeScript9();
             else if (currentURL.includes('klokapp.ai')) await executeScript8();
@@ -652,11 +651,11 @@
             await randomDelay(2000, 5000); // 等待2-5秒确保页面稳定
 
             // 定义元素选择器
-            const element1Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(2) > div:nth-child(2) > div > div > div > div > div > button > div > p';
+            const element1Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(1) > div.fPSBzf.iHMUPj.pezuA.iRgpoQ.hlUslA.content-column-50 > div.fPSBzf.hlUslA.jSqJiD.dMMuNs.oBvEG.dOouYe.fJVVlQ.dNTNvO.Axhdq.frIWUH.dFrlbO.ksdoCR.jvYutH > div > div > div > div > button > div > p';
             const element2Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(1) > div.jsx-f1b6ce0373f41d79.info-tooltip-control > button > div > p';
             const element3Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.jsx-f1b6ce0373f41d79.info-tooltip-control > button > div > p';
             const element4Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(1) > div:nth-child(2) > button > div > p';
-            const element5Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(2) > div:nth-child(1) > div > div > div > div > div > button > div > p';
+            const element5Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div:nth-child(2) > div:nth-child(2) > div > div > div > div > div > button > div > p';
             const element6Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.fPSBzf.bYPztT.bYPznK.hdAwi.fzoLlu.qbeer.kiKDyH.dnFyWD.kcKISj.VrCRh.icmKIQ > div:nth-child(2) > div.fPSBzf.cMGtQw.gEYBVn.hYZFkb.dnSWCz.jTWvec.hlUslA.fOVJNr.jNyvxD > div > div > div.fPSBzf.bYPztT.bYPznK.pezuA.cMGtQw.pBppg.dMMuNs > button';
             const element7Selector = 'div.tile.jetbrains';
             const element8Selector = 'body > div.dMMuNs.kcKISj > div.fPSBzf.bYPztT.dKLBtz.iRgpoQ.container-page-loaded > div.fPSBzf.container-content > div > div.fPSBzf.bYPztT.bYPznK.pezuA.cMGtQw.pBppg.dMMuNs > button:nth-child(1) > div';
@@ -723,7 +722,7 @@
                         if (clickFailureCount >= maxFailures) {
                             log(`元素7点击无效次数超过${maxFailures}次，结束循环，跳转至Beamable Hub页面`);
                             await randomDelay(5000, 10000);
-                            window.location.href = 'https://hub.beamable.network/modules/questsold';
+                            window.location.href = 'https://hub.talus.network/loyalty';
                             return; // 直接退出函数
                         }
                     } else {
