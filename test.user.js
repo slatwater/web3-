@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      8.0
+// @version      8.1
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -269,7 +269,7 @@
         try {
             log('等待页面完全加载...');
             await waitForPageLoad();
-            await randomDelay(2000, 5000);
+            await randomDelay(6000, 10000);
 
             const buttonSelector = 'button.px-4.py-1\\.5.rounded-lg.text-sm.font-semibold.bg-\\[\\#6DFB3F\\]';
             const backupSelector = 'button:not([disabled])[class*="bg-"]:contains("Claim")';
@@ -286,7 +286,7 @@
                 log('准备点击 Claim 按钮');
                 simulateClick(claimButton);
                 log('Claim 按钮已点击');
-                await randomDelay(500, 1500);
+                await randomDelay(2000, 2500);
             } else {
                 log('未找到 Claim 按钮，跳过点击');
             }
