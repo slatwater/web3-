@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      8.3
+// @version      8.5
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -949,7 +949,7 @@
                     log(`点击元素2失败: ${error.message}，继续下一循环...`);
                 }
 
-                if (i < 12) {
+                if (i < 30) {
                     log(`第 ${i} 次循环完成，等待下一轮...`);
                     await randomDelay(2000, 3000);
                 }
