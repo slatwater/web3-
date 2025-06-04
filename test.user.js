@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      8.5
+// @version      8.7
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -233,7 +233,7 @@
             simulateClick(element3);
             log('点击Spin按钮，等待小窗口2...');
 
-            const smallWindow2Selector = 'body > div:nth-child(8) > div > div > div > div';
+            const smallWindow2Selector = 'body > div:nth-child(6) > div > div > div > div';
             await waitForSelector(smallWindow2Selector, 10000);
             const element4Selector = `${smallWindow2Selector} > button.spin-btn`;
             const element4 = await waitForSelector(element4Selector, 10000);
