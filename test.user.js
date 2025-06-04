@@ -146,7 +146,7 @@
     // 脚本3：SideQuest 自动化操作
     async function executeScript3() {
         log('执行 SideQuest 自动化脚本...');
-
+    
         const missionListSelector = '#root > div > div > div.main > div.content.undefined > div > div.mission-list';
         let missionList;
         try {
@@ -157,19 +157,19 @@
             window.location.href = 'https://testnet.humanity.org/dashboard';
             return;
         }
-
+    
         while (true) {
             const buttons = missionList.querySelectorAll('button');
             if (buttons.length === 0) {
                 log('任务列表中无按钮，进入第二步...');
                 break;
             }
-
+    
             const randomIndex = Math.floor(Math.random() * buttons.length);
             const selectedButton = buttons[randomIndex];
             log(`点击任务按钮 ${randomIndex + 1}...`);
             simulateClick(selectedButton);
-
+    
             async function findSmallWindow1(timeout = 10000) {
                 const startTime = Date.now();
                 while (Date.now() - startTime < timeout) {
@@ -192,12 +192,12 @@
                 }
                 throw new Error('未找到小窗口1');
             }
-
+    
             try {
                 const smallWindow1 = await findSmallWindow1(10000);
                 log('小窗口1已出现。');
                 await randomDelay(1000, 2000);
-
+    
                 const element1Selector = 'div.btn-container > button';
                 const element1Button = await waitForSelector(element1Selector, 10000, smallWindow1);
                 log(`找到小窗口1中的按钮: ${element1Button.textContent.trim()}`);
@@ -212,51 +212,72 @@
                     }, 500);
                     setTimeout(() => { clearInterval(check); resolve(); }, 30000);
                 });
-
+    
                 const closeButtonSelector = 'button.close-btn, button > img, button[aria-label="close"], button svg';
                 const closeButton = await waitForSelector(closeButtonSelector, 10000, smallWindow1);
                 log(`找到小窗口1中的关闭按钮: ${closeButton.outerHTML}`);
                 simulateClick(closeButton);
                 log('点击小窗口1中的关闭按钮。');
-
-                await randomDelay(500, 1500);
+    
+                await randomDelay(500 | 1500);
             } catch (error) {
                 log(`小窗口1处理失败: ${error.message}，延迟后继续循环...`);
                 await randomDelay(2000, 4000);
             }
             await randomDelay(2000, 4000);
         }
-
+    
         const element3Selector = '#root > div > div > div.main > div.content.undefined > div > div.spin-container > div > button';
         try {
             const element3 = await waitForSelector(element3Selector, 10000);
             simulateClick(element3);
             log('点击Spin按钮，等待小窗口2...');
-
-            const smallWindow2Selector = 'body > div:nth-child(6) > div > div > div > div';
-            await waitForSelector(smallWindow2Selector, 10000);
-            const element4Selector = `${smallWindow2Selector} > button.spin-btn`;
-            const element4 = await waitForSelector(element4Selector, 10000);
+    
+            // 动态定位小窗口2
+            async function findSmallWindow2(timeout = 10000) {
+                const startTime = Date.now();
+                while (Date.now() - startTime < timeout) {
+                    const potentialWindows = document.querySelectorAll('body > div');
+                    for (const div of potentialWindows) {
+                        const spinButton = div.querySelector('button.spin-btn');
+                        const closeButton = div.querySelector('button.close-btn, button.close-btn > img, button[aria-label="close"], button svg');
+                        if (spinButton || closeButton) {
+                            const computedStyle = window.getComputedStyle(div);
+                            const isVisible = computedStyle.display !== 'none' && computedStyle.visibility !== 'hidden' && div.offsetParent !== null;
+                            if (isVisible) {
+                                log('动态定位到小窗口2');
+                                return div;
+                            }
+                        }
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                throw new Error('未找到小窗口2');
+            }
+    
+            const smallWindow2 = await findSmallWindow2(10000);
+            const element4Selector = 'button.spin-btn';
+            const element4 = await waitForSelector(element4Selector, 10000, smallWindow2);
             simulateClick(element4);
             log('点击小窗口2中的Spin按钮，等待消失...');
             await new Promise(resolve => {
                 const check = setInterval(() => {
-                    if (!document.querySelector(element4Selector)) {
+                    if (!smallWindow2.querySelector(element4Selector)) {
                         clearInterval(check);
                         resolve();
                     }
                 }, 500);
                 setTimeout(() => { clearInterval(check); resolve(); }, 30000);
             });
-
-            const element5Selector = `${smallWindow2Selector} > button.close-btn > img`;
-            const element5 = await waitForSelector(element5Selector, 10000);
+    
+            const element5Selector = 'button.close-btn > img';
+            const element5 = await waitForSelector(element5Selector, 10000, smallWindow2);
             simulateClick(element5);
             log('关闭小窗口2。');
         } catch (error) {
             log(`小窗口2处理失败: ${error.message}，继续执行...`);
         }
-
+    
         log('SideQuest 脚本执行完毕，跳转至 Humanity 页面。');
         await randomDelay(5000, 10000);
         window.location.href = 'https://testnet.humanity.org/dashboard';
