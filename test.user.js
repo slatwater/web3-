@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      9.2
+// @version      9.3
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -511,7 +511,7 @@
 
             log('Mahojin Point 脚本执行完毕，跳转至 Magic Newton 页面。');
             await randomDelay(5000, 10000);
-            window.location.href = 'https://www.magicnewton.com/portal/rewards';
+            window.location.href = 'https://hub.talus.network/loyalty';
         } catch (error) {
             log(`Mahojin Point 脚本执行出错: ${error.message}，尝试跳转至 Magic Newton 页面`);
             await randomDelay(5000, 10000);
