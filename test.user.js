@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      9.3
+// @version      9.5
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -585,16 +585,6 @@
             const element3 = await findElement3();
             await clickElement(element3, "元素3");
 
-            log("开始持续点击元素4...");
-            while (true) {
-                const element4 = document.evaluate(element4XPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (!element4) {
-                    log("元素4已消失，跳转至 Bithub 页面");
-                    break;
-                }
-                await clickElement(element4, "元素4");
-                await randomDelay(3000, 6000);
-            }
 
             await randomDelay(5000, 10000);
             window.location.href = 'https://klokapp.ai/';
