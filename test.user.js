@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      9.6
+// @version      9.7
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -535,8 +535,8 @@
             log("等待页面完全加载...");
             await randomDelay(2000, 5000);
 
-            const element2Selector = '#loyalty-quest-root-check_in > div > div.flex.items-center.gap-3.order-2.lg\\:order-none > button';
-            const element4XPath = '//*[@id="loyalty-quest-root-drip_x_new_tweet"]/div/div[3]/a';
+            const element2Selector = '#loyalty-quest-root-check_in > div > div.flex.flex-col.lg\:flex-row.gap-3.order-2.lg\:order-none > div > button';
+            const element4XPath = '//*[@id="radix-:r1g:"]/div/div/div/button';
 
             log("检查元素2...");
             const element2 = await waitForElement(element2Selector);
