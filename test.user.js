@@ -1,13 +1,12 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      9.5
+// @version      9.6
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
 // @match        https://sidequest.rcade.game/*
-// @match        https://testnet.humanity.org/dashboard
 // @match        https://forge.gg/quests
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://app.mahojin.ai/my/point
@@ -70,7 +69,6 @@
             if (currentURL.includes('quests.avalon.online')) await executeScript0();
             else if (currentURL.includes('glob.shaga.xyz/main')) await executeScript2();
             else if (currentURL.includes('sidequest.rcade.game')) await executeScript3();
-            else if (currentURL.includes('testnet.humanity.org/dashboard')) await executeScript5();
             else if (currentURL.includes('forge.gg/quests')) await executeScript4();
             else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) await executeScript6();
             else if (currentURL.includes('app.mahojin.ai/my/point')) await executeScript12();
@@ -152,7 +150,7 @@
         } catch (error) {
             log(`任务列表未找到: ${error.message}，跳转至 Humanity 页面`);
             await randomDelay(5000, 10000);
-            window.location.href = 'https://testnet.humanity.org/dashboard';
+            window.location.href = 'https://forge.gg/quests';
             return;
         }
     
@@ -278,47 +276,10 @@
     
         log('SideQuest 脚本执行完毕，跳转至 Humanity 页面。');
         await randomDelay(5000, 10000);
-        window.location.href = 'https://testnet.humanity.org/dashboard';
+        window.location.href = 'https://forge.gg/quests';
     }
 
-    // 脚本5：Humanity Dashboard 自动化操作
-    async function executeScript5() {
-        log('执行 Humanity Dashboard 自动化脚本...');
 
-        try {
-            log('等待页面完全加载...');
-            await waitForPageLoad();
-            await randomDelay(20000, 25000);
-
-            const buttonSelector = 'button.px-4.py-1\\.5.rounded-lg.text-sm.font-semibold.bg-\\[\\#6DFB3F\\]';
-            const backupSelector = 'button:not([disabled])[class*="bg-"]:contains("Claim")';
-            let claimButton;
-            try {
-                claimButton = await waitForSelector(buttonSelector, 20000);
-                log('找到主选择器 Claim 按钮');
-            } catch (error) {
-                log(`主选择器未找到 Claim 按钮: ${error.message}，尝试备用选择器...`);
-                claimButton = await waitForSelector(backupSelector, 10000);
-            }
-
-            if (claimButton) {
-                log('准备点击 Claim 按钮');
-                simulateClick(claimButton);
-                log('Claim 按钮已点击');
-                await randomDelay(2000, 2500);
-            } else {
-                log('未找到 Claim 按钮，跳过点击');
-            }
-
-            log('Humanity 脚本执行完毕，跳转至 Forge.gg 页面。');
-            await randomDelay(5000, 10000);
-            window.location.href = 'https://forge.gg/quests';
-        } catch (error) {
-            log(`Humanity 脚本执行出错: ${error.message}，尝试跳转至 Forge.gg 页面`);
-            await randomDelay(5000, 10000);
-            window.location.href = 'https://forge.gg/quests';
-        }
-    }
 
     // 脚本4：Forge.gg Quests 自动化操作
     async function executeScript4() {
