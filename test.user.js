@@ -1,13 +1,11 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      9.8
+// @version      10.0
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
 // @match        https://glob.shaga.xyz/main
-// @match        https://sidequest.rcade.game/*
-// @match        https://forge.gg/quests
 // @match        https://xnet.xtremeverse.xyz/earn?index=1
 // @match        https://app.mahojin.ai/my/point
 // @match        https://hub.talus.network/loyalty
@@ -68,12 +66,9 @@
         try {
             if (currentURL.includes('quests.avalon.online')) await executeScript0();
             else if (currentURL.includes('glob.shaga.xyz/main')) await executeScript2();
-            else if (currentURL.includes('sidequest.rcade.game')) await executeScript3();
-            else if (currentURL.includes('forge.gg/quests')) await executeScript4();
             else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) await executeScript6();
             else if (currentURL.includes('app.mahojin.ai/my/point')) await executeScript12();
             else if (currentURL.includes('hub.talus.network/loyalty')) await executeScript10();
-            else if (currentURL.includes('bithub.77-bit.com')) await executeScript9();
             else if (currentURL.includes('klokapp.ai')) await executeScript8();
             else log('当前页面不在脚本处理范围内。');
         } catch (error) {
@@ -136,208 +131,13 @@
             log('未找到SPIN按钮或不可点击，跳转至 SideQuest 页面。');
         }
         await randomDelay(5000, 10000);
-        window.location.href = 'https://sidequest.rcade.game/quests';
-    }
-
-    // 脚本3：SideQuest 自动化操作
-    async function executeScript3() {
-        log('执行 SideQuest 自动化脚本...');
-    
-        const missionListSelector = '#root > div > div > div.main > div.content.undefined > div > div.mission-list';
-        let missionList;
-        try {
-            missionList = await waitForSelector(missionListSelector);
-        } catch (error) {
-            log(`任务列表未找到: ${error.message}，跳转至 Humanity 页面`);
-            await randomDelay(5000, 10000);
-            window.location.href = 'https://forge.gg/quests';
-            return;
-        }
-    
-        while (true) {
-            const buttons = missionList.querySelectorAll('button');
-            if (buttons.length === 0) {
-                log('任务列表中无按钮，进入第二步...');
-                break;
-            }
-    
-            const randomIndex = Math.floor(Math.random() * buttons.length);
-            const selectedButton = buttons[randomIndex];
-            log(`点击任务按钮 ${randomIndex + 1}...`);
-            simulateClick(selectedButton);
-    
-            async function findSmallWindow1(timeout = 10000) {
-                const startTime = Date.now();
-                while (Date.now() - startTime < timeout) {
-                    const potentialWindows = document.querySelectorAll('body > div');
-                    for (const div of potentialWindows) {
-                        const buttonContainer = div.querySelector('div > div > div.btn-container > button');
-                        if (buttonContainer) {
-                            log('动态定位到小窗口1');
-                            return div;
-                        }
-                    }
-                    for (const div of potentialWindows) {
-                        const anyButton = div.querySelector('button:not([disabled])');
-                        if (anyButton && div.style.display !== 'none') {
-                            log('使用备用定位找到小窗口1');
-                            return div;
-                        }
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                }
-                throw new Error('未找到小窗口1');
-            }
-    
-            try {
-                const smallWindow1 = await findSmallWindow1(10000);
-                log('小窗口1已出现。');
-                await randomDelay(1000, 2000);
-    
-                const element1Selector = 'div.btn-container > button';
-                const element1Button = await waitForSelector(element1Selector, 10000, smallWindow1);
-                log(`找到小窗口1中的按钮: ${element1Button.textContent.trim()}`);
-                simulateClick(element1Button);
-                log('点击小窗口1中的按钮，等待消失...');
-                await new Promise(resolve => {
-                    const check = setInterval(() => {
-                        if (!smallWindow1.querySelector(element1Selector)) {
-                            clearInterval(check);
-                            resolve();
-                        }
-                    }, 500);
-                    setTimeout(() => { clearInterval(check); resolve(); }, 30000);
-                });
-    
-                const closeButtonSelector = 'button.close-btn, button > img, button[aria-label="close"], button svg';
-                const closeButton = await waitForSelector(closeButtonSelector, 10000, smallWindow1);
-                log(`找到小窗口1中的关闭按钮: ${closeButton.outerHTML}`);
-                simulateClick(closeButton);
-                log('点击小窗口1中的关闭按钮。');
-    
-                await randomDelay(500 | 1500);
-            } catch (error) {
-                log(`小窗口1处理失败: ${error.message}，延迟后继续循环...`);
-                await randomDelay(2000, 4000);
-            }
-            await randomDelay(2000, 4000);
-        }
-    
-        const element3Selector = '#root > div > div > div.main > div.content.undefined > div > div.spin-container > div > button';
-        try {
-            const element3 = await waitForSelector(element3Selector, 10000);
-            simulateClick(element3);
-            log('点击Spin按钮，等待小窗口2...');
-    
-            // 动态定位小窗口2
-            async function findSmallWindow2(timeout = 10000) {
-                const startTime = Date.now();
-                while (Date.now() - startTime < timeout) {
-                    const potentialWindows = document.querySelectorAll('body > div');
-                    for (const div of potentialWindows) {
-                        const spinButton = div.querySelector('button.spin-btn');
-                        const closeButton = div.querySelector('button.close-btn, button.close-btn > img, button[aria-label="close"], button svg');
-                        if (spinButton || closeButton) {
-                            const computedStyle = window.getComputedStyle(div);
-                            const isVisible = computedStyle.display !== 'none' && computedStyle.visibility !== 'hidden' && div.offsetParent !== null;
-                            if (isVisible) {
-                                log('动态定位到小窗口2');
-                                return div;
-                            }
-                        }
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                }
-                throw new Error('未找到小窗口2');
-            }
-    
-            const smallWindow2 = await findSmallWindow2(10000);
-            const element4Selector = 'button.spin-btn';
-            const element4 = await waitForSelector(element4Selector, 10000, smallWindow2);
-            simulateClick(element4);
-            log('点击小窗口2中的Spin按钮，等待消失...');
-            await new Promise(resolve => {
-                const check = setInterval(() => {
-                    if (!smallWindow2.querySelector(element4Selector)) {
-                        clearInterval(check);
-                        resolve();
-                    }
-                }, 500);
-                setTimeout(() => { clearInterval(check); resolve(); }, 30000);
-            });
-    
-            const element5Selector = 'button.close-btn > img';
-            const element5 = await waitForSelector(element5Selector, 10000, smallWindow2);
-            simulateClick(element5);
-            log('关闭小窗口2。');
-        } catch (error) {
-            log(`小窗口2处理失败: ${error.message}，继续执行...`);
-        }
-    
-        log('SideQuest 脚本执行完毕，跳转至 Humanity 页面。');
-        await randomDelay(5000, 10000);
-        window.location.href = 'https://forge.gg/quests';
-    }
-
-
-
-    // 脚本4：Forge.gg Quests 自动化操作
-    async function executeScript4() {
-        log('执行 Forge.gg Quests 自动化脚本...');
-        const element1Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > button';
-        const spinnerSelector = '#root > div > div.user__wrapper.bg-quest.content-paused > main > div.home-topcontent > header > p > span.spinner';
-
-        while (!document.querySelector(spinnerSelector)) {
-            const element1 = await waitForSelector(element1Selector, 10000);
-            await randomDelay(500, 1000);
-            element1.click();
-            log('点击元素1，等待加载...');
-            await randomDelay(1000, 2000);
-        }
-
-        log('加载开始，等待spinner消失...');
-        await new Promise(resolve => {
-            const check = setInterval(() => {
-                if (!document.querySelector(spinnerSelector)) {
-                    clearInterval(check);
-                    resolve();
-                }
-            }, 1000);
-        });
-
-        const element3Selector = 'div.xpbar.xpbar--badge.margin-bottom';
-        const element3 = await waitForSelector(element3Selector, 20000);
-        const initialBarValue = element3.style.getPropertyValue('--barValue') || '0';
-        log(`初始barValue: ${initialBarValue}`);
-
-        const element2Selector = '#root > div > div.user__wrapper.bg-quest > main > div.home-topcontent > header > div.home-rewards__head > div > button';
-        const element2 = await waitForSelector(element2Selector, 20000);
-        element2.click();
-        log('首次点击元素2。');
-
-        const intervalId = setInterval(async () => {
-            if (document.querySelector(element2Selector)) {
-                document.querySelector(element2Selector).click();
-                log('定期点击元素2。');
-            }
-        }, 50000);
-
-        await new Promise(resolve => {
-            const observer = new MutationObserver(() => {
-                const newBarValue = element3.style.getPropertyValue('--barValue') || '0';
-                if (newBarValue !== initialBarValue) {
-                    observer.disconnect();
-                    clearInterval(intervalId);
-                    resolve();
-                }
-            });
-            observer.observe(element3, { attributes: true, attributeFilter: ['style'] });
-        });
-
-        log('barValue已变化，跳转至 XtremeVerse 页面。');
-        await randomDelay(5000, 10000);
         window.location.href = 'https://xnet.xtremeverse.xyz/earn?index=1';
     }
+
+
+
+
+
 
     // 脚本6：XtremeVerse 自动化操作
     async function executeScript6() {
@@ -612,7 +412,7 @@
                 log('未找到登录按钮，直接执行循环操作...');
             }
 
-            for (let i = 1; i <= 12; i++) {
+            for (let i = 1; i <= 30; i++) {
                 log(`开始第 ${i} 次循环...`);
 
                 const buttons = await getButtons();
