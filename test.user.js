@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      10.5
+// @version      10.7
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -316,18 +316,21 @@
             const element2Selector = '#loyalty-quest-root-check_in > div > div.flex.flex-col.lg\\:flex-row.gap-3.order-2.lg\\:order-none > div > button';
             const elementASelector = '#loyalty-quest-root-link_click > div > div.flex.flex-col.lg\\:flex-row.gap-3.order-2.lg\\:order-none.min-w-0 > div > a';
     
-            // 遍历点击所有元素a
+            // 遍历点击所有元素a，最多点击4个
             log("检查元素a...");
+            let clickCount = 0;
+            const maxClicks = 4;
             let elementA = document.querySelectorAll(elementASelector);
-            while (elementA.length > 0) {
-                for (let i = 0; i < elementA.length; i++) {
-                    await clickElement(elementA[i], `元素a[${i + 1}]`);
+            while (elementA.length > 0 && clickCount < maxClicks) {
+                for (let i = 0; i < elementA.length && clickCount < maxClicks; i++) {
+                    await clickElement(elementA[i], `元素a[${clickCount + 1}]`);
+                    clickCount++;
                 }
                 // 重新检查元素a是否存在
                 await randomDelay(1000, 2000);
                 elementA = document.querySelectorAll(elementASelector);
             }
-            log("所有元素a已点击完成或不存在");
+            log(`元素a点击完成，累计点击${clickCount}次`);
     
             log("检查元素2...");
             const element2 = await waitForElement(element2Selector);
