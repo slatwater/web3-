@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动化脚本：Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub、KlokApp
 // @namespace    http://tampermonkey.net/
-// @version      10.9
+// @version      11.1
 // @description  自动化操作 Avalon、Shaga、SideQuest、Humanity、Forge、XtremeVerse、Mahojin、Magic Newton、Beamable、Talus、Bithub 和 KlokApp 页面上的任务
 // @author       Grok 3 by xAI
 // @match        https://quests.avalon.online/*
@@ -69,7 +69,6 @@
             else if (currentURL.includes('xnet.xtremeverse.xyz/earn')) await executeScript6();
             else if (currentURL.includes('app.mahojin.ai/my/point')) await executeScript12();
             else if (currentURL.includes('hub.talus.network/loyalty')) await executeScript10();
-            else if (currentURL.includes('klokapp.ai')) await executeScript8();
             else log('当前页面不在脚本处理范围内。');
         } catch (error) {
             log(`脚本执行出错: ${error.message}`);
@@ -338,133 +337,14 @@
     
             log("等待5秒后跳转...");
             await new Promise(resolve => setTimeout(resolve, 5000));
-            window.location.href = 'https://klokapp.ai/';
+
         } catch (error) {
             log(`Talus Loyalty 脚本执行出错: ${error.message}，尝试跳转至 Bithub 页面`);
             await new Promise(resolve => setTimeout(resolve, 5000));
-            window.location.href = 'https://klokapp.ai/';
+
         }
     }
-    // 脚本8：KlokApp Automation
-    async function executeScript8() {
-        log('执行 KlokApp 自动化脚本...');
 
-        async function waitForElement(cssSelector, xpath, timeout = 30000) {
-            const start = Date.now();
-            while (Date.now() - start < timeout) {
-                const elementByCss = document.querySelector(cssSelector);
-                if (elementByCss) {
-                    log(`通过CSS选择器找到元素: ${cssSelector}`);
-                    return elementByCss;
-                }
-
-                const elementByXPath = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (elementByXPath) {
-                    log(`通过XPath找到元素: ${xpath}`);
-                    return elementByXPath;
-                }
-
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-            throw new Error(`超时：未能在${timeout}ms内找到元素 - CSS: ${cssSelector}, XPath: ${xpath}`);
-        }
-
-        async function getButtons(timeout = 30000) {
-            const buttons = [];
-            const baseXPath = '/html/body/div[1]/div[2]/div[2]/div[2]/div[2]/button';
-            const start = Date.now();
-
-            while (Date.now() - start < timeout) {
-                for (let i = 1; i <= 4; i++) {
-                    const xpath = `${baseXPath}[${i}]`;
-                    const button = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                    if (button) buttons.push(button);
-                }
-                if (buttons.length > 0) return buttons;
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-            throw new Error('未能在超时时间内找到任何按钮');
-        }
-
-        async function checkElementExists(selector, timeout = 5000) {
-            const start = Date.now();
-            while (Date.now() - start < timeout) {
-                const element = document.querySelector(selector);
-                if (element) return element;
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-            return null;
-        }
-
-        const loginButtonSelector = 'body > div.AuthContainer_container__lGPSt > div > div.style_loginBtns__HdAFX > button.style_button__pYQlj.style_primary__w2PcZ';
-        const element2Selector = 'body > div.page_container__FA90Q.page_empty__aDXOo > div.flex.justify-between.gap-10 > div.style_sidebar__efxYk > div.flex.flex-col.xs\\:sticky.md\\:fixed.md\\:top-\\[32px\\].xs\\:top-0.bg-\\[\\#14171b\\].z-10.xs\\:pt-8.xs\\:pb-4.lg\\:py-0 > a';
-        const element2XPath = '/html/body/div[1]/div[2]/div[1]/div[1]/a';
-        const errorMessageSelector = 'h2[style="font-size: 14px; font-weight: 400; line-height: 28px; margin: 0px 8px;"]';
-
-        try {
-            const loginButton = await checkElementExists(loginButtonSelector);
-            if (loginButton) {
-                log('找到登录按钮，准备点击...');
-                simulateClick(loginButton);
-                log('登录按钮已点击，等待循环操作元素出现...');
-
-                const startWait = Date.now();
-                while (Date.now() - startWait < 30000) {
-                    const errorMessage = document.querySelector(errorMessageSelector);
-                    if (errorMessage && errorMessage.textContent.includes('Application error')) {
-                        log('检测到客户端错误，刷新页面...');
-                        window.location.reload();
-                        await new Promise(resolve => setTimeout(resolve, randomDelay(5000, 10000)));
-                        break;
-                    }
-
-                    const buttons = await getButtons(5000).catch(() => []);
-                    if (buttons.length > 0) {
-                        log('循环操作元素已就绪，开始执行循环...');
-                        break;
-                    }
-                    await randomDelay(500, 1000);
-                }
-            } else {
-                log('未找到登录按钮，直接执行循环操作...');
-            }
-
-            for (let i = 1; i <= 30; i++) {
-                log(`开始第 ${i} 次循环...`);
-
-                const buttons = await getButtons();
-                if (buttons.length < 1) {
-                    log('未找到任何按钮，跳过本次循环...');
-                    continue;
-                }
-                log(`找到 ${buttons.length} 个按钮可供选择。`);
-
-                const randomIndex = Math.floor(Math.random() * buttons.length);
-                const selectedButton = buttons[randomIndex];
-                log(`随机选择按钮 ${randomIndex + 1}，准备点击...`);
-                simulateClick(selectedButton);
-
-                await randomDelay(8000, 10000);
-
-                try {
-                    const element2 = await waitForElement(element2Selector, element2XPath);
-                    log('找到元素2，准备点击...');
-                    simulateClick(element2);
-                } catch (error) {
-                    log(`点击元素2失败: ${error.message}，继续下一循环...`);
-                }
-
-                if (i < 30) {
-                    log(`第 ${i} 次循环完成，等待下一轮...`);
-                    await randomDelay(2000, 3000);
-                }
-            }
-
-            log('KlokApp 脚本执行完毕，脚本结束。');
-        } catch (error) {
-            log(`KlokApp 脚本执行出错: ${error.message}`);
-        }
-    }
 
     // 执行主函数
     main().catch(error => log(`脚本执行出错: ${error}`));
